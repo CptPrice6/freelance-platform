@@ -26,7 +26,7 @@ func (c *UserController) Get() {
 	}
 
 	c.Ctx.ResponseWriter.WriteHeader(http.StatusOK)
-	c.Data["json"] = map[string]string{"username": user.Username, "email": user.Email, "role": user.Role}
+	c.Data["json"] = map[string]string{"email": user.Email, "role": user.Role}
 	c.ServeJSON()
 
 }

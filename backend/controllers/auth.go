@@ -3,8 +3,8 @@ package controllers
 import (
 	"backend/models"
 	"backend/utils"
+	"backend/validators"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/beego/beego/v2/client/orm"
@@ -19,43 +19,16 @@ type AuthController struct {
 // RegisterHandler - Handles user registration
 func (c *AuthController) RegisterHandler() {
 
-	var user models.User
-	err := json.Unmarshal(c.Ctx.Input.RequestBody, &user)
+	registerRequest, err := validators.RegisterValidator(c.Ctx.Input.RequestBody)
 	if err != nil {
-		fmt.Println("Error parsing request body:", err)
 		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
-		c.Data["json"] = map[string]string{"error": "Invalid input"}
-		c.ServeJSON()
-		return
-	}
-	missingFields := []string{}
-	if user.Email == "" {
-		missingFields = append(missingFields, "email")
-	}
-	if user.Password == "" {
-		missingFields = append(missingFields, "password")
-	}
-	if user.Username == "" {
-		missingFields = append(missingFields, "username")
-	}
-
-	if len(missingFields) > 0 {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
-		c.Data["json"] = map[string]interface{}{
-			"error":          "Missing required fields",
-			"missing_fields": missingFields,
-		}
+		c.Data["json"] = map[string]string{"error": err.Error()}
 		c.ServeJSON()
 		return
 	}
 
-	user.Role = "user"
-
-	// Check if email already exists
-	o := orm.NewOrm()
-	existingUser := models.User{Email: user.Email}
-	err = o.Read(&existingUser, "Email")
-	if err == nil { // If user exists, return conflict error
+	alreadyExists := models.UserAlreadyExists(registerRequest.Email)
+	if alreadyExists {
 		c.Ctx.ResponseWriter.WriteHeader(http.StatusConflict)
 		c.Data["json"] = map[string]string{"error": "Email already registered"}
 		c.ServeJSON()
@@ -63,7 +36,7 @@ func (c *AuthController) RegisterHandler() {
 	}
 
 	// Hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerRequest.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
 		c.Data["json"] = map[string]string{"error": "Password hashing failed"}
@@ -71,10 +44,7 @@ func (c *AuthController) RegisterHandler() {
 		return
 	}
 
-	user.Password = string(hashedPassword)
-
-	// Save user to database
-	_, err = o.Insert(&user)
+	err = models.CreateUser(registerRequest.Email, string(hashedPassword), "user")
 	if err != nil {
 		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
 		c.Data["json"] = map[string]string{"error": "Registration failed"}
