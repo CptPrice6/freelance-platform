@@ -8,7 +8,7 @@ import (
 	"github.com/beego/beego/v2/server/web/context"
 )
 
-// JWTMiddleware is a middleware to protect routes with JWT
+// A middleware to protect routes with JWT authentication
 func UserMiddleware(ctx *context.Context) {
 	// Get the token from the Authorization header
 	tokenString := ctx.Input.Header("Authorization")
@@ -27,12 +27,15 @@ func UserMiddleware(ctx *context.Context) {
 		ctx.Output.JSON(map[string]string{"error": "Invalid token"}, false, false)
 		return
 	}
+
 	// check if user is banned
 
 	// Attach user email to the context for further use
 	ctx.Input.SetData("email", claims.Email)
 }
 
+// A middleware to protect routes with JWT authentication
+// This middleware is used to protect routes that require admin access
 func AdminMiddleware(ctx *context.Context) {
 	tokenString := strings.TrimPrefix(ctx.Input.Header("Authorization"), "Bearer ")
 
@@ -48,6 +51,7 @@ func AdminMiddleware(ctx *context.Context) {
 		ctx.Output.JSON(map[string]string{"error": "Invalid token"}, false, false)
 		return
 	}
+
 	// check if user is banned
 
 	if claims.Role != "admin" {
