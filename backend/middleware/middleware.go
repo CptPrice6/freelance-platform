@@ -60,5 +60,6 @@ func AdminMiddleware(ctx *context.Context) {
 		return
 	}
 
+	// Attach user email to the context for further use
 	ctx.Input.SetData("email", claims.Email)
 }

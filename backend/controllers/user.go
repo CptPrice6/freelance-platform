@@ -20,13 +20,11 @@ func (c *UserController) Get() {
 	err := o.Read(&user, "Email")
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
-		c.Data["json"] = map[string]string{"error": "User not found"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
 		return
 	}
 
 	c.Ctx.Output.SetStatus(http.StatusOK)
-	c.Data["json"] = map[string]string{"email": user.Email, "role": user.Role}
-	c.ServeJSON()
+	c.Ctx.Output.JSON(map[string]string{"email": user.Email, "role": user.Role}, false, false)
 
 }

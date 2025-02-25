@@ -22,16 +22,14 @@ func (c *AuthController) RegisterHandler() {
 	registerRequest, err := validators.RegisterValidator(c.Ctx.Input.RequestBody)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
-		c.Data["json"] = map[string]string{"error": err.Error()}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
 		return
 	}
 
 	alreadyExists := models.UserAlreadyExists(registerRequest.Email)
 	if alreadyExists {
 		c.Ctx.Output.SetStatus(http.StatusConflict)
-		c.Data["json"] = map[string]string{"error": "Email already registered"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Email already registered"}, false, false)
 		return
 	}
 
@@ -39,16 +37,14 @@ func (c *AuthController) RegisterHandler() {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerRequest.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Data["json"] = map[string]string{"error": "Password hashing failed"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Password hashing failed"}, false, false)
 		return
 	}
 
 	err = models.CreateUser(registerRequest.Email, string(hashedPassword), "user")
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Data["json"] = map[string]string{"error": "Registration failed"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Registration failed"}, false, false)
 		return
 	}
 
@@ -68,8 +64,7 @@ func (c *AuthController) LoginHandler() {
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &loginData)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
-		c.Data["json"] = map[string]string{"error": "Invalid input"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid input"}, false, false)
 		return
 	}
 
@@ -83,11 +78,7 @@ func (c *AuthController) LoginHandler() {
 
 	if len(missingFields) > 0 {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
-		c.Data["json"] = map[string]interface{}{
-			"error":          "Missing required fields",
-			"missing_fields": missingFields,
-		}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]interface{}{"error": "Missing required fields", "missing_fields": missingFields}, false, false)
 		return
 	}
 
@@ -96,8 +87,7 @@ func (c *AuthController) LoginHandler() {
 	err = o.Read(&user, "Email")
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
-		c.Data["json"] = map[string]string{"error": "User not found"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
 		return
 	}
 
@@ -105,8 +95,7 @@ func (c *AuthController) LoginHandler() {
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginData.Password))
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
-		c.Data["json"] = map[string]string{"error": "Incorrect password"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Incorrect password"}, false, false)
 		return
 	}
 
@@ -114,26 +103,23 @@ func (c *AuthController) LoginHandler() {
 	accessToken, err := utils.GenerateAccessToken(user.Email, user.Role)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Data["json"] = map[string]string{"error": "Access token generation failed"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Access token generation failed"}, false, false)
 		return
 	}
 
 	refreshToken, err := utils.GenerateRefreshToken(user.Email, user.Role)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Data["json"] = map[string]string{"error": "Refresh token generation failed"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Refresh token generation failed"}, false, false)
 		return
 	}
 
 	// Successful login
 	c.Ctx.Output.SetStatus(http.StatusOK)
-	c.Data["json"] = map[string]string{
+	c.Ctx.Output.JSON(map[string]string{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
-	}
-	c.ServeJSON()
+	}, false, false)
 }
 
 // Refresh Token Handler
@@ -145,17 +131,14 @@ func (c *AuthController) RefreshTokenHandler() {
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &requestData)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
-		c.Ctx.Output.ContentType("application/json")
-		c.Data["json"] = map[string]string{"error": "Invalid input"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid input"}, false, false)
 		return
 	}
 	// Validate Refresh Token
 	claims, err := utils.ValidateRefreshToken(requestData.RefreshToken)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
-		c.Data["json"] = map[string]string{"error": "Invalid refresh token"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid refresh token"}, false, false)
 		return
 	}
 
@@ -163,13 +146,11 @@ func (c *AuthController) RefreshTokenHandler() {
 	newAccessToken, err := utils.GenerateAccessToken(claims.Email, claims.Role)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Data["json"] = map[string]string{"error": "Could not generate a new access token"}
-		c.ServeJSON()
+		c.Ctx.Output.JSON(map[string]string{"error": "Could not generate a new access token"}, false, false)
 		return
 	}
 	c.Ctx.Output.SetStatus(http.StatusOK)
-	c.Data["json"] = map[string]string{
-		"access_token": newAccessToken,
-	}
-	c.ServeJSON()
+	c.Ctx.Output.JSON(map[string]string{
+		"access_token": newAccessToken}, false, false)
+
 }
