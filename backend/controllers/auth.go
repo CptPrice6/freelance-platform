@@ -21,7 +21,7 @@ func (c *AuthController) RegisterHandler() {
 
 	registerRequest, err := validators.RegisterValidator(c.Ctx.Input.RequestBody)
 	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
 		c.Data["json"] = map[string]string{"error": err.Error()}
 		c.ServeJSON()
 		return
@@ -29,7 +29,7 @@ func (c *AuthController) RegisterHandler() {
 
 	alreadyExists := models.UserAlreadyExists(registerRequest.Email)
 	if alreadyExists {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusConflict)
+		c.Ctx.Output.SetStatus(http.StatusConflict)
 		c.Data["json"] = map[string]string{"error": "Email already registered"}
 		c.ServeJSON()
 		return
@@ -38,7 +38,7 @@ func (c *AuthController) RegisterHandler() {
 	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerRequest.Password), bcrypt.DefaultCost)
 	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Data["json"] = map[string]string{"error": "Password hashing failed"}
 		c.ServeJSON()
 		return
@@ -46,14 +46,14 @@ func (c *AuthController) RegisterHandler() {
 
 	err = models.CreateUser(registerRequest.Email, string(hashedPassword), "user")
 	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Data["json"] = map[string]string{"error": "Registration failed"}
 		c.ServeJSON()
 		return
 	}
 
 	// Registration successful
-	c.Ctx.ResponseWriter.WriteHeader(http.StatusCreated)
+	c.Ctx.Output.SetStatus(http.StatusCreated)
 	c.Data["json"] = map[string]string{"message": "User registered successfully"}
 	c.ServeJSON()
 }
@@ -67,7 +67,7 @@ func (c *AuthController) LoginHandler() {
 	}
 	err := json.Unmarshal(c.Ctx.Input.RequestBody, &loginData)
 	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
 		c.Data["json"] = map[string]string{"error": "Invalid input"}
 		c.ServeJSON()
 		return
@@ -82,7 +82,7 @@ func (c *AuthController) LoginHandler() {
 	}
 
 	if len(missingFields) > 0 {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusBadRequest)
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
 		c.Data["json"] = map[string]interface{}{
 			"error":          "Missing required fields",
 			"missing_fields": missingFields,
@@ -95,7 +95,7 @@ func (c *AuthController) LoginHandler() {
 	user := models.User{Email: loginData.Email}
 	err = o.Read(&user, "Email")
 	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
 		c.Data["json"] = map[string]string{"error": "User not found"}
 		c.ServeJSON()
 		return
@@ -104,23 +104,72 @@ func (c *AuthController) LoginHandler() {
 	// Compare passwords
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginData.Password))
 	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
 		c.Data["json"] = map[string]string{"error": "Incorrect password"}
 		c.ServeJSON()
 		return
 	}
 
 	// Generate JWT token
-	token, err := utils.GenerateJWT(user.Email, user.Role)
+	accessToken, err := utils.GenerateAccessToken(user.Email, user.Role)
 	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
-		c.Data["json"] = map[string]string{"error": "Token generation failed"}
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Data["json"] = map[string]string{"error": "Access token generation failed"}
+		c.ServeJSON()
+		return
+	}
+
+	refreshToken, err := utils.GenerateRefreshToken(user.Email, user.Role)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Data["json"] = map[string]string{"error": "Refresh token generation failed"}
 		c.ServeJSON()
 		return
 	}
 
 	// Successful login
-	c.Ctx.ResponseWriter.WriteHeader(http.StatusOK)
-	c.Data["json"] = map[string]string{"token": token}
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = map[string]string{
+		"access_token":  accessToken,
+		"refresh_token": refreshToken,
+	}
+	c.ServeJSON()
+}
+
+// Refresh Token Handler
+func (c *AuthController) RefreshTokenHandler() {
+	var requestData struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+
+	err := json.Unmarshal(c.Ctx.Input.RequestBody, &requestData)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.ContentType("application/json")
+		c.Data["json"] = map[string]string{"error": "Invalid input"}
+		c.ServeJSON()
+		return
+	}
+	// Validate Refresh Token
+	claims, err := utils.ValidateRefreshToken(requestData.RefreshToken)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Data["json"] = map[string]string{"error": "Invalid refresh token"}
+		c.ServeJSON()
+		return
+	}
+
+	// Generate new Access Token
+	newAccessToken, err := utils.GenerateAccessToken(claims.Email, claims.Role)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Data["json"] = map[string]string{"error": "Could not generate a new access token"}
+		c.ServeJSON()
+		return
+	}
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = map[string]string{
+		"access_token": newAccessToken,
+	}
 	c.ServeJSON()
 }

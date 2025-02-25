@@ -10,6 +10,7 @@ import (
 func init() {
 	web.Router("/register", &controllers.AuthController{}, "post:RegisterHandler")
 	web.Router("/login", &controllers.AuthController{}, "post:LoginHandler")
+	web.Router("/refresh-token", &controllers.AuthController{}, "post:RefreshTokenHandler")
 
 	web.InsertFilter("/random", web.BeforeRouter, middleware.UserMiddleware)
 	web.Router("/random", &controllers.NumberController{})

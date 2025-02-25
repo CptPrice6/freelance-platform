@@ -7,32 +7,47 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var SecretKey = []byte("secret-salt")
+var secretKey = []byte("secret-salt")
 
 type Claims struct {
-	Email string `json:"email"`
-	Role  string `json:"role"`
+	Email     string `json:"email"`
+	Role      string `json:"role"`
+	TokenType string `json:"token_type"`
 	jwt.RegisteredClaims
 }
 
 // GenerateJWT creates a new JWT token
-func GenerateJWT(email string, role string) (string, error) {
+func GenerateAccessToken(email string, role string) (string, error) {
 	claims := Claims{
-		Email: email,
-		Role:  role,
+		Email:     email,
+		Role:      role,
+		TokenType: "access",
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 60)), // 24 hours expiry
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 30)), // 30 minutes expiry
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(SecretKey)
+	return token.SignedString(secretKey)
 }
 
-// ParseJWT parses the JWT token and validates it
+func GenerateRefreshToken(email string, role string) (string, error) {
+	claims := Claims{
+		Email:     email,
+		Role:      role,
+		TokenType: "refresh",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)), // 7 day expiry
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(secretKey)
+}
+
 func ParseJWT(tokenStr string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return SecretKey, nil
+		return secretKey, nil
 	})
 
 	if err != nil {
@@ -45,7 +60,33 @@ func ParseJWT(tokenStr string) (*Claims, error) {
 
 	claims, ok := token.Claims.(*Claims)
 	if !ok {
+		return nil, errors.New("invalid token")
+	}
+
+	return claims, nil
+}
+
+func ValidateAccessToken(tokenStr string) (*Claims, error) {
+	claims, err := ParseJWT(tokenStr)
+	if err != nil {
 		return nil, err
+	}
+
+	if claims.TokenType != "access" {
+		return nil, errors.New("invalid token type: expected access token")
+	}
+
+	return claims, nil
+}
+
+func ValidateRefreshToken(tokenStr string) (*Claims, error) {
+	claims, err := ParseJWT(tokenStr)
+	if err != nil {
+		return nil, err
+	}
+
+	if claims.TokenType != "refresh" {
+		return nil, errors.New("invalid token type: expected refresh token")
 	}
 
 	return claims, nil

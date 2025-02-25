@@ -15,10 +15,10 @@ type NumberController struct {
 func (c *NumberController) Get() {
 	number, err := models.GetRandomNumber()
 	if err != nil {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Data["json"] = map[string]string{"error": err.Error()}
 	} else {
-		c.Ctx.ResponseWriter.WriteHeader(http.StatusOK)
+		c.Ctx.Output.SetStatus(http.StatusOK)
 		c.Data["json"] = map[string]int{"random_number": number}
 	}
 	c.ServeJSON()

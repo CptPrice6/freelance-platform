@@ -16,15 +16,15 @@ func UserMiddleware(ctx *context.Context) {
 
 	if tokenString == "" {
 		ctx.Output.SetStatus(http.StatusUnauthorized)
-		ctx.Output.Body([]byte("Authorization token missing"))
+		ctx.Output.JSON(map[string]string{"error": "Authorization token missing"}, false, false)
 		return
 	}
 
 	// Parse and validate JWT
-	claims, err := utils.ParseJWT(tokenString)
+	claims, err := utils.ValidateAccessToken(tokenString)
 	if err != nil {
 		ctx.Output.SetStatus(http.StatusUnauthorized)
-		ctx.Output.Body([]byte("Invalid token"))
+		ctx.Output.JSON(map[string]string{"error": "Invalid token"}, false, false)
 		return
 	}
 	// check if user is banned
@@ -38,21 +38,21 @@ func AdminMiddleware(ctx *context.Context) {
 
 	if tokenString == "" {
 		ctx.Output.SetStatus(http.StatusUnauthorized)
-		ctx.Output.Body([]byte("Authorization token missing"))
+		ctx.Output.JSON(map[string]string{"error": "Authorization token missing"}, false, false)
 		return
 	}
 
-	claims, err := utils.ParseJWT(tokenString)
+	claims, err := utils.ValidateAccessToken(tokenString)
 	if err != nil {
 		ctx.Output.SetStatus(http.StatusUnauthorized)
-		ctx.Output.Body([]byte("Invalid token"))
+		ctx.Output.JSON(map[string]string{"error": "Invalid token"}, false, false)
 		return
 	}
 	// check if user is banned
 
 	if claims.Role != "admin" {
 		ctx.Output.SetStatus(http.StatusForbidden)
-		ctx.Output.Body([]byte("Access denied: Admins only"))
+		ctx.Output.JSON(map[string]string{"error": "Access denied: Admins only"}, false, false)
 		return
 	}
 
