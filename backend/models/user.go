@@ -6,10 +6,11 @@ import (
 
 // Number represents a database entity
 type User struct {
-	Id       int `orm:"pk;auto"`
-	Name     string
-	Email    string
-	Password string
+	Id       int    `orm:"pk;auto"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Role     string
 }
 
 func init() {

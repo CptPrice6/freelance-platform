@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/models"
+	"net/http"
 
 	"github.com/beego/beego/v2/server/web"
 )
@@ -14,8 +15,10 @@ type NumberController struct {
 func (c *NumberController) Get() {
 	number, err := models.GetRandomNumber()
 	if err != nil {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusInternalServerError)
 		c.Data["json"] = map[string]string{"error": err.Error()}
 	} else {
+		c.Ctx.ResponseWriter.WriteHeader(http.StatusOK)
 		c.Data["json"] = map[string]int{"random_number": number}
 	}
 	c.ServeJSON()

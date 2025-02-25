@@ -10,6 +10,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bxcodec/faker/v3 v3.8.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jmoiron/sqlx v1.4.0 // indirect
