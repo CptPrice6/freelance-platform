@@ -9,7 +9,7 @@ import (
 )
 
 // JWTMiddleware is a middleware to protect routes with JWT
-func JWTMiddleware(ctx *context.Context) {
+func UserMiddleware(ctx *context.Context) {
 	// Get the token from the Authorization header
 	tokenString := ctx.Input.Header("Authorization")
 	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
@@ -27,6 +27,7 @@ func JWTMiddleware(ctx *context.Context) {
 		ctx.Output.Body([]byte("Invalid token"))
 		return
 	}
+	// check if user is banned
 
 	// Attach user email to the context for further use
 	ctx.Input.SetData("email", claims.Email)
@@ -47,6 +48,7 @@ func AdminMiddleware(ctx *context.Context) {
 		ctx.Output.Body([]byte("Invalid token"))
 		return
 	}
+	// check if user is banned
 
 	if claims.Role != "admin" {
 		ctx.Output.SetStatus(http.StatusForbidden)

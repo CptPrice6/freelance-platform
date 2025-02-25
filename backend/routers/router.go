@@ -11,12 +11,10 @@ func init() {
 	web.Router("/register", &controllers.AuthController{}, "post:RegisterHandler")
 	web.Router("/login", &controllers.AuthController{}, "post:LoginHandler")
 
-	web.InsertFilter("/random", web.BeforeRouter, middleware.JWTMiddleware)
-
+	web.InsertFilter("/random", web.BeforeRouter, middleware.UserMiddleware)
 	web.Router("/random", &controllers.NumberController{})
 
 	web.InsertFilter("/user", web.BeforeRouter, middleware.AdminMiddleware)
-
 	web.Router("/user", &controllers.UserController{})
 
 }
