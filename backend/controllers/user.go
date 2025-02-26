@@ -3,8 +3,8 @@ package controllers
 import (
 	"backend/models"
 	"net/http"
+	"strconv"
 
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/server/web"
 )
 
@@ -14,17 +14,15 @@ type UserController struct {
 
 // GET /random - Returns a user from JWT middleware context email
 func (c *UserController) Get() {
-	email := c.Ctx.Input.GetData("email").(string)
-	o := orm.NewOrm()
-	user := models.User{Email: email}
-	err := o.Read(&user, "Email")
-	if err != nil {
+	id := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(id)
+	if user == nil || err != nil {
 		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
 		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
 		return
 	}
 
 	c.Ctx.Output.SetStatus(http.StatusOK)
-	c.Ctx.Output.JSON(map[string]string{"email": user.Email, "role": user.Role}, false, false)
+	c.Ctx.Output.JSON(map[string]string{"id": strconv.Itoa(user.Id), "email": user.Email, "role": user.Role}, false, false)
 
 }
