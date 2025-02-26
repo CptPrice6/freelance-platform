@@ -12,7 +12,6 @@ type UserController struct {
 	web.Controller
 }
 
-// GET /random - Returns a user from JWT middleware context email
 func (c *UserController) Get() {
 	id := c.Ctx.Input.GetData("id").(int)
 	user, err := models.GetUserById(id)

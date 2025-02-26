@@ -65,3 +65,21 @@ func RefreshValidator(requestBody []byte) (*types.RefreshRequest, error) {
 	return refreshRequest, nil
 
 }
+
+func LogoutUserValidator(requestBody []byte) (*types.LogoutUserRequest, error) {
+
+	var logoutUserRequest = new(types.LogoutUserRequest)
+
+	err := json.Unmarshal(requestBody, &logoutUserRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	if logoutUserRequest.UserId == 0 {
+		return nil, fmt.Errorf("Missing required fields: user_id")
+	}
+
+	return logoutUserRequest, nil
+
+}

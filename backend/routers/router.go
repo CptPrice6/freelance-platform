@@ -12,10 +12,12 @@ func init() {
 	web.Router("/login", &controllers.AuthController{}, "post:LoginHandler")
 	web.Router("/refresh-token", &controllers.AuthController{}, "post:RefreshTokenHandler")
 
-	web.InsertFilter("/random", web.BeforeRouter, middleware.UserAuthMiddleware)
-	web.Router("/random", &controllers.NumberController{})
+	web.InsertFilter("/user/*", web.BeforeRouter, middleware.UserAuthMiddleware)
+	web.Router("/user/random", &controllers.NumberController{})
+	web.Router("/user/data", &controllers.UserController{})
+	web.Router("/user/logout", &controllers.AuthController{}, "post:LogoutHandler")
 
-	web.InsertFilter("/user", web.BeforeRouter, middleware.AdminAuthMiddleware)
-	web.Router("/user", &controllers.UserController{})
+	web.InsertFilter("/admin/*", web.BeforeRouter, middleware.AdminAuthMiddleware)
+	web.Router("/admin/logout-user", &controllers.AdminController{}, "post:LogoutUserHandler")
 
 }
