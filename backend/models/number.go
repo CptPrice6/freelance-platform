@@ -7,7 +7,6 @@ import (
 	"github.com/beego/beego/v2/client/orm"
 )
 
-// Number represents a database entity
 type Number struct {
 	Id    int `orm:"pk;auto"`
 	Value int
