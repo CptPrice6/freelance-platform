@@ -77,18 +77,10 @@ func (c *AuthController) LoginHandler() {
 		return
 	}
 
-	// Generate JWT token
-	accessToken, err := utils.GenerateAccessToken(user.Id, user.Role)
+	accessToken, refreshToken, err := utils.GenerateTokenPair(user.Id, user.Role)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Ctx.Output.JSON(map[string]string{"error": "Access token generation failed"}, false, false)
-		return
-	}
-
-	refreshToken, err := utils.GenerateRefreshToken(user.Id)
-	if err != nil {
-		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Ctx.Output.JSON(map[string]string{"error": "Refresh token generation failed"}, false, false)
+		c.Ctx.Output.JSON(map[string]string{"error": "Could not generate a new token pair"}, false, false)
 		return
 	}
 
@@ -126,15 +118,17 @@ func (c *AuthController) RefreshTokenHandler() {
 	}
 
 	// Generate new Access Token
-	newAccessToken, err := utils.GenerateAccessToken(user.Id, user.Role)
+	newAccessToken, newRefreshToken, err := utils.GenerateTokenPair(user.Id, user.Role)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Ctx.Output.JSON(map[string]string{"error": "Could not generate a new access token"}, false, false)
+		c.Ctx.Output.JSON(map[string]string{"error": "Could not generate a new token pair"}, false, false)
 		return
 	}
 
 	c.Ctx.Output.SetStatus(http.StatusOK)
 	c.Ctx.Output.JSON(map[string]string{
-		"access_token": newAccessToken}, false, false)
+		"access_token":  newAccessToken,
+		"refresh_token": newRefreshToken,
+	}, false, false)
 
 }

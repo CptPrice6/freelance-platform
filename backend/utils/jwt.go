@@ -44,6 +44,20 @@ func GenerateRefreshToken(id int) (string, error) {
 	return token.SignedString(secretKey)
 }
 
+func GenerateTokenPair(id int, role string) (accessToken string, refreshToken string, err error) {
+	accessToken, err = GenerateAccessToken(id, role)
+	if err != nil {
+		return "", "", err
+	}
+
+	refreshToken, err = GenerateRefreshToken(id)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
+}
+
 func ParseJWT(tokenStr string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil
