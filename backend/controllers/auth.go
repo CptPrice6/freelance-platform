@@ -4,10 +4,8 @@ import (
 	"backend/models"
 	"backend/utils"
 	"backend/validators"
-	"encoding/json"
 	"net/http"
 
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/server/web"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -57,42 +55,22 @@ func (c *AuthController) RegisterHandler() {
 // LoginHandler - Handles user login and returns a JWT token
 func (c *AuthController) LoginHandler() {
 
-	var loginData struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-	err := json.Unmarshal(c.Ctx.Input.RequestBody, &loginData)
+	loginRequest, err := validators.LoginValidator(c.Ctx.Input.RequestBody)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
-		c.Ctx.Output.JSON(map[string]string{"error": "Invalid input"}, false, false)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
 		return
 	}
 
-	missingFields := []string{}
-	if loginData.Email == "" {
-		missingFields = append(missingFields, "email")
-	}
-	if loginData.Password == "" {
-		missingFields = append(missingFields, "password")
-	}
-
-	if len(missingFields) > 0 {
-		c.Ctx.Output.SetStatus(http.StatusBadRequest)
-		c.Ctx.Output.JSON(map[string]interface{}{"error": "Missing required fields", "missing_fields": missingFields}, false, false)
-		return
-	}
-
-	o := orm.NewOrm()
-	user := models.User{Email: loginData.Email}
-	err = o.Read(&user, "Email")
-	if err != nil {
+	user, err := models.GetUserByEmail(loginRequest.Email)
+	if user == nil || err != nil {
 		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
 		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
 		return
 	}
 
 	// Compare passwords
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginData.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
 		c.Ctx.Output.JSON(map[string]string{"error": "Incorrect password"}, false, false)
@@ -124,18 +102,16 @@ func (c *AuthController) LoginHandler() {
 
 // Refresh Token Handler
 func (c *AuthController) RefreshTokenHandler() {
-	var requestData struct {
-		RefreshToken string `json:"refresh_token"`
-	}
 
-	err := json.Unmarshal(c.Ctx.Input.RequestBody, &requestData)
+	refreshRequest, err := validators.RefreshValidator(c.Ctx.Input.RequestBody)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
-		c.Ctx.Output.JSON(map[string]string{"error": "Invalid input"}, false, false)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
 		return
 	}
+
 	// Validate Refresh Token
-	claims, err := utils.ValidateRefreshToken(requestData.RefreshToken)
+	claims, err := utils.ValidateRefreshToken(refreshRequest.RefreshToken)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
 		c.Ctx.Output.JSON(map[string]string{"error": "Invalid refresh token"}, false, false)
