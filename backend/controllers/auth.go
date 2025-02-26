@@ -84,12 +84,41 @@ func (c *AuthController) LoginHandler() {
 		return
 	}
 
+	err = models.DeleteAllRefreshTokensForUser(user.Id)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error deleting old refresh token"}, false, false)
+		return
+	}
+
+	err = models.SaveRefreshToken(refreshToken, user.Id)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Could not store new refresh token"}, false, false)
+		return
+	}
+
 	// Successful login
 	c.Ctx.Output.SetStatus(http.StatusOK)
 	c.Ctx.Output.JSON(map[string]string{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
 	}, false, false)
+}
+
+func (c *AuthController) LogoutHandler() {
+
+	err := models.DeleteAllRefreshTokensForUser(c.Ctx.Input.GetData("id").(int))
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error deleting old refresh token"}, false, false)
+		return
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusCreated)
+	c.Data["json"] = map[string]string{"message": "User log out successfull"}
+	c.ServeJSON()
+
 }
 
 // Refresh Token Handler
@@ -117,11 +146,33 @@ func (c *AuthController) RefreshTokenHandler() {
 		return
 	}
 
+	// Validate the refresh token in the database
+	isValid, err := models.ValidateRefreshTokenInDB(refreshRequest.RefreshToken, user.Id)
+	if err != nil || !isValid {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "Refresh token is invalid or expired"}, false, false)
+		return
+	}
+
+	err = models.DeleteAllRefreshTokensForUser(user.Id)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error deleting old refresh token"}, false, false)
+		return
+	}
+
 	// Generate new Access Token
 	newAccessToken, newRefreshToken, err := utils.GenerateTokenPair(user.Id, user.Role)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Ctx.Output.JSON(map[string]string{"error": "Could not generate a new token pair"}, false, false)
+		return
+	}
+
+	err = models.SaveRefreshToken(newRefreshToken, user.Id)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Could not store new refresh token"}, false, false)
 		return
 	}
 
