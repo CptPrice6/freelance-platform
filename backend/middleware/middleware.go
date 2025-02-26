@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"backend/models"
 	"backend/utils"
 	"net/http"
 	"strings"
@@ -28,7 +29,18 @@ func UserAuthMiddleware(ctx *context.Context) {
 		return
 	}
 
-	// check if user is banned
+	banStatus, err := models.IsUserBanned(claims.Id)
+	if err != nil {
+		ctx.Output.SetStatus(http.StatusInternalServerError)
+		ctx.Output.JSON(map[string]string{"error": "Error fetching user data"}, false, false)
+		return
+	}
+
+	if banStatus {
+		ctx.Output.SetStatus(http.StatusForbidden)
+		ctx.Output.JSON(map[string]string{"error": "User is banned"}, false, false)
+		return
+	}
 
 	// Attach user id to the context for further use
 	ctx.Input.SetData("id", claims.Id)
