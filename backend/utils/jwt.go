@@ -10,16 +10,16 @@ import (
 var secretKey = []byte("secret-salt")
 
 type Claims struct {
-	Email     string `json:"email"`
+	Id        int    `json:"id"`
 	Role      string `json:"role"`
 	TokenType string `json:"token_type"`
 	jwt.RegisteredClaims
 }
 
 // GenerateJWT creates a new JWT token
-func GenerateAccessToken(email string, role string) (string, error) {
+func GenerateAccessToken(id int, role string) (string, error) {
 	claims := Claims{
-		Email:     email,
+		Id:        id,
 		Role:      role,
 		TokenType: "access",
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -31,10 +31,9 @@ func GenerateAccessToken(email string, role string) (string, error) {
 	return token.SignedString(secretKey)
 }
 
-func GenerateRefreshToken(email string, role string) (string, error) {
+func GenerateRefreshToken(id int) (string, error) {
 	claims := Claims{
-		Email:     email,
-		Role:      role,
+		Id:        id,
 		TokenType: "refresh",
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)), // 7 day expiry

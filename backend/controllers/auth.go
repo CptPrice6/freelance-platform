@@ -26,8 +26,8 @@ func (c *AuthController) RegisterHandler() {
 		return
 	}
 
-	alreadyExists := models.UserAlreadyExists(registerRequest.Email)
-	if alreadyExists {
+	user, err := models.GetUserByEmail(registerRequest.Email)
+	if user != nil || err == nil {
 		c.Ctx.Output.SetStatus(http.StatusConflict)
 		c.Ctx.Output.JSON(map[string]string{"error": "Email already registered"}, false, false)
 		return
@@ -100,14 +100,14 @@ func (c *AuthController) LoginHandler() {
 	}
 
 	// Generate JWT token
-	accessToken, err := utils.GenerateAccessToken(user.Email, user.Role)
+	accessToken, err := utils.GenerateAccessToken(user.Id, user.Role)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Ctx.Output.JSON(map[string]string{"error": "Access token generation failed"}, false, false)
 		return
 	}
 
-	refreshToken, err := utils.GenerateRefreshToken(user.Email, user.Role)
+	refreshToken, err := utils.GenerateRefreshToken(user.Id)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Ctx.Output.JSON(map[string]string{"error": "Refresh token generation failed"}, false, false)
@@ -142,13 +142,21 @@ func (c *AuthController) RefreshTokenHandler() {
 		return
 	}
 
+	user, err := models.GetUserById(claims.Id)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
 	// Generate new Access Token
-	newAccessToken, err := utils.GenerateAccessToken(claims.Email, claims.Role)
+	newAccessToken, err := utils.GenerateAccessToken(user.Id, user.Role)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Ctx.Output.JSON(map[string]string{"error": "Could not generate a new access token"}, false, false)
 		return
 	}
+
 	c.Ctx.Output.SetStatus(http.StatusOK)
 	c.Ctx.Output.JSON(map[string]string{
 		"access_token": newAccessToken}, false, false)
