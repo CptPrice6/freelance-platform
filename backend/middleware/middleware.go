@@ -9,7 +9,7 @@ import (
 )
 
 // A middleware to protect routes with JWT authentication
-func UserMiddleware(ctx *context.Context) {
+func UserAuthMiddleware(ctx *context.Context) {
 	// Get the token from the Authorization header
 	tokenString := ctx.Input.Header("Authorization")
 	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
@@ -30,13 +30,13 @@ func UserMiddleware(ctx *context.Context) {
 
 	// check if user is banned
 
-	// Attach user email to the context for further use
-	ctx.Input.SetData("email", claims.Email)
+	// Attach user id to the context for further use
+	ctx.Input.SetData("id", claims.Id)
 }
 
 // A middleware to protect routes with JWT authentication
 // This middleware is used to protect routes that require admin access
-func AdminMiddleware(ctx *context.Context) {
+func AdminAuthMiddleware(ctx *context.Context) {
 	tokenString := strings.TrimPrefix(ctx.Input.Header("Authorization"), "Bearer ")
 
 	if tokenString == "" {
@@ -52,14 +52,12 @@ func AdminMiddleware(ctx *context.Context) {
 		return
 	}
 
-	// check if user is banned
-
 	if claims.Role != "admin" {
 		ctx.Output.SetStatus(http.StatusForbidden)
 		ctx.Output.JSON(map[string]string{"error": "Access denied: Admins only"}, false, false)
 		return
 	}
 
-	// Attach user email to the context for further use
-	ctx.Input.SetData("email", claims.Email)
+	// Attach user id to the context for further use
+	ctx.Input.SetData("id", claims.Id)
 }
