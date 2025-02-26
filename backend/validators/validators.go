@@ -6,9 +6,9 @@ import (
 	"fmt"
 )
 
-func RegisterValidator(requestBody []byte) (*types.RegisterRequest, error) {
+func RegisterValidator(requestBody []byte) (*types.RegisterLoginRequest, error) {
 
-	var registerRequest = new(types.RegisterRequest)
+	var registerRequest = new(types.RegisterLoginRequest)
 
 	err := json.Unmarshal(requestBody, &registerRequest)
 	if err != nil {
@@ -22,6 +22,46 @@ func RegisterValidator(requestBody []byte) (*types.RegisterRequest, error) {
 		return nil, fmt.Errorf("Missing required fields: password")
 	}
 
+	// add a check for password length and email validity
+
 	return registerRequest, nil
+
+}
+
+func LoginValidator(requestBody []byte) (*types.RegisterLoginRequest, error) {
+
+	var loginRequest = new(types.RegisterLoginRequest)
+
+	err := json.Unmarshal(requestBody, &loginRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	if loginRequest.Email == "" {
+		return nil, fmt.Errorf("Missing required fields: email")
+	} else if loginRequest.Password == "" {
+		return nil, fmt.Errorf("Missing required fields: password")
+	}
+
+	return loginRequest, nil
+
+}
+
+func RefreshValidator(requestBody []byte) (*types.RefreshRequest, error) {
+
+	var refreshRequest = new(types.RefreshRequest)
+
+	err := json.Unmarshal(requestBody, &refreshRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	if refreshRequest.RefreshToken == "" {
+		return nil, fmt.Errorf("Missing required fields: refresh_token")
+	}
+
+	return refreshRequest, nil
 
 }
