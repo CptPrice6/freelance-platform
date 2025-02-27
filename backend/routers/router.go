@@ -10,11 +10,12 @@ import (
 func init() {
 	web.Router("/register", &controllers.AuthController{}, "post:RegisterHandler")
 	web.Router("/login", &controllers.AuthController{}, "post:LoginHandler")
-	web.Router("/refresh-token", &controllers.AuthController{}, "post:RefreshTokenHandler")
+	web.Router("/refresh", &controllers.AuthController{}, "post:RefreshTokenHandler")
 
 	web.InsertFilter("/user/*", web.BeforeRouter, middleware.UserAuthMiddleware)
+
+	web.Router("/user", &controllers.UserController{})
 	web.Router("/user/random", &controllers.NumberController{})
-	web.Router("/user/data", &controllers.UserController{})
 	web.Router("/user/logout", &controllers.AuthController{}, "post:LogoutHandler")
 
 	web.InsertFilter("/admin/*", web.BeforeRouter, middleware.AdminAuthMiddleware)
