@@ -80,3 +80,15 @@ func BanUserByID(userID int) error {
 	_, err := o.Update(&user, "Ban")
 	return err
 }
+
+func UpdateUser(user *User) error {
+	o := orm.NewOrm()
+
+	// Update user
+	_, err := o.Update(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
