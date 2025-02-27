@@ -83,3 +83,17 @@ func LogoutUserValidator(requestBody []byte) (*types.LogoutUserRequest, error) {
 	return logoutUserRequest, nil
 
 }
+
+func UpdateUserValidator(requestBody []byte) (*types.UpdateUserRequest, error) {
+
+	var updateUserRequest = new(types.UpdateUserRequest)
+
+	err := json.Unmarshal(requestBody, &updateUserRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	return updateUserRequest, nil
+
+}
