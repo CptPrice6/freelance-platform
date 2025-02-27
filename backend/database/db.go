@@ -8,6 +8,7 @@ import (
 	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/server/web"
 	_ "github.com/lib/pq"
+	"github.com/pressly/goose"
 )
 
 var once sync.Once
@@ -35,6 +36,17 @@ func InitializeDB() {
 		// Run migrations
 		if err := orm.RunSyncdb("default", false, true); err != nil {
 			log.Fatalf("Failed to sync database: %v", err)
+		}
+
+		db, err := goose.OpenDBWithDriver("postgres", dsn)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer db.Close()
+
+		// Add constraints
+		if err := goose.Up(db, "migrations"); err != nil {
+			log.Fatal(err)
 		}
 
 		log.Println("Database connected and migrated successfully!")
