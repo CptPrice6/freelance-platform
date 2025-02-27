@@ -116,7 +116,7 @@ func (c *AuthController) LogoutHandler() {
 	}
 
 	c.Ctx.Output.SetStatus(http.StatusCreated)
-	c.Data["json"] = map[string]string{"message": "User log out successfull"}
+	c.Data["json"] = map[string]string{"message": "User logged out successfully"}
 	c.ServeJSON()
 
 }

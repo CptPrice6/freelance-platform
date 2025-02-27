@@ -17,6 +17,8 @@ COPY --from=builder /app/backend /root/
 
 COPY conf ./conf
 
+COPY --from=builder /app/migrations /root/migrations
+
 EXPOSE 8080
 
 # Run the application
