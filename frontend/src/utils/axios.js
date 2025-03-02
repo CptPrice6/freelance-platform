@@ -38,6 +38,7 @@ axiosInstance.interceptors.response.use(
 
     // Check if the error is a 401 and if a refresh token exists
     if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
       const refreshToken = getRefreshToken();
 
       if (!refreshToken) {
