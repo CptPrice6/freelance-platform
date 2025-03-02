@@ -11,6 +11,21 @@ import (
 
 // A middleware to protect routes with JWT authentication
 func UserAuthMiddleware(ctx *context.Context) {
+
+	if ctx.Request.Method == "OPTIONS" {
+		ctx.ResponseWriter.Header().Set("Access-Control-Allow-Origin", "*")
+		ctx.ResponseWriter.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		ctx.ResponseWriter.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
+		ctx.ResponseWriter.Header().Set("Access-Control-Allow-Credentials", "true")
+		ctx.Output.SetStatus(http.StatusOK)
+		return
+	}
+
+	ctx.ResponseWriter.Header().Set("Access-Control-Allow-Origin", "*")
+	ctx.ResponseWriter.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	ctx.ResponseWriter.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
+	ctx.ResponseWriter.Header().Set("Access-Control-Allow-Credentials", "true")
+
 	// Get the token from the Authorization header
 	tokenString := ctx.Input.Header("Authorization")
 	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
@@ -49,6 +64,21 @@ func UserAuthMiddleware(ctx *context.Context) {
 // A middleware to protect routes with JWT authentication
 // This middleware is used to protect routes that require admin access
 func AdminAuthMiddleware(ctx *context.Context) {
+
+	if ctx.Request.Method == "OPTIONS" {
+		ctx.ResponseWriter.Header().Set("Access-Control-Allow-Origin", "*")
+		ctx.ResponseWriter.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		ctx.ResponseWriter.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
+		ctx.ResponseWriter.Header().Set("Access-Control-Allow-Credentials", "true")
+		ctx.Output.SetStatus(http.StatusOK)
+		return
+	}
+
+	ctx.ResponseWriter.Header().Set("Access-Control-Allow-Origin", "*")
+	ctx.ResponseWriter.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	ctx.ResponseWriter.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
+	ctx.ResponseWriter.Header().Set("Access-Control-Allow-Credentials", "true")
+
 	tokenString := strings.TrimPrefix(ctx.Input.Header("Authorization"), "Bearer ")
 
 	if tokenString == "" {
