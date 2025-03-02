@@ -97,3 +97,11 @@ func UpdateUserValidator(requestBody []byte) (*types.UpdateUserRequest, error) {
 	return updateUserRequest, nil
 
 }
+
+func EmailValidator(email string) error {
+	return nil
+}
+
+func PasswordValidator(email string) error {
+	return nil
+}
