@@ -37,7 +37,11 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config; // Original request that caused the error
 
     // Check if the error is a 401 and if a refresh token exists
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (
+      error.response.status === 401 &&
+      !originalRequest._retry &&
+      error.response?.data?.error?.includes("access token")
+    ) {
       originalRequest._retry = true;
       const refreshToken = getRefreshToken();
 
@@ -66,6 +70,25 @@ axiosInstance.interceptors.response.use(
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }
+    }
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      alert("Please log in again!");
+      window.location.href = "/login";
+      return Promise.reject(error);
+    }
+
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.error?.includes("banned")
+    ) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      alert("You are banned!");
+      window.location.href = "/";
+      return Promise.reject(error);
     }
 
     // If the error is not a 401 or another issue, reject the promise
