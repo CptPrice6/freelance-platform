@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { API_BASE_URL } from "../config";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -13,24 +14,18 @@ function Login() {
     setError("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const response = await axios.post(`${API_BASE_URL}/login`, {
+        email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Login failed");
-      }
-
-      localStorage.setItem("accessToken", data.access_token);
-      localStorage.setItem("refreshToken", data.refresh_token);
+      localStorage.setItem("accessToken", response.data.access_token);
+      localStorage.setItem("refreshToken", response.data.refresh_token);
       alert("Login successful!");
       navigate("/"); // Redirect to home page
     } catch (err) {
-      setError(err.message);
+      // Handle backend error response
+      setError(err.response?.data?.error || "Login failed");
     }
   };
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { API_BASE_URL } from "../config";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Register() {
   const [email, setEmail] = useState("");
@@ -13,22 +14,17 @@ function Register() {
     setError("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const response = await axios.post(`${API_BASE_URL}/register`, {
+        email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Registration failed");
-      }
-
-      alert("Registration successful!");
+      // If successful, show the success message from backend
+      alert(response.data.message || "Registration successful!");
       navigate("/login"); // Redirect to login page
     } catch (err) {
-      setError(err.message);
+      // Extract error message if available
+      setError(err.response?.data?.error || "Registration failed");
     }
   };
 
