@@ -80,3 +80,7 @@ func (c *UserController) Put() {
 	c.ServeJSON()
 
 }
+
+func (c *UserController) Delete() {
+	// Delete User+Delete Refresh Tokens from table associated with the user
+}

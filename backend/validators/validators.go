@@ -3,7 +3,11 @@ package validators
 import (
 	"backend/types"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"regexp"
+
+	"github.com/go-passwd/validator"
 )
 
 func RegisterValidator(requestBody []byte) (*types.RegisterLoginRequest, error) {
@@ -22,7 +26,15 @@ func RegisterValidator(requestBody []byte) (*types.RegisterLoginRequest, error) 
 		return nil, fmt.Errorf("Missing required fields: password")
 	}
 
-	// add a check for password length and email validity
+	err = ValidateEmail(registerRequest.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	err = ValidatePassword(registerRequest.Password)
+	if err != nil {
+		return nil, err
+	}
 
 	return registerRequest, nil
 
@@ -93,15 +105,46 @@ func UpdateUserValidator(requestBody []byte) (*types.UpdateUserRequest, error) {
 		fmt.Println("Error parsing request body:", err)
 		return nil, fmt.Errorf("Invalid input")
 	}
+	if updateUserRequest.Email != "" {
+		err = ValidateEmail(updateUserRequest.Email)
+		if err != nil {
+			return nil, err
+		}
+	} else if updateUserRequest.NewPassword != "" {
+		err = ValidatePassword(updateUserRequest.NewPassword)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return updateUserRequest, nil
 
 }
 
-func EmailValidator(email string) error {
+func ValidateEmail(email string) error {
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	re := regexp.MustCompile(emailRegex)
+
+	if !re.MatchString(email) {
+		return errors.New("Invalid email format")
+	}
 	return nil
 }
 
-func PasswordValidator(email string) error {
+func ValidatePassword(password string) error {
+	// Create a new validator instance
+	v := validator.New(validator.MinLength(8, errors.New("Password must contain at least 8 characters")),
+		validator.MaxLength(20, errors.New("Password must not exceed 20 characters")),
+		validator.CommonPassword(errors.New("Password cannot be common, please choose something unique")),
+		validator.ContainsAtLeast("0123456789", 1, errors.New("Password must contain at least one number")),
+		validator.ContainsAtLeast("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 1, errors.New("Password must contain at least one uppercase letter")),
+		validator.ContainsAtLeast("abcdefghijklmnopqrstuvwxyz", 1, errors.New("Password must contain at least one lowercase letter")),
+	)
+	// Applying validation rules
+	err := v.Validate(password)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
