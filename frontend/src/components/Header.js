@@ -1,15 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import axiosInstance from "../utils/axios";
 
 function Header() {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem("accessToken");
   const isAuthenticated = !!accessToken;
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    navigate("/"); // Redirect to home page after logout
+  const handleLogout = async () => {
+    try {
+      if (isAuthenticated) {
+        await axiosInstance.post("/user/logout");
+      }
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (

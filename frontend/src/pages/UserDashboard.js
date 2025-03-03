@@ -1,27 +1,25 @@
 import { useEffect, useState } from "react";
-import axiosInstance from "../utils/axios"; // Import the configured axios instance
+import axiosInstance from "../utils/axios";
 
-// Include the Bootstrap CDN in your public HTML or install via npm/yarn in your project
 function UserDashboard() {
   const [user, setUser] = useState(null);
-  const [error, setError] = useState(""); // General error
-  const [email, setEmail] = useState(""); // State for the email input field
-  const [password, setPassword] = useState(""); // State for the old password
-  const [newPassword, setNewPassword] = useState(""); // State for the new password
-  const [updateError, setUpdateError] = useState(""); // Error for update process
-  const [updateSuccess, setUpdateSuccess] = useState(""); // Success message
+  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [updateError, setUpdateError] = useState("");
+  const [updateSuccess, setUpdateSuccess] = useState("");
 
-  // Fetch user data when the component mounts
   useEffect(() => {
     axiosInstance
       .get("/user")
       .then((response) => {
         setUser(response.data);
-        setEmail(response.data.email); // Pre-fill email input with current email
+        setEmail(response.data.email);
       })
       .catch((err) => {
         const errorMessage = err.response?.data?.error || err.message;
-        setError(errorMessage); // Set error state with either the response's error or the generic message
+        setError(errorMessage);
       });
   }, []);
 
@@ -30,58 +28,55 @@ function UserDashboard() {
     e.preventDefault();
 
     if (!email || email === user.email) {
-      setUpdateSuccess(""); // Clear any previous success messages
+      setUpdateSuccess("");
       setUpdateError("No changes were made to the email.");
       return;
     }
 
     const updatedData = { email };
 
-    // Send PUT request to update email
     axiosInstance
       .put("/user", updatedData)
       .then(() => {
         setUser((prevUser) => ({
           ...prevUser,
-          email: email, // Update email in the user state with the new value
+          email: email,
         }));
         setUpdateSuccess("Email updated successfully.");
-        setUpdateError(""); // Clear any previous errors
+        setUpdateError("");
       })
       .catch((err) => {
         setUpdateError(
           err.response?.data?.error || "An unknown error occurred."
         );
-        setUpdateSuccess(""); // Clear any previous success messages
+        setUpdateSuccess("");
       });
   };
 
-  // Handle password update
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
 
     if (!password || !newPassword) {
-      setUpdateSuccess(""); // Clear any previous success messages
+      setUpdateSuccess("");
       setUpdateError("Please provide both old and new passwords.");
       return;
     }
 
     const updatedData = { password, new_password: newPassword };
 
-    // Send PUT request to update password
     axiosInstance
       .put("/user", updatedData)
       .then(() => {
         setUpdateSuccess("Password updated successfully.");
-        setUpdateError(""); // Clear any previous errors
-        setPassword(""); // Clear password fields after success
-        setNewPassword(""); // Clear password fields after success
+        setUpdateError("");
+        setPassword("");
+        setNewPassword("");
       })
       .catch((err) => {
         setUpdateError(
           err.response?.data?.error || "An unknown error occurred."
         );
-        setUpdateSuccess(""); // Clear any previous success messages
+        setUpdateSuccess("");
       });
   };
 
@@ -112,7 +107,7 @@ function UserDashboard() {
                   type="email"
                   id="email"
                   className="form-control"
-                  value={email} // Controlled input value
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)} // Update email state
                 />
               </div>
@@ -134,7 +129,7 @@ function UserDashboard() {
                   type="password"
                   id="password"
                   className="form-control"
-                  value={password} // Controlled input value
+                  value={password}
                   onChange={(e) => setPassword(e.target.value)} // Update old password state
                 />
               </div>
@@ -146,7 +141,7 @@ function UserDashboard() {
                   type="password"
                   id="new_password"
                   className="form-control"
-                  value={newPassword} // Controlled input value
+                  value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)} // Update new password state
                 />
               </div>
