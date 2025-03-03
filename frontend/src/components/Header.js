@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "../utils/axios";
+import { getAccessToken } from "../utils/tokens";
 
 function Header() {
   const navigate = useNavigate();
-  const accessToken = localStorage.getItem("accessToken");
+  const accessToken = getAccessToken();
   const isAuthenticated = !!accessToken;
 
   const handleLogout = async () => {

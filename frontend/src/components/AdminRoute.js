@@ -1,11 +1,12 @@
 import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { getAccessToken } from "../utils/tokens";
 
-const AdminRoute = ({ element, ...rest }) => {
-  const accessToken = localStorage.getItem("accessToken");
+const AdminRoute = ({ element }) => {
+  const accessToken = getAccessToken();
 
   if (!accessToken) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
   try {
@@ -13,10 +14,10 @@ const AdminRoute = ({ element, ...rest }) => {
 
     // If the user is not an admin, redirect them
     if (decoded.role !== "admin") {
-      return <Navigate to="/" />;
+      return <Navigate to="/" replace />;
     }
   } catch (err) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
   return element;
