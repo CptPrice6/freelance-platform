@@ -49,7 +49,7 @@ func (c *UserController) Put() {
 	} else if updateUserRequest.Password != "" {
 		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(updateUserRequest.Password))
 		if err != nil {
-			c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+			c.Ctx.Output.SetStatus(http.StatusBadRequest)
 			c.Ctx.Output.JSON(map[string]string{"error": "Incorrect old password"}, false, false)
 			return
 		}

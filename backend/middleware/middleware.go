@@ -32,7 +32,7 @@ func UserAuthMiddleware(ctx *context.Context) {
 
 	if tokenString == "" {
 		ctx.Output.SetStatus(http.StatusUnauthorized)
-		ctx.Output.JSON(map[string]string{"error": "Authorization token missing"}, false, false)
+		ctx.Output.JSON(map[string]string{"error": "Missing access token"}, false, false)
 		return
 	}
 
@@ -40,7 +40,7 @@ func UserAuthMiddleware(ctx *context.Context) {
 	claims, err := utils.ValidateAccessToken(tokenString)
 	if err != nil {
 		ctx.Output.SetStatus(http.StatusUnauthorized)
-		ctx.Output.JSON(map[string]string{"error": "Invalid token"}, false, false)
+		ctx.Output.JSON(map[string]string{"error": "Invalid access token"}, false, false)
 		return
 	}
 
@@ -83,14 +83,14 @@ func AdminAuthMiddleware(ctx *context.Context) {
 
 	if tokenString == "" {
 		ctx.Output.SetStatus(http.StatusUnauthorized)
-		ctx.Output.JSON(map[string]string{"error": "Authorization token missing"}, false, false)
+		ctx.Output.JSON(map[string]string{"error": "Missing access token"}, false, false)
 		return
 	}
 
 	claims, err := utils.ValidateAccessToken(tokenString)
 	if err != nil {
 		ctx.Output.SetStatus(http.StatusUnauthorized)
-		ctx.Output.JSON(map[string]string{"error": "Invalid token"}, false, false)
+		ctx.Output.JSON(map[string]string{"error": "Invalid access token"}, false, false)
 		return
 	}
 

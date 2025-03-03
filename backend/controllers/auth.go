@@ -72,7 +72,7 @@ func (c *AuthController) LoginHandler() {
 	// Compare passwords
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
-		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
 		c.Ctx.Output.JSON(map[string]string{"error": "Incorrect password"}, false, false)
 		return
 	}
