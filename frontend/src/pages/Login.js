@@ -2,6 +2,7 @@ import { useState } from "react";
 import { API_BASE_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { setAccessToken, setRefreshToken } from "../utils/tokens";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -19,8 +20,8 @@ function Login() {
         password,
       });
 
-      localStorage.setItem("accessToken", response.data.access_token);
-      localStorage.setItem("refreshToken", response.data.refresh_token);
+      setAccessToken(response.data.access_token);
+      setRefreshToken(response.data.refresh_token);
       alert("Login successful!");
       navigate("/"); // Redirect to home page
     } catch (err) {
