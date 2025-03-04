@@ -183,3 +183,20 @@ func (c *AuthController) RefreshTokenHandler() {
 	}, false, false)
 
 }
+
+func (c *AuthController) AuthHandler() {
+
+	user, err := models.GetUserById(c.Ctx.Input.GetData("id").(int))
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = map[string]string{
+		"message": "User authenticated",
+		"role":    user.Role, // Send user role
+	}
+	c.ServeJSON()
+}
