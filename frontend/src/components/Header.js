@@ -7,17 +7,33 @@ function Header() {
   const navigate = useNavigate();
   const accessToken = getAccessToken();
   const isAuthenticated = !!accessToken;
+  const userRole = localStorage.getItem("role");
 
   const handleLogout = async () => {
     try {
       if (isAuthenticated) {
         await axiosInstance.post("/user/logout");
       }
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
+    } finally {
+      // Clear all authentication-related data
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("role");
+      navigate("/");
+    }
+  };
+  const getDashboardRoute = () => {
+    switch (userRole) {
+      case "admin":
+        return "/admin/dashboard";
+      case "client":
+        return "/client/dashboard";
+      case "contractor":
+        return "/contractor/dashboard";
+      default:
+        return "/contractor/dashboard";
     }
   };
 
@@ -25,11 +41,10 @@ function Header() {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
         <Link className="navbar-brand" to="/">
-          Website
+          CodeHire
         </Link>
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto">
-            {/* Show Login/Register if not authenticated */}
             {!isAuthenticated ? (
               <>
                 <li className="nav-item">
@@ -45,9 +60,8 @@ function Header() {
               </>
             ) : (
               <>
-                {/* Show Dashboard and Logout if authenticated */}
                 <li className="nav-item">
-                  <Link className="nav-link" to="/user/dashboard">
+                  <Link className="nav-link" to={getDashboardRoute()}>
                     Dashboard
                   </Link>
                 </li>

@@ -14,11 +14,9 @@ const AdminRoute = ({ element }) => {
         .get("/user/auth")
         .then((response) => {
           setIsAuthenticated(true);
-          if (response.data.role === "admin") {
-            setIsAdmin(true);
-          } else {
-            setIsAdmin(false);
-          }
+          const userRole = response.data.role;
+          setIsAdmin(userRole === "admin");
+          localStorage.setItem("role", userRole);
         })
         .catch(() => {
           setIsAuthenticated(false);
@@ -37,6 +35,7 @@ const AdminRoute = ({ element }) => {
   if (!isAuthenticated) {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("role");
     return <Navigate to="/login" replace />;
   }
 

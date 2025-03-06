@@ -11,8 +11,10 @@ const PrivateRoute = ({ element }) => {
     if (accessToken) {
       axiosInstance
         .get("/user/auth")
-        .then(() => {
+        .then((response) => {
           setIsAuthenticated(true);
+          const userRole = response.data.role;
+          localStorage.setItem("role", userRole);
         })
         .catch(() => {
           setIsAuthenticated(false);
@@ -29,6 +31,7 @@ const PrivateRoute = ({ element }) => {
   if (!isAuthenticated) {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("role");
     return <Navigate to="/login" replace />;
   }
 

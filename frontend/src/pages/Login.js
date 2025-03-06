@@ -3,6 +3,7 @@ import { API_BASE_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { setAccessToken, setRefreshToken } from "../utils/tokens";
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -20,8 +21,12 @@ function Login() {
         password,
       });
 
-      setAccessToken(response.data.access_token);
+      const accessToken = response.data.access_token;
+      setAccessToken(accessToken);
       setRefreshToken(response.data.refresh_token);
+      const decodedToken = jwtDecode(accessToken);
+      const userRole = decodedToken.role || "contractor";
+      localStorage.setItem("role", userRole);
       alert("Login successful!");
       navigate("/"); // Redirect to home page
     } catch (err) {
