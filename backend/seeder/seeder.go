@@ -3,38 +3,56 @@ package seeder
 import (
 	"backend/models"
 	"log"
-	"math/rand"
 
 	"github.com/beego/beego/v2/client/orm"
+	"github.com/bxcodec/faker/v3"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func SeedDatabase() {
-	SeedNumberTable()
+	SeedUsersTable()
 }
 
-func SeedNumberTable() {
+func SeedUsersTable() {
 	o := orm.NewOrm()
 
-	// Check if table has data
-	count, err := o.QueryTable(new(models.Number)).Count()
+	count, err := o.QueryTable(new(models.User)).Count()
 	if err != nil {
-		log.Fatalf("Error checking count in Number table: %v", err)
+		log.Fatalf("Error checking count in User table: %v", err)
 		return
 	}
 	if count == 0 {
-		for i := 0; i < 10; i++ {
-			num := models.Number{
-				Value: rand.Intn(100), // Generate a random number between 0 and 99
-			}
+		roles := []string{"client", "freelancer", "admin"}
+		passwords := map[string]string{
+			"client":     "client222",
+			"freelancer": "freelancer222",
+			"admin":      "admin222",
+		}
 
-			// Insert the new number into the table
-			_, err := o.Insert(&num)
-			if err != nil {
-				log.Printf("Error inserting number: %v", err)
+		for _, role := range roles {
+			for range 1 {
+				user := models.User{}
+
+				user.Email = faker.Username() + "@gmail.com"
+				user.Role = role
+				user.Ban = false
+
+				password := passwords[role]
+				hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+				if err != nil {
+					log.Printf("Error hashing password for %s: %v", role, err)
+					continue
+				}
+				user.Password = string(hashedPassword)
+
+				_, err = o.Insert(&user)
+				if err != nil {
+					log.Printf("Error inserting user into database: %v", err)
+				}
 			}
 		}
-		log.Println("Number table seeded successfully.")
+		log.Println("User table seeded successfully")
 	} else {
-		log.Println("Number table already contains data.")
+		log.Println("User table already contains data.")
 	}
 }
