@@ -84,24 +84,6 @@ func RefreshValidator(requestBody []byte) (*types.RefreshRequest, error) {
 
 }
 
-func LogoutUserValidator(requestBody []byte) (*types.LogoutUserRequest, error) {
-
-	var logoutUserRequest = new(types.LogoutUserRequest)
-
-	err := json.Unmarshal(requestBody, &logoutUserRequest)
-	if err != nil {
-		fmt.Println("Error parsing request body:", err)
-		return nil, fmt.Errorf("Invalid input")
-	}
-
-	if logoutUserRequest.UserId == 0 {
-		return nil, fmt.Errorf("Missing required fields: user_id")
-	}
-
-	return logoutUserRequest, nil
-
-}
-
 func UpdateUserValidator(requestBody []byte) (*types.UpdateUserRequest, error) {
 
 	var updateUserRequest = new(types.UpdateUserRequest)
@@ -121,6 +103,24 @@ func UpdateUserValidator(requestBody []byte) (*types.UpdateUserRequest, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	return updateUserRequest, nil
+
+}
+
+func UpdateUserValidatorAdmin(requestBody []byte) (*types.UpdateUserRequestAdmin, error) {
+
+	var updateUserRequest = new(types.UpdateUserRequestAdmin)
+
+	err := json.Unmarshal(requestBody, &updateUserRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	if updateUserRequest.Role != "" && updateUserRequest.Role != "client" && updateUserRequest.Role != "freelancer" && updateUserRequest.Role != "admin" {
+		return nil, fmt.Errorf("Invalid role: %s. Role must be 'client', 'freelancer' or 'admin' ", updateUserRequest.Role)
 	}
 
 	return updateUserRequest, nil
