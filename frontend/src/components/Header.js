@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 import axiosInstance from "../utils/axios";
 import { getAccessToken } from "../utils/tokens";
 
@@ -30,10 +29,10 @@ function Header() {
         return "/admin/dashboard";
       case "client":
         return "/client/dashboard";
-      case "contractor":
-        return "/contractor/dashboard";
+      case "freelancer":
+        return "/freelancer/dashboard";
       default:
-        return "/contractor/dashboard";
+        return "/freelancer/dashboard";
     }
   };
 
@@ -41,7 +40,7 @@ function Header() {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
         <Link className="navbar-brand" to="/">
-          CodeHire
+          FreelancePlatform
         </Link>
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto">

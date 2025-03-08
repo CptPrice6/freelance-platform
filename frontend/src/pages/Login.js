@@ -25,7 +25,7 @@ function Login() {
       setAccessToken(accessToken);
       setRefreshToken(response.data.refresh_token);
       const decodedToken = jwtDecode(accessToken);
-      const userRole = decodedToken.role || "contractor";
+      const userRole = decodedToken.role || "freelancer";
       localStorage.setItem("role", userRole);
       alert("Login successful!");
       navigate("/"); // Redirect to home page
