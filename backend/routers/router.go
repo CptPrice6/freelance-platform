@@ -8,6 +8,7 @@ import (
 )
 
 func init() {
+
 	web.Router("/register", &controllers.AuthController{}, "post:RegisterHandler")
 	web.Router("/login", &controllers.AuthController{}, "post:LoginHandler")
 	web.Router("/refresh", &controllers.AuthController{}, "post:RefreshTokenHandler")
@@ -15,11 +16,13 @@ func init() {
 	web.InsertFilter("/user/*", web.BeforeRouter, middleware.UserAuthMiddleware)
 
 	web.Router("/user", &controllers.UserController{})
-	web.Router("/user/random", &controllers.NumberController{})
+
 	web.Router("/user/logout", &controllers.AuthController{}, "post:LogoutHandler")
 	web.Router("/user/auth", &controllers.AuthController{}, "get:AuthHandler")
 
 	web.InsertFilter("/admin/*", web.BeforeRouter, middleware.AdminAuthMiddleware)
-	web.Router("/admin/logout-user", &controllers.AdminController{}, "post:LogoutUserHandler")
+	web.Router("/admin/users", &controllers.AdminController{}, "get:GetUsersHandler")
+	web.Router("/admin/users/:id", &controllers.AdminController{}, "delete:DeleteUserHandler")
+	web.Router("/admin/users/:id", &controllers.AdminController{}, "put:UpdateUserHandler")
 
 }
