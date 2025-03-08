@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import UserDashboard from "./pages/UserDashboard";
 import PrivateRoute from "./components/PrivateRoute";
+import AdminRoute from "./components/AdminRoute";
 
 function App() {
   return (
@@ -19,6 +20,14 @@ function App() {
             <Route
               path="/freelancer/dashboard"
               element={<PrivateRoute element={<UserDashboard />} />}
+            />
+            <Route
+              path="/client/dashboard"
+              element={<PrivateRoute element={<UserDashboard />} />}
+            />
+            <Route
+              path="/admin/dashboard"
+              element={<AdminRoute element={<UserDashboard />} />}
             />
           </Routes>
         </Layout>

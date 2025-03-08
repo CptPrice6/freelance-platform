@@ -8,8 +8,8 @@ type User struct {
 	Id       int    `orm:"pk;auto"`
 	Email    string `orm:"unique"`
 	Password string
-	Role     string `orm:"default(user)"`
-	Ban      bool   `orm:"default(false)"`
+	Role     string
+	Ban      bool `orm:"default(false)"`
 }
 
 func init() {

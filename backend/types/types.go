@@ -1,7 +1,14 @@
 package types
 
-// request structure for register and login
-type RegisterLoginRequest struct {
+// request structure for register
+type RegisterRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Role     string `json:"role"`
+}
+
+// request structure for login
+type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }

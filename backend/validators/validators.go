@@ -10,9 +10,9 @@ import (
 	"github.com/go-passwd/validator"
 )
 
-func RegisterValidator(requestBody []byte) (*types.RegisterLoginRequest, error) {
+func RegisterValidator(requestBody []byte) (*types.RegisterRequest, error) {
 
-	var registerRequest = new(types.RegisterLoginRequest)
+	var registerRequest = new(types.RegisterRequest)
 
 	err := json.Unmarshal(requestBody, &registerRequest)
 	if err != nil {
@@ -24,6 +24,12 @@ func RegisterValidator(requestBody []byte) (*types.RegisterLoginRequest, error) 
 		return nil, fmt.Errorf("Missing required fields: email")
 	} else if registerRequest.Password == "" {
 		return nil, fmt.Errorf("Missing required fields: password")
+	} else if registerRequest.Role == "" {
+		return nil, fmt.Errorf("Missing required fields: role")
+	}
+
+	if registerRequest.Role != "client" && registerRequest.Role != "freelancer" {
+		return nil, fmt.Errorf("Invalid role: %s. Role must be either 'client' or 'freelancer'", registerRequest.Role)
 	}
 
 	err = ValidateEmail(registerRequest.Email)
@@ -40,9 +46,9 @@ func RegisterValidator(requestBody []byte) (*types.RegisterLoginRequest, error) 
 
 }
 
-func LoginValidator(requestBody []byte) (*types.RegisterLoginRequest, error) {
+func LoginValidator(requestBody []byte) (*types.LoginRequest, error) {
 
-	var loginRequest = new(types.RegisterLoginRequest)
+	var loginRequest = new(types.LoginRequest)
 
 	err := json.Unmarshal(requestBody, &loginRequest)
 	if err != nil {

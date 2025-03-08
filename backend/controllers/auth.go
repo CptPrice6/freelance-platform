@@ -39,7 +39,7 @@ func (c *AuthController) RegisterHandler() {
 		return
 	}
 
-	err = models.CreateUser(registerRequest.Email, string(hashedPassword), "user", false)
+	err = models.CreateUser(registerRequest.Email, string(hashedPassword), registerRequest.Role, false)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Ctx.Output.JSON(map[string]string{"error": "Registration failed"}, false, false)

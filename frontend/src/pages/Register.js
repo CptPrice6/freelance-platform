@@ -7,6 +7,7 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [role, setRole] = useState("freelancer");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -17,6 +18,7 @@ function Register() {
       const response = await axios.post(`${API_BASE_URL}/register`, {
         email,
         password,
+        role,
       });
 
       // If successful, show the success message from backend
@@ -52,6 +54,18 @@ function Register() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Role</label>
+          <select
+            className="form-control"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            required
+          >
+            <option value="freelancer">Freelancer</option>
+            <option value="client">Client</option>
+          </select>
         </div>
         <button type="submit" className="btn btn-success">
           Register
