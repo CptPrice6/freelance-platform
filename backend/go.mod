@@ -9,6 +9,7 @@ require github.com/smartystreets/goconvey v1.8.1
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bxcodec/faker/v3 v3.8.1 // indirect
+	github.com/bxcodec/faker/v4 v4.0.0-beta.3 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/go-passwd/validator v0.0.0-20180902184246-0b4c967e436b // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
