@@ -46,7 +46,8 @@ func (c *UserController) Put() {
 
 	if updateUserRequest.Email != "" {
 		user.Email = updateUserRequest.Email
-	} else if updateUserRequest.Password != "" {
+	}
+	if updateUserRequest.Password != "" {
 		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(updateUserRequest.Password))
 		if err != nil {
 			c.Ctx.Output.SetStatus(http.StatusBadRequest)
@@ -71,7 +72,7 @@ func (c *UserController) Put() {
 	err = models.UpdateUser(user)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Ctx.Output.JSON(map[string]string{"error": "User update failed"}, false, false)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
 		return
 	}
 
@@ -82,5 +83,24 @@ func (c *UserController) Put() {
 }
 
 func (c *UserController) Delete() {
-	// Delete User+Delete Refresh Tokens from table associated with the user
+	id := c.Ctx.Input.GetData("id").(int)
+	err := models.DeleteUserByID(id)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
+	err = models.DeleteAllRefreshTokensForUser(id)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error deleting old refresh token"}, false, false)
+		return
+	}
+
+	// delete all cascading tables!
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = map[string]string{"message": "User deletion successful"}
+	c.ServeJSON()
 }
