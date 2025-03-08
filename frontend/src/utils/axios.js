@@ -91,6 +91,14 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    if (
+      error.response?.status === 403 &&
+      error.response?.data?.error?.includes("Admins only")
+    ) {
+      window.location.href = "/";
+      return Promise.reject(error);
+    }
+
     // If the error is not a 401 or another issue, reject the promise
     return Promise.reject(error);
   }
