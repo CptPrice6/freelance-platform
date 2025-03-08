@@ -92,3 +92,30 @@ func UpdateUser(user *User) error {
 
 	return nil
 }
+
+func DeleteUserByID(id int) error {
+	o := orm.NewOrm()
+
+	user := User{Id: id}
+
+	// Delete the user by ID
+	_, err := o.Delete(&user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetUsers() ([]User, error) {
+	o := orm.NewOrm()
+
+	var users []User
+
+	_, err := o.QueryTable(new(User)).All(&users)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
