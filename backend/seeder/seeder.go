@@ -36,6 +36,9 @@ func SeedUsersTable() {
 				user.Email = faker.Username() + "@gmail.com"
 				user.Role = role
 				user.Ban = false
+				user.Name = faker.Name()
+				user.Surname = faker.LastName()
+				user.Description = faker.Sentence()
 
 				password := passwords[role]
 				hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

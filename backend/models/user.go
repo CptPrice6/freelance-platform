@@ -1,15 +1,21 @@
 package models
 
 import (
+	"time"
+
 	"github.com/beego/beego/v2/client/orm"
 )
 
 type User struct {
-	Id       int    `orm:"pk;auto"`
-	Email    string `orm:"unique"`
-	Password string
-	Role     string
-	Ban      bool `orm:"default(false)"`
+	Id          int       `orm:"pk;auto"`
+	Email       string    `orm:"unique;size(255)"`
+	Password    string    `orm:"size(255)"`
+	Name        string    `orm:"size(100)"`
+	Surname     string    `orm:"size(100)"`
+	Description string    `orm:"type(text);null"`
+	CreatedAt   time.Time `orm:"auto_now_add;type(datetime)"`
+	Role        string    `orm:"size(20)"`
+	Ban         bool      `orm:"default(false)"`
 }
 
 func init() {
