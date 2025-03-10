@@ -26,6 +26,10 @@ func RegisterValidator(requestBody []byte) (*types.RegisterRequest, error) {
 		return nil, fmt.Errorf("Missing required fields: password")
 	} else if registerRequest.Role == "" {
 		return nil, fmt.Errorf("Missing required fields: role")
+	} else if registerRequest.Name == "" {
+		return nil, fmt.Errorf("Missing required fields: name")
+	} else if registerRequest.Surname == "" {
+		return nil, fmt.Errorf("Missing required fields: surname")
 	}
 
 	if registerRequest.Role != "client" && registerRequest.Role != "freelancer" {
@@ -40,6 +44,17 @@ func RegisterValidator(requestBody []byte) (*types.RegisterRequest, error) {
 	err = ValidatePassword(registerRequest.Password)
 	if err != nil {
 		return nil, err
+	}
+
+	if registerRequest.Name != "" {
+		if len(registerRequest.Name) > 100 {
+			return nil, fmt.Errorf("Name cannot be longer than 100 symbols")
+		}
+	}
+	if registerRequest.Surname != "" {
+		if len(registerRequest.Surname) > 100 {
+			return nil, fmt.Errorf("Surname cannot be longer than 100 symbols")
+		}
 	}
 
 	return registerRequest, nil
@@ -98,10 +113,26 @@ func UpdateUserValidator(requestBody []byte) (*types.UpdateUserRequest, error) {
 		if err != nil {
 			return nil, err
 		}
-	} else if updateUserRequest.NewPassword != "" {
+	}
+	if updateUserRequest.NewPassword != "" {
 		err = ValidatePassword(updateUserRequest.NewPassword)
 		if err != nil {
 			return nil, err
+		}
+	}
+	if updateUserRequest.Name != "" {
+		if len(updateUserRequest.Name) > 100 {
+			return nil, fmt.Errorf("Name cannot be longer than 100 symbols")
+		}
+	}
+	if updateUserRequest.Surname != "" {
+		if len(updateUserRequest.Surname) > 100 {
+			return nil, fmt.Errorf("Surname cannot be longer than 100 symbols")
+		}
+	}
+	if updateUserRequest.Description != "" {
+		if len(updateUserRequest.Surname) > 1000 {
+			return nil, fmt.Errorf("Description cannot be longer than 1000 symbols")
 		}
 	}
 
@@ -153,4 +184,77 @@ func ValidatePassword(password string) error {
 	}
 
 	return nil
+}
+
+func UpdateFreelancerDataValidator(requestBody []byte) (*types.UpdateFreelancerDataRequest, error) {
+
+	var updateFreelancerDataRequest = new(types.UpdateFreelancerDataRequest)
+
+	err := json.Unmarshal(requestBody, &updateFreelancerDataRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	if updateFreelancerDataRequest.HourlyRate != 0 {
+		if updateFreelancerDataRequest.HourlyRate > 1000 {
+			return nil, fmt.Errorf("Hourly Rate cannot be more than 1000")
+		}
+		if updateFreelancerDataRequest.HourlyRate <= 1 {
+			return nil, fmt.Errorf("Hourly Rate cannot be less than 1")
+		}
+	}
+	if updateFreelancerDataRequest.WorkType != "" {
+		if updateFreelancerDataRequest.WorkType != "remote" && updateFreelancerDataRequest.WorkType != "on-site" && updateFreelancerDataRequest.WorkType != "hybrid" {
+			return nil, fmt.Errorf("Work type should be remote or on-site or hybrid")
+		}
+	}
+	if updateFreelancerDataRequest.HoursPerWeek != 0 {
+		if updateFreelancerDataRequest.HoursPerWeek < 1 {
+			return nil, fmt.Errorf("Hours per week cannot be less than 1")
+		}
+		if updateFreelancerDataRequest.HoursPerWeek > 168 {
+			return nil, fmt.Errorf("Hours per week cannot be more than 168")
+		}
+	}
+
+	return updateFreelancerDataRequest, nil
+
+}
+
+func UpdateClientDataValidator(requestBody []byte) (*types.UpdateClientDataRequest, error) {
+
+	var updateClientDataRequest = new(types.UpdateClientDataRequest)
+
+	err := json.Unmarshal(requestBody, &updateClientDataRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+	if len(updateClientDataRequest.CompanyName) > 255 {
+		return nil, fmt.Errorf("Company name cannot be more than 255 symbols")
+	}
+	if len(updateClientDataRequest.Industry) > 100 {
+		return nil, fmt.Errorf("Industry name cannot be more than 100 symbols")
+	}
+	if len(updateClientDataRequest.Location) > 255 {
+		return nil, fmt.Errorf("Location name cannot be more than 255 symbols")
+	}
+
+	return updateClientDataRequest, nil
+
+}
+
+func AddDeleteSkillValidator(requestBody []byte) (*types.AddDeleteSkillRequest, error) {
+
+	var addDeleteSkillRequest = new(types.AddDeleteSkillRequest)
+
+	err := json.Unmarshal(requestBody, &addDeleteSkillRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	return addDeleteSkillRequest, nil
+
 }
