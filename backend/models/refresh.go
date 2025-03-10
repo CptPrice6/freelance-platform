@@ -7,7 +7,7 @@ import (
 type RefreshToken struct {
 	Id    int    `orm:"pk;auto"`
 	Token string `orm:"unique"`
-	User  *User  `orm:"rel(fk)"`
+	User  *User  `orm:"rel(fk);on_delete(cascade)"`
 }
 
 func init() {
