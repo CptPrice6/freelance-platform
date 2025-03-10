@@ -17,14 +17,48 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+
+            {/*Full list of Jobs and Freelancers */}
+            <Route
+              path="/freelancers"
+              element={<PrivateRoute element={<UserDashboard />} />}
+            />
+            <Route
+              path="/jobs"
+              element={<PrivateRoute element={<UserDashboard />} />}
+            />
+            {/* Specific Job and Freelancer Detail Pages */}
+            <Route
+              path="/jobs/:id"
+              element={<PrivateRoute element={<UserDashboard />} />}
+            />
+            <Route
+              path="/freelancers/:id"
+              element={<PrivateRoute element={<UserDashboard />} />}
+            />
+
             <Route
               path="/freelancer/dashboard"
               element={<PrivateRoute element={<UserDashboard />} />}
             />
             <Route
+              path="/freelancer/applications"
+              element={<PrivateRoute element={<UserDashboard />} />}
+            />
+            <Route
+              path="/freelancer/jobs"
+              element={<PrivateRoute element={<UserDashboard />} />}
+            />
+
+            <Route
               path="/client/dashboard"
               element={<PrivateRoute element={<UserDashboard />} />}
             />
+            <Route
+              path="/client/jobs"
+              element={<PrivateRoute element={<UserDashboard />} />}
+            />
+
             <Route
               path="/admin/dashboard"
               element={<AdminRoute element={<UserDashboard />} />}

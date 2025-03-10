@@ -23,6 +23,7 @@ function Header() {
       navigate("/");
     }
   };
+
   const getDashboardRoute = () => {
     switch (userRole) {
       case "admin":
@@ -36,12 +37,58 @@ function Header() {
     }
   };
 
+  const renderRoleSpecificLinks = () => {
+    switch (userRole) {
+      case "freelancer":
+        return (
+          <>
+            <li className="nav-item">
+              <Link className="nav-link" to="/freelancer/applications">
+                My Applications
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/freelancer/jobs">
+                My Jobs
+              </Link>
+            </li>
+          </>
+        );
+      case "client":
+        return (
+          <li className="nav-item">
+            <Link className="nav-link" to="/client/jobs">
+              My Posted Jobs
+            </Link>
+          </li>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
-        <Link className="navbar-brand" to="/">
-          FreelancePlatform
-        </Link>
+        {/* Left side links */}
+        <div className="navbar-nav">
+          {isAuthenticated && (
+            <>
+              <li className="nav-item">
+                <Link className="nav-link" to="/jobs">
+                  Jobs
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/freelancers">
+                  Freelancers
+                </Link>
+              </li>
+            </>
+          )}
+        </div>
+
+        {/* Right side links */}
         <div className="collapse navbar-collapse">
           <ul className="navbar-nav ms-auto">
             {!isAuthenticated ? (
@@ -64,6 +111,7 @@ function Header() {
                     Dashboard
                   </Link>
                 </li>
+                {renderRoleSpecificLinks()}
                 <li className="nav-item">
                   <button
                     className="nav-link btn btn-link"
