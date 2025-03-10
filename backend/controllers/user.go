@@ -4,7 +4,6 @@ import (
 	"backend/models"
 	"backend/validators"
 	"net/http"
-	"strconv"
 
 	"github.com/beego/beego/v2/server/web"
 	"golang.org/x/crypto/bcrypt"
@@ -14,7 +13,7 @@ type UserController struct {
 	web.Controller
 }
 
-func (c *UserController) Get() {
+func (c *UserController) GetUserHandler() {
 	id := c.Ctx.Input.GetData("id").(int)
 	user, err := models.GetUserById(id)
 	if user == nil || err != nil {
@@ -23,12 +22,44 @@ func (c *UserController) Get() {
 		return
 	}
 
+	response := map[string]interface{}{
+		"id":          user.Id,
+		"email":       user.Email,
+		"role":        user.Role,
+		"name":        user.Name,
+		"surname":     user.Surname,
+		"description": user.Description,
+	}
+
+	switch user.Role {
+	case "freelancer":
+		freelancerData, err := models.GetFreelancerDataByUserID(user.Id)
+		if err == nil && freelancerData != nil {
+			response["freelancer_data"] = map[string]interface{}{
+				"skills":         freelancerData.Skills,
+				"hourly_rate":    freelancerData.HourlyRate,
+				"work_type":      freelancerData.WorkType,
+				"hours_per_week": freelancerData.HoursPerWeek,
+			}
+		}
+	case "client":
+		clientData, err := models.GetClientDataByUserID(user.Id)
+		if err == nil && clientData != nil {
+			response["client_data"] = map[string]interface{}{
+				"company_name": clientData.CompanyName,
+				"industry":     clientData.Industry,
+				"location":     clientData.Location,
+			}
+		}
+	}
+
 	c.Ctx.Output.SetStatus(http.StatusOK)
-	c.Ctx.Output.JSON(map[string]string{"id": strconv.Itoa(user.Id), "email": user.Email, "role": user.Role}, false, false)
+	c.Data["json"] = response
+	c.ServeJSON()
 
 }
 
-func (c *UserController) Put() {
+func (c *UserController) UpdateUserHandler() {
 	id := c.Ctx.Input.GetData("id").(int)
 	user, err := models.GetUserById(id)
 	if user == nil || err != nil {
@@ -68,6 +99,15 @@ func (c *UserController) Put() {
 			return
 		}
 	}
+	if updateUserRequest.Name != "" {
+		user.Name = updateUserRequest.Name
+	}
+	if updateUserRequest.Surname != "" {
+		user.Surname = updateUserRequest.Surname
+	}
+	if updateUserRequest.Description != "" {
+		user.Description = updateUserRequest.Description
+	}
 
 	err = models.UpdateUser(user)
 	if err != nil {
@@ -82,7 +122,7 @@ func (c *UserController) Put() {
 
 }
 
-func (c *UserController) Delete() {
+func (c *UserController) DeleteUserHandler() {
 	id := c.Ctx.Input.GetData("id").(int)
 	err := models.DeleteUserByID(id)
 	if err != nil {
