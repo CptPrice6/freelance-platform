@@ -14,14 +14,14 @@ func init() {
 	orm.RegisterModel(new(RefreshToken))
 }
 
-func (u *RefreshToken) TableName() string {
+func (r *RefreshToken) TableName() string {
 	return "refresh_tokens"
 }
 
-func SaveRefreshToken(token string, userId int) error {
+func SaveRefreshToken(token string, userID int) error {
 	o := orm.NewOrm()
 
-	user, err := GetUserById(userId)
+	user, err := GetUserById(userID)
 	if err != nil {
 		return err
 	}
@@ -34,10 +34,10 @@ func SaveRefreshToken(token string, userId int) error {
 	return err
 }
 
-func ValidateRefreshTokenInDB(token string, userId int) (bool, error) {
+func ValidateRefreshTokenInDB(token string, userID int) (bool, error) {
 	o := orm.NewOrm()
 	var refreshToken RefreshToken
-	err := o.QueryTable("refresh_tokens").Filter("token", token).Filter("user_id", userId).One(&refreshToken)
+	err := o.QueryTable("refresh_tokens").Filter("token", token).Filter("user_id", userID).One(&refreshToken)
 
 	if err == orm.ErrNoRows {
 		return false, nil // Token not found → Invalid
@@ -48,10 +48,10 @@ func ValidateRefreshTokenInDB(token string, userId int) (bool, error) {
 	return true, nil // Token is valid
 }
 
-func DeleteAllRefreshTokensForUser(userId int) error {
+func DeleteAllRefreshTokensForUser(userID int) error {
 	o := orm.NewOrm()
 
 	// Delete all refresh tokens associated with the given userId
-	_, err := o.QueryTable("refresh_tokens").Filter("user_id", userId).Delete()
+	_, err := o.QueryTable("refresh_tokens").Filter("user_id", userID).Delete()
 	return err
 }

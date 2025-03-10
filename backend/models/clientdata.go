@@ -1,6 +1,10 @@
 package models
 
-import "github.com/beego/beego/v2/client/orm"
+import (
+	"errors"
+
+	"github.com/beego/beego/v2/client/orm"
+)
 
 type ClientData struct {
 	Id          int    `orm:"pk;auto"`
@@ -14,6 +18,53 @@ func init() {
 	orm.RegisterModel(new(ClientData))
 }
 
-func (u *ClientData) TableName() string {
+func (c *ClientData) TableName() string {
 	return "client_data"
+}
+
+func GetClientDataByUserID(userID int) (*ClientData, error) {
+	o := orm.NewOrm()
+	client := ClientData{User: &User{Id: userID}}
+	err := o.Read(&client, "User")
+	if err == orm.ErrNoRows {
+		return nil, nil
+	}
+	return &client, err
+}
+
+func CreateClientData(userID int) error {
+	o := orm.NewOrm()
+
+	user := User{Id: userID}
+	err := o.Read(&user)
+	if err == orm.ErrNoRows {
+		return errors.New("user not found")
+	}
+
+	if user.Role != "client" {
+		return errors.New("user is not a client")
+	}
+
+	clientData := &ClientData{
+		User: &user,
+	}
+
+	_, err = o.Insert(clientData)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateClientData(clientData *ClientData) error {
+	o := orm.NewOrm()
+
+	// Update user
+	_, err := o.Update(clientData)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
