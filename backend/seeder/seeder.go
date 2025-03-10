@@ -10,10 +10,12 @@ import (
 )
 
 func SeedDatabase() {
-	SeedUsersTable()
+	SeedUsersWithDataAndSkills()
 }
 
-func SeedUsersTable() {
+// TODO: Add client and freelancer data tables creation!
+func SeedUsersWithDataAndSkills() {
+	SeedSkillsTable()
 	o := orm.NewOrm()
 
 	count, err := o.QueryTable(new(models.User)).Count()
@@ -52,10 +54,17 @@ func SeedUsersTable() {
 				if err != nil {
 					log.Printf("Error inserting user into database: %v", err)
 				}
+				// Create data tables for users based on their roles
+				// Assign 1-3 random skills to freelancers
 			}
 		}
 		log.Println("User table seeded successfully")
 	} else {
 		log.Println("User table already contains data.")
 	}
+}
+
+// Add 100 skills
+func SeedSkillsTable() {
+
 }
