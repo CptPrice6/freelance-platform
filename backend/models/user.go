@@ -26,17 +26,38 @@ func (u *User) TableName() string {
 	return "users"
 }
 
-func CreateUser(email, password, role string, ban bool) error {
+func CreateUser(email, password, role, name, surname string, ban bool) error {
 	o := orm.NewOrm()
 	user := User{
 		Email:    email,
 		Password: password,
+		Name:     name,
+		Surname:  surname,
 		Role:     role,
 		Ban:      ban,
 	}
 
-	_, err := o.Insert(&user)
-	return err
+	userID, err := o.Insert(&user)
+	if err != nil {
+		return err
+	}
+
+	switch role {
+	case "client":
+		err := CreateClientData(int(userID))
+		if err != nil {
+			return err
+		}
+	case "freelancer":
+		err := CreateFreelancerData(int(userID))
+		if err != nil {
+			return err
+		}
+	default:
+		// No role-specific data to create for "admin"
+	}
+
+	return nil
 }
 
 func GetUserByEmail(email string) (*User, error) {
@@ -49,9 +70,9 @@ func GetUserByEmail(email string) (*User, error) {
 	return &user, nil
 }
 
-func GetUserById(id int) (*User, error) {
+func GetUserById(userID int) (*User, error) {
 	o := orm.NewOrm()
-	user := User{Id: id}
+	user := User{Id: userID}
 	err := o.Read(&user, "Id")
 	if err != nil {
 		return nil, err
@@ -99,10 +120,10 @@ func UpdateUser(user *User) error {
 	return nil
 }
 
-func DeleteUserByID(id int) error {
+func DeleteUserByID(userID int) error {
 	o := orm.NewOrm()
 
-	user := User{Id: id}
+	user := User{Id: userID}
 
 	// Delete the user by ID
 	_, err := o.Delete(&user)
