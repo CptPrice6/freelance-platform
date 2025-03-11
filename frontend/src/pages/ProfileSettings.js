@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../utils/axios";
 
-function UserDashboard() {
+function ProfileSettings() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
@@ -80,9 +80,33 @@ function UserDashboard() {
       });
   };
 
+  const handleDeleteAccount = () => {
+    if (window.confirm("Are you sure you want to delete your account?")) {
+      axiosInstance
+        .delete("/user")
+        .then(() => {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("role");
+
+          window.location.replace("/");
+
+          setUser(null);
+
+          alert("Your account has been deleted.");
+        })
+        .catch((err) => {
+          setError(
+            err.response?.data?.error ||
+              "An unknown error occurred during deletion."
+          );
+        });
+    }
+  };
+
   return (
     <div className="container mt-5">
-      <h2>User Dashboard</h2>
+      <h2>Profile Settings</h2>
       {error && (
         <div className="alert alert-danger" role="alert">
           {error}
@@ -162,6 +186,13 @@ function UserDashboard() {
               {updateSuccess}
             </div>
           )}
+
+          {/* Delete Account Section */}
+          <section className="mt-5">
+            <button className="btn btn-danger" onClick={handleDeleteAccount}>
+              Delete Account
+            </button>
+          </section>
         </div>
       ) : (
         <p>Loading user data...</p>
@@ -170,4 +201,4 @@ function UserDashboard() {
   );
 }
 
-export default UserDashboard;
+export default ProfileSettings;
