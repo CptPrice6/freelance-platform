@@ -3,7 +3,7 @@ package types
 // request structure for register
 type RegisterRequest struct {
 	Name     string `json:"name"`
-	Surname  string `json:"Surname"`
+	Surname  string `json:"surname"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
@@ -24,7 +24,7 @@ type UpdateUserRequest struct {
 	Password    string `json:"password"`
 	NewPassword string `json:"new_password"`
 	Name        string `json:"name"`
-	Surname     string `json:"Surname"`
+	Surname     string `json:"surname"`
 }
 
 type UpdateUserRequestAdmin struct {
