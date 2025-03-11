@@ -138,10 +138,20 @@ func GetUsers() ([]User, error) {
 
 	var users []User
 
-	_, err := o.QueryTable(new(User)).All(&users)
+	_, err := o.QueryTable(new(User)).OrderBy("id").All(&users)
 	if err != nil {
 		return nil, err
 	}
 
+	return users, nil
+}
+
+func GetUsersByRole(role string) ([]User, error) {
+	o := orm.NewOrm()
+	var users []User
+	_, err := o.QueryTable(new(User)).Filter("Role", role).All(&users)
+	if err != nil {
+		return nil, err
+	}
 	return users, nil
 }
