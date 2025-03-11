@@ -2,7 +2,7 @@ import { useState } from "react";
 import UserControlPanel from "./UserControlPanel";
 import SkillControlPanel from "./SkillControlPanel";
 
-const AdminPanel = () => {
+const AdminDashboard = () => {
   const [activePanel, setActivePanel] = useState("users");
 
   return (
@@ -37,4 +37,4 @@ const AdminPanel = () => {
   );
 };
 
-export default AdminPanel;
+export default AdminDashboard;
