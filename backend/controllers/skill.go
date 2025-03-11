@@ -4,6 +4,7 @@ import (
 	"backend/models"
 	"backend/validators"
 	"net/http"
+	"strconv"
 
 	"github.com/beego/beego/v2/server/web"
 )
@@ -117,12 +118,91 @@ func (c *SkillController) GetSkillsHandler() {
 
 func (c *SkillController) AddSkillHandler() {
 
+	updateSkillRequest, err := validators.AddUpdateSkillValidator(c.Ctx.Input.RequestBody)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		return
+	}
+
+	err = models.CreateSkill(updateSkillRequest.SkillName)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		return
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = map[string]string{"message": "Skill added successfully"}
+	c.ServeJSON()
+
 }
 
 func (c *SkillController) DeleteSkillHandler() {
+	idStr := c.Ctx.Input.Param(":id")
+	skillID, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid skill ID"}, false, false)
+		return
+	}
+
+	skill, err := models.GetSkillById(skillID)
+	if skill == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Skill not found"}, false, false)
+		return
+	}
+
+	err = models.DeleteSkillByID(skillID)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Skill not found"}, false, false)
+		return
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = map[string]string{"message": "Skill deletion successful"}
+	c.ServeJSON()
 
 }
 
 func (c *SkillController) UpdateSkillHandler() {
+	idStr := c.Ctx.Input.Param(":id")
+	skillID, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid skill ID"}, false, false)
+		return
+	}
+
+	updateSkillRequest, err := validators.AddUpdateSkillValidator(c.Ctx.Input.RequestBody)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		return
+	}
+
+	skill, err := models.GetSkillById(skillID)
+	if skill == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Skill not found"}, false, false)
+		return
+	}
+
+	if updateSkillRequest.SkillName != "" {
+		skill.Name = updateSkillRequest.SkillName
+	}
+
+	err = models.UpdateSkill(skill)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		return
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = map[string]string{"message": "Skill name updated successfully"}
+	c.ServeJSON()
 
 }
