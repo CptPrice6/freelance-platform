@@ -36,7 +36,7 @@ func init() {
 
 	//TODO:
 	web.Router("/admin/skills", &controllers.SkillController{}, "post:AddSkillHandler")
-	web.Router("/admin/skills", &controllers.SkillController{}, "delete:DeleteSkillHandler")
-	web.Router("/admin/skills", &controllers.SkillController{}, "put:UpdateSkillHandler")
+	web.Router("/admin/skills/:id", &controllers.SkillController{}, "delete:DeleteSkillHandler")
+	web.Router("/admin/skills/:id", &controllers.SkillController{}, "put:UpdateSkillHandler")
 
 }

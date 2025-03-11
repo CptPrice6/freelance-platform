@@ -23,12 +23,11 @@ func (c *UserController) GetUserHandler() {
 	}
 
 	response := map[string]interface{}{
-		"id":          user.Id,
-		"email":       user.Email,
-		"role":        user.Role,
-		"name":        user.Name,
-		"surname":     user.Surname,
-		"description": user.Description,
+		"id":      user.Id,
+		"email":   user.Email,
+		"role":    user.Role,
+		"name":    user.Name,
+		"surname": user.Surname,
 	}
 
 	switch user.Role {
@@ -36,6 +35,8 @@ func (c *UserController) GetUserHandler() {
 		freelancerData, err := models.GetFreelancerDataByUserID(user.Id)
 		if err == nil && freelancerData != nil {
 			response["freelancer_data"] = map[string]interface{}{
+				"title":          freelancerData.Title,
+				"description":    freelancerData.Description,
 				"skills":         freelancerData.Skills,
 				"hourly_rate":    freelancerData.HourlyRate,
 				"work_type":      freelancerData.WorkType,
@@ -46,6 +47,7 @@ func (c *UserController) GetUserHandler() {
 		clientData, err := models.GetClientDataByUserID(user.Id)
 		if err == nil && clientData != nil {
 			response["client_data"] = map[string]interface{}{
+				"description":  clientData.Description,
 				"company_name": clientData.CompanyName,
 				"industry":     clientData.Industry,
 				"location":     clientData.Location,
@@ -105,9 +107,6 @@ func (c *UserController) UpdateUserHandler() {
 	if updateUserRequest.Surname != "" {
 		user.Surname = updateUserRequest.Surname
 	}
-	if updateUserRequest.Description != "" {
-		user.Description = updateUserRequest.Description
-	}
 
 	err = models.UpdateUser(user)
 	if err != nil {
@@ -137,8 +136,6 @@ func (c *UserController) DeleteUserHandler() {
 		c.Ctx.Output.JSON(map[string]string{"error": "Error deleting old refresh token"}, false, false)
 		return
 	}
-
-	// delete all cascading tables!
 
 	c.Ctx.Output.SetStatus(http.StatusOK)
 	c.Data["json"] = map[string]string{"message": "User deletion successful"}

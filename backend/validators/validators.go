@@ -130,11 +130,6 @@ func UpdateUserValidator(requestBody []byte) (*types.UpdateUserRequest, error) {
 			return nil, fmt.Errorf("Surname cannot be longer than 100 symbols")
 		}
 	}
-	if updateUserRequest.Description != "" {
-		if len(updateUserRequest.Surname) > 1000 {
-			return nil, fmt.Errorf("Description cannot be longer than 1000 symbols")
-		}
-	}
 
 	return updateUserRequest, nil
 
@@ -215,6 +210,16 @@ func UpdateFreelancerDataValidator(requestBody []byte) (*types.UpdateFreelancerD
 		}
 		if updateFreelancerDataRequest.HoursPerWeek > 168 {
 			return nil, fmt.Errorf("Hours per week cannot be more than 168")
+		}
+	}
+	if updateFreelancerDataRequest.Description != "" {
+		if len(updateFreelancerDataRequest.Description) > 1000 {
+			return nil, fmt.Errorf("Description cannot be longer than 1000 symbols")
+		}
+	}
+	if updateFreelancerDataRequest.Title != "" {
+		if len(updateFreelancerDataRequest.Title) > 50 {
+			return nil, fmt.Errorf("Title cannot be longer than 50 symbols")
 		}
 	}
 
