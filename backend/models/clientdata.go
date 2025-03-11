@@ -9,6 +9,7 @@ import (
 type ClientData struct {
 	Id          int    `orm:"pk;auto"`
 	User        *User  `orm:"rel(fk);on_delete(cascade);unique"`
+	Description string `orm:"type(text);null"`
 	CompanyName string `orm:"size(255);null"`
 	Industry    string `orm:"size(100);null"`
 	Location    string `orm:"size(255);null"`

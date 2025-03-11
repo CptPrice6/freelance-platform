@@ -38,6 +38,12 @@ func (c *FreelancerController) UpdateFreelancerDataHandler() {
 	if updateFreelancerRequest.HoursPerWeek > 0 {
 		freelancerData.HoursPerWeek = updateFreelancerRequest.HoursPerWeek
 	}
+	if updateFreelancerRequest.Description != "" {
+		freelancerData.Description = updateFreelancerRequest.Description
+	}
+	if updateFreelancerRequest.Title != "" {
+		freelancerData.Title = updateFreelancerRequest.Title
+	}
 
 	err = models.UpdateFreelancerData(freelancerData)
 	if err != nil {

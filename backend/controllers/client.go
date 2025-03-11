@@ -38,6 +38,9 @@ func (c *ClientController) UpdateClientDataHandler() {
 	if updateClientRequest.Location != "" {
 		clientData.Location = updateClientRequest.Location
 	}
+	if updateClientRequest.Description != "" {
+		clientData.Description = updateClientRequest.Description
+	}
 
 	err = models.UpdateClientData(clientData)
 	if err != nil {

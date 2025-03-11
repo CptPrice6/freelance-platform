@@ -9,6 +9,8 @@ import (
 type FreelancerData struct {
 	Id           int      `orm:"pk;auto"`
 	User         *User    `orm:"rel(fk);on_delete(cascade);unique"`
+	Title        string   `orm:"size(50);null"`
+	Description  string   `orm:"type(text);null"`
 	HourlyRate   float64  `orm:"null"`
 	WorkType     string   `orm:"size(50);null"`
 	HoursPerWeek int      `orm:"null"`
