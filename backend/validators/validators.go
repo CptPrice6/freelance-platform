@@ -263,3 +263,17 @@ func AddDeleteSkillValidator(requestBody []byte) (*types.AddDeleteSkillRequest, 
 	return addDeleteSkillRequest, nil
 
 }
+
+func AddUpdateSkillValidator(requestBody []byte) (*types.AddUpdateSkillRequest, error) {
+
+	var addUpdateSkillRequest = new(types.AddUpdateSkillRequest)
+
+	err := json.Unmarshal(requestBody, &addUpdateSkillRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	return addUpdateSkillRequest, nil
+
+}

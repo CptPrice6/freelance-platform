@@ -49,3 +49,7 @@ type UpdateClientDataRequest struct {
 type AddDeleteSkillRequest struct {
 	SkillID int `json:"skill_id"`
 }
+
+type AddUpdateSkillRequest struct {
+	SkillName string `json:"skill_name"`
+}
