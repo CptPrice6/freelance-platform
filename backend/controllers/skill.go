@@ -42,10 +42,18 @@ func (c *SkillController) AddFreelancerSkillHandler() {
 		return
 	}
 
+	for _, existingSkill := range freelancerData.Skills {
+		if existingSkill.Id == skill.Id {
+			c.Ctx.Output.SetStatus(http.StatusBadRequest)
+			c.Ctx.Output.JSON(map[string]string{"error": "This skill is already present"}, false, false)
+			return
+		}
+	}
+
 	err = models.AddSkillToFreelancerData(freelancerData, skill)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Ctx.Output.JSON(map[string]string{"error": "Failed to add skill to freelancer data"}, false, false)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
 		return
 	}
 
