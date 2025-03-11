@@ -6,7 +6,7 @@ import Register from "./pages/Register";
 import ProfileSettings from "./pages/ProfileSettings";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminRoute from "./components/AdminRoute";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminPanel from "./pages/AdminPanel";
 
 function App() {
   return (
@@ -67,7 +67,7 @@ function App() {
 
             <Route
               path="/admin/dashboard"
-              element={<AdminRoute element={<AdminDashboard />} />}
+              element={<AdminRoute element={<AdminPanel />} />}
             />
           </Routes>
         </Layout>
