@@ -34,9 +34,12 @@ func init() {
 	web.Router("/admin/users/:id", &controllers.AdminController{}, "delete:DeleteUserHandler")
 	web.Router("/admin/users/:id", &controllers.AdminController{}, "put:UpdateUserHandler")
 
-	//TODO:
 	web.Router("/admin/skills", &controllers.SkillController{}, "post:AddSkillHandler")
 	web.Router("/admin/skills/:id", &controllers.SkillController{}, "delete:DeleteSkillHandler")
 	web.Router("/admin/skills/:id", &controllers.SkillController{}, "put:UpdateSkillHandler")
+
+	web.InsertFilter("/freelancers/*", web.BeforeRouter, middleware.UserAuthMiddleware)
+	web.Router("/freelancers", &controllers.FreelancerController{}, "get:GetFreelancersHandler")
+	web.Router("/freelancers/:id", &controllers.FreelancerController{}, "get:GetFreelancerHandler")
 
 }
