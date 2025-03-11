@@ -16,21 +16,21 @@ type AdminController struct {
 func (c *AdminController) DeleteUserHandler() {
 
 	idStr := c.Ctx.Input.Param(":id")
-	id, err := strconv.Atoi(idStr)
+	userID, err := strconv.Atoi(idStr)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
 		c.Ctx.Output.JSON(map[string]string{"error": "Invalid user ID"}, false, false)
 		return
 	}
 
-	err = models.DeleteUserByID(id)
+	err = models.DeleteUserByID(userID)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
 		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
 		return
 	}
 
-	err = models.DeleteAllRefreshTokensForUser(id)
+	err = models.DeleteAllRefreshTokensForUser(userID)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Ctx.Output.JSON(map[string]string{"error": "Error deleting old refresh token"}, false, false)
