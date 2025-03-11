@@ -111,6 +111,11 @@ function Header() {
                     Dashboard
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/settings">
+                    Settings
+                  </Link>
+                </li>
                 {renderRoleSpecificLinks()}
                 <li className="nav-item">
                   <button

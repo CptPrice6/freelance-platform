@@ -3,9 +3,10 @@ import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import UserDashboard from "./pages/UserDashboard";
+import ProfileSettings from "./pages/ProfileSettings";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminRoute from "./components/AdminRoute";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -21,47 +22,52 @@ function App() {
             {/*Full list of Jobs and Freelancers */}
             <Route
               path="/freelancers"
-              element={<PrivateRoute element={<UserDashboard />} />}
+              element={<PrivateRoute element={<ProfileSettings />} />}
             />
             <Route
               path="/jobs"
-              element={<PrivateRoute element={<UserDashboard />} />}
+              element={<PrivateRoute element={<ProfileSettings />} />}
             />
             {/* Specific Job and Freelancer Detail Pages */}
             <Route
               path="/jobs/:id"
-              element={<PrivateRoute element={<UserDashboard />} />}
+              element={<PrivateRoute element={<ProfileSettings />} />}
             />
             <Route
               path="/freelancers/:id"
-              element={<PrivateRoute element={<UserDashboard />} />}
+              element={<PrivateRoute element={<ProfileSettings />} />}
             />
 
             <Route
               path="/freelancer/dashboard"
-              element={<PrivateRoute element={<UserDashboard />} />}
+              element={<PrivateRoute element={<ProfileSettings />} />}
             />
             <Route
               path="/freelancer/applications"
-              element={<PrivateRoute element={<UserDashboard />} />}
+              element={<PrivateRoute element={<ProfileSettings />} />}
             />
             <Route
               path="/freelancer/jobs"
-              element={<PrivateRoute element={<UserDashboard />} />}
+              element={<PrivateRoute element={<ProfileSettings />} />}
             />
 
             <Route
               path="/client/dashboard"
-              element={<PrivateRoute element={<UserDashboard />} />}
+              element={<PrivateRoute element={<ProfileSettings />} />}
             />
             <Route
               path="/client/jobs"
-              element={<PrivateRoute element={<UserDashboard />} />}
+              element={<PrivateRoute element={<ProfileSettings />} />}
+            />
+
+            <Route
+              path="/settings"
+              element={<PrivateRoute element={<ProfileSettings />} />}
             />
 
             <Route
               path="/admin/dashboard"
-              element={<AdminRoute element={<UserDashboard />} />}
+              element={<AdminRoute element={<AdminDashboard />} />}
             />
           </Routes>
         </Layout>
