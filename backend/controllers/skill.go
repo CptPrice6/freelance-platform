@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/server/web"
 )
 
@@ -98,7 +97,7 @@ func (c *SkillController) DeleteFreelancerSkillHandler() {
 
 	err = models.DeleteSkillFromFreelancerData(freelancerData, skill)
 	if err != nil {
-		if err == orm.ErrNoRows {
+		if err.Error() == "skill not found" {
 			c.Ctx.Output.SetStatus(http.StatusBadRequest)
 			c.Ctx.Output.JSON(map[string]string{"error": "Freelancer does not have this skill"}, false, false)
 		} else {

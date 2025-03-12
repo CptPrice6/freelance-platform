@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/beego/beego/v2/client/orm"
 )
@@ -90,9 +91,13 @@ func AddSkillToFreelancerData(freelancerData *FreelancerData, skill *Skill) erro
 func DeleteSkillFromFreelancerData(freelancerData *FreelancerData, skill *Skill) error {
 	o := orm.NewOrm()
 
-	_, err := o.QueryM2M(freelancerData, "Skills").Remove(skill)
+	affectedRows, err := o.QueryM2M(freelancerData, "Skills").Remove(skill)
 	if err != nil {
 		return err
+	}
+
+	if affectedRows == 0 {
+		return fmt.Errorf("skill not found")
 	}
 
 	return nil

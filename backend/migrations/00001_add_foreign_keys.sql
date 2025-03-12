@@ -1,6 +1,4 @@
 -- +goose Up
-ALTER TABLE refresh_tokens
-  ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 ALTER TABLE client_data
   ADD CONSTRAINT fk_client_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 ALTER TABLE freelancer_data
@@ -13,7 +11,6 @@ ALTER TABLE freelancer_skills
 
 
 -- +goose Down
-ALTER TABLE refresh_tokens DROP CONSTRAINT fk_user_id;
 ALTER TABLE client_data DROP CONSTRAINT fk_client_user;
 ALTER TABLE freelancer_data DROP CONSTRAINT fk_freelancer_user;
 
