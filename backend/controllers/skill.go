@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"backend/models"
+	"backend/types"
 	"backend/validators"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/beego/beego/v2/server/web"
 )
@@ -112,8 +114,18 @@ func (c *SkillController) GetSkillsHandler() {
 		c.Ctx.Output.JSON(map[string]string{"error": "Failed to fetch skills"}, false, false)
 		return
 	}
+
+	var skillsResponse []types.Skill
+
+	for _, skill := range skills {
+		skillsResponse = append(skillsResponse, types.Skill{
+			Id:   skill.Id,
+			Name: skill.Name,
+		})
+	}
+
 	c.Ctx.Output.SetStatus(http.StatusOK)
-	c.Ctx.Output.JSON(skills, false, false)
+	c.Ctx.Output.JSON(skillsResponse, false, false)
 }
 
 func (c *SkillController) AddSkillHandler() {
@@ -127,8 +139,13 @@ func (c *SkillController) AddSkillHandler() {
 
 	err = models.CreateSkill(updateSkillRequest.SkillName)
 	if err != nil {
-		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		if strings.Contains(err.Error(), "unique constraint") {
+			c.Ctx.Output.SetStatus(http.StatusBadRequest)
+			c.Ctx.Output.JSON(map[string]string{"error": "Skill already exists!"}, false, false)
+		} else {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		}
 		return
 	}
 
@@ -196,8 +213,13 @@ func (c *SkillController) UpdateSkillHandler() {
 
 	err = models.UpdateSkill(skill)
 	if err != nil {
-		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		if strings.Contains(err.Error(), "unique constraint") {
+			c.Ctx.Output.SetStatus(http.StatusBadRequest)
+			c.Ctx.Output.JSON(map[string]string{"error": "Skill already exists!"}, false, false)
+		} else {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		}
 		return
 	}
 

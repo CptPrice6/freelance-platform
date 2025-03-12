@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/models"
+	"backend/types"
 	"backend/validators"
 	"net/http"
 
@@ -22,35 +23,44 @@ func (c *UserController) GetUserHandler() {
 		return
 	}
 
-	response := map[string]interface{}{
-		"id":      user.Id,
-		"email":   user.Email,
-		"role":    user.Role,
-		"name":    user.Name,
-		"surname": user.Surname,
+	response := types.UserResponse{
+		ID:      user.Id,
+		Email:   user.Email,
+		Role:    user.Role,
+		Name:    user.Name,
+		Surname: user.Surname,
 	}
 
 	switch user.Role {
 	case "freelancer":
 		freelancerData, err := models.GetFreelancerDataByUserID(user.Id)
 		if err == nil && freelancerData != nil {
-			response["freelancer_data"] = map[string]interface{}{
-				"title":          freelancerData.Title,
-				"description":    freelancerData.Description,
-				"skills":         freelancerData.Skills,
-				"hourly_rate":    freelancerData.HourlyRate,
-				"work_type":      freelancerData.WorkType,
-				"hours_per_week": freelancerData.HoursPerWeek,
+			var skillList []types.Skill
+
+			for _, skill := range freelancerData.Skills {
+				skillList = append(skillList, types.Skill{
+					Id:   skill.Id,
+					Name: skill.Name,
+				})
+			}
+
+			response.FreelancerData = &types.FreelancerData{
+				Title:        freelancerData.Title,
+				Description:  freelancerData.Description,
+				Skills:       skillList,
+				HourlyRate:   freelancerData.HourlyRate,
+				WorkType:     freelancerData.WorkType,
+				HoursPerWeek: freelancerData.HoursPerWeek,
 			}
 		}
 	case "client":
 		clientData, err := models.GetClientDataByUserID(user.Id)
 		if err == nil && clientData != nil {
-			response["client_data"] = map[string]interface{}{
-				"description":  clientData.Description,
-				"company_name": clientData.CompanyName,
-				"industry":     clientData.Industry,
-				"location":     clientData.Location,
+			response.ClientData = &types.ClientData{
+				Description: clientData.Description,
+				CompanyName: clientData.CompanyName,
+				Industry:    clientData.Industry,
+				Location:    clientData.Location,
 			}
 		}
 	}

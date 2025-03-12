@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/models"
+	"backend/types"
 	"backend/validators"
 	"net/http"
 	"strconv"
@@ -66,7 +67,7 @@ func (c *FreelancerController) GetFreelancersHandler() {
 		return
 	}
 
-	var freelancersData []map[string]interface{}
+	var freelancers []types.FreelancerInfo
 
 	for _, user := range users {
 		freelancerData, err := models.GetFreelancerDataByUserID(user.Id)
@@ -74,19 +75,19 @@ func (c *FreelancerController) GetFreelancersHandler() {
 			continue
 		}
 
-		freelancerInfo := map[string]interface{}{
-			"id":          user.Id,
-			"name":        user.Name,
-			"surname":     user.Surname,
-			"title":       freelancerData.Title,
-			"hourly_rate": freelancerData.HourlyRate,
+		freelancerInfo := types.FreelancerInfo{
+			ID:         user.Id,
+			Name:       user.Name,
+			Surname:    user.Surname,
+			Title:      freelancerData.Title,
+			HourlyRate: freelancerData.HourlyRate,
 		}
 
-		freelancersData = append(freelancersData, freelancerInfo)
+		freelancers = append(freelancers, freelancerInfo)
 	}
 
 	c.Ctx.Output.SetStatus(http.StatusOK)
-	c.Data["json"] = freelancersData
+	c.Data["json"] = freelancers
 	c.ServeJSON()
 }
 
@@ -111,22 +112,33 @@ func (c *FreelancerController) GetFreelancerHandler() {
 		return
 	}
 
-	response := map[string]interface{}{
-		"id":      user.Id,
-		"email":   user.Email,
-		"name":    user.Name,
-		"surname": user.Surname,
+	response := types.UserResponse{
+		ID:      user.Id,
+		Email:   user.Email,
+		Role:    user.Role,
+		Name:    user.Name,
+		Surname: user.Surname,
 	}
 
 	freelancerData, err := models.GetFreelancerDataByUserID(user.Id)
 	if err == nil && freelancerData != nil {
-		response["freelancer_data"] = map[string]interface{}{
-			"title":          freelancerData.Title,
-			"description":    freelancerData.Description,
-			"skills":         freelancerData.Skills,
-			"hourly_rate":    freelancerData.HourlyRate,
-			"work_type":      freelancerData.WorkType,
-			"hours_per_week": freelancerData.HoursPerWeek,
+
+		var skillList []types.Skill
+
+		for _, skill := range freelancerData.Skills {
+			skillList = append(skillList, types.Skill{
+				Id:   skill.Id,
+				Name: skill.Name,
+			})
+		}
+
+		response.FreelancerData = &types.FreelancerData{
+			Title:        freelancerData.Title,
+			Description:  freelancerData.Description,
+			Skills:       skillList,
+			HourlyRate:   freelancerData.HourlyRate,
+			WorkType:     freelancerData.WorkType,
+			HoursPerWeek: freelancerData.HoursPerWeek,
 		}
 	}
 

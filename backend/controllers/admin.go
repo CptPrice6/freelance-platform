@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/models"
+	"backend/types"
 	"backend/validators"
 	"net/http"
 	"strconv"
@@ -95,8 +96,59 @@ func (c *AdminController) GetUsersHandler() {
 		return
 	}
 
+	var usersResponse []types.UserResponseForAdmins
+
+	for _, user := range users {
+
+		response := types.UserResponseForAdmins{
+			ID:        user.Id,
+			Email:     user.Email,
+			Role:      user.Role,
+			Name:      user.Name,
+			Surname:   user.Surname,
+			Ban:       user.Ban,
+			CreatedAt: user.CreatedAt,
+		}
+
+		switch user.Role {
+		case "freelancer":
+			freelancerData, err := models.GetFreelancerDataByUserID(user.Id)
+			if err == nil && freelancerData != nil {
+				var skillList []types.Skill
+
+				for _, skill := range freelancerData.Skills {
+					skillList = append(skillList, types.Skill{
+						Id:   skill.Id,
+						Name: skill.Name,
+					})
+				}
+
+				response.FreelancerData = &types.FreelancerData{
+					Title:        freelancerData.Title,
+					Description:  freelancerData.Description,
+					Skills:       skillList,
+					HourlyRate:   freelancerData.HourlyRate,
+					WorkType:     freelancerData.WorkType,
+					HoursPerWeek: freelancerData.HoursPerWeek,
+				}
+			}
+		case "client":
+			clientData, err := models.GetClientDataByUserID(user.Id)
+			if err == nil && clientData != nil {
+				response.ClientData = &types.ClientData{
+					Description: clientData.Description,
+					CompanyName: clientData.CompanyName,
+					Industry:    clientData.Industry,
+					Location:    clientData.Location,
+				}
+			}
+		}
+
+		usersResponse = append(usersResponse, response)
+	}
+
 	c.Ctx.Output.SetStatus(http.StatusOK)
-	c.Data["json"] = users
+	c.Data["json"] = usersResponse
 	c.ServeJSON()
 
 }
