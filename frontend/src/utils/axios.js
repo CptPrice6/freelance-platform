@@ -14,6 +14,8 @@ const axiosInstance = axios.create({
   },
 });
 
+let isRefreshing = false;
+
 // Request interceptor to attach access token to the Authorization header
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -31,7 +33,7 @@ axiosInstance.interceptors.request.use(
 // Response interceptor to handle token refresh on 401 errors
 axiosInstance.interceptors.response.use(
   (response) => {
-    return response; // If response is successful, just return the response.
+    return response;
   },
   async (error) => {
     const originalRequest = error.config; // Original request that caused the error
@@ -43,6 +45,14 @@ axiosInstance.interceptors.response.use(
       error.response?.data?.error?.includes("access token")
     ) {
       originalRequest._retry = true;
+
+      // If refresh token is already being refreshed, reject this request directly
+      if (isRefreshing) {
+        return Promise.reject(error);
+      }
+
+      isRefreshing = true;
+
       const refreshToken = getRefreshToken();
 
       if (!refreshToken) {
@@ -67,14 +77,18 @@ axiosInstance.interceptors.response.use(
         // If refresh failed, remove tokens and redirect to login
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        localStorage.removeItem("role");
         window.location.href = "/login";
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false; // Reset the refresh flag
       }
     }
 
     if (error.response?.status === 401) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      localStorage.removeItem("role");
       alert("Please log in again!");
       window.location.href = "/login";
       return Promise.reject(error);
@@ -86,6 +100,7 @@ axiosInstance.interceptors.response.use(
     ) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      localStorage.removeItem("role");
       alert("You are banned!");
       window.location.href = "/";
       return Promise.reject(error);

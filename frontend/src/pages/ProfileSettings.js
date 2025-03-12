@@ -11,6 +11,10 @@ function ProfileSettings() {
   const [updateSuccess, setUpdateSuccess] = useState("");
 
   useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = () => {
     axiosInstance
       .get("/user")
       .then((response) => {
@@ -21,7 +25,7 @@ function ProfileSettings() {
         const errorMessage = err.response?.data?.error || err.message;
         setError(errorMessage);
       });
-  }, []);
+  };
 
   // Handle email update
   const handleEmailSubmit = (e) => {
@@ -46,6 +50,7 @@ function ProfileSettings() {
         setUpdateError("");
       })
       .catch((err) => {
+        fetchSettings();
         setUpdateError(
           err.response?.data?.error || "An unknown error occurred."
         );

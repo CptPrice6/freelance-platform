@@ -23,7 +23,7 @@ func GenerateAccessToken(id int, role string) (string, error) {
 		Role:      role,
 		TokenType: "access",
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 30)), // 30 minutes expiry
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 60)), // 60 minutes expiry
 		},
 	}
 

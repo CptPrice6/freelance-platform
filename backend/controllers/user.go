@@ -88,6 +88,14 @@ func (c *UserController) UpdateUserHandler() {
 	}
 
 	if updateUserRequest.Email != "" {
+
+		existingUser, err := models.GetUserByEmail(updateUserRequest.Email)
+		if existingUser != nil || err == nil {
+			c.Ctx.Output.SetStatus(http.StatusConflict)
+			c.Ctx.Output.JSON(map[string]string{"error": "Email already registered"}, false, false)
+			return
+		}
+
 		user.Email = updateUserRequest.Email
 	}
 	if updateUserRequest.Password != "" {
