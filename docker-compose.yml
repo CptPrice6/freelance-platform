@@ -19,7 +19,7 @@ services:
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=secret
-      - DB_NAME=backenddb
+      - DB_NAME=freelance_db
     depends_on:
       db:
         condition: service_healthy
@@ -31,7 +31,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secret
-      POSTGRES_DB: backenddb
+      POSTGRES_DB: freelance_db
     ports:
       - "5432:5432"
     healthcheck:
