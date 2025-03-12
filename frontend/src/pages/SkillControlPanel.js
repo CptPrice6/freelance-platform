@@ -8,15 +8,14 @@ const SkillControlPanel = () => {
   const [newSkill, setNewSkill] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessageModal, setErrorMessageModal] = useState("");
+  const [errorMessageMenu, setErrorMessageMenu] = useState("");
 
   useEffect(() => {
     fetchSkills();
   }, []);
 
   const fetchSkills = () => {
-    setLoading(true);
     axiosInstance
       .get("/skills")
       .then((response) => {
@@ -24,9 +23,6 @@ const SkillControlPanel = () => {
       })
       .catch((error) => {
         console.error("Error fetching skills", error);
-      })
-      .finally(() => {
-        setLoading(false);
       });
   };
 
@@ -35,8 +31,18 @@ const SkillControlPanel = () => {
       .put(`/admin/skills/${id}`, { skill_name: updatedName })
       .then(() => {
         fetchSkills();
+        setErrorMessageMenu("");
       })
       .catch((error) => {
+        fetchSkills();
+        if (
+          error.response &&
+          error.response.data.error.includes("already exists")
+        ) {
+          setErrorMessageMenu(error.response.data.error);
+        } else {
+          setErrorMessageMenu("Error updating skill. Please try again.");
+        }
         console.error("Error updating skill", error);
       });
   };
@@ -62,16 +68,16 @@ const SkillControlPanel = () => {
       .post("/admin/skills", { skill_name: newSkill.trim() })
       .then(() => {
         setNewSkill("");
-        setErrorMessage("");
+        setErrorMessageModal("");
         setShowModal(false);
         fetchSkills();
       })
       .catch((error) => {
         if (
           error.response &&
-          error.response.data.error.includes("unique constraint")
+          error.response.data.error.includes("already exists")
         ) {
-          setErrorMessage("Skill already exists!");
+          setErrorMessageModal(error.response.data.error);
         } else {
           console.error("Error adding skill", error);
         }
@@ -80,8 +86,20 @@ const SkillControlPanel = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setErrorMessage("");
+    setErrorMessageModal("");
     setNewSkill("");
+  };
+
+  const handleChange = (id, field, value) => {
+    setSkills((prev) =>
+      prev.map((skill) =>
+        skill.id === id ? { ...skill, [field]: value } : skill
+      )
+    );
+  };
+
+  const handleBlur = (skill) => {
+    handleUpdateSkill(skill.id, skill.name);
   };
 
   const totalPages = Math.ceil(skills.length / ITEMS_PER_PAGE);
@@ -92,58 +110,49 @@ const SkillControlPanel = () => {
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-4 d-flex justify-content-between align-items-center">
-        <button className="btn btn-success" onClick={() => setShowModal(true)}>
-          +
-        </button>
-      </h1>
-
-      {loading ? (
-        <p>Loading skills...</p>
-      ) : (
-        <>
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Skill Name</th>
-                <th>Actions</th>
+      <>
+        {/* Error message section */}
+        {errorMessageMenu && (
+          <div className="alert alert-danger">{errorMessageMenu}</div>
+        )}
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Skill Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedSkills.map((skill) => (
+              <tr key={skill.id}>
+                <td>{skill.id}</td>
+                <td>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={skill.name}
+                    onChange={(e) =>
+                      handleChange(skill.id, "name", e.target.value)
+                    }
+                    onBlur={() => handleBlur(skill)}
+                  />
+                </td>
+                <td>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDeleteSkill(skill.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {paginatedSkills.map((skill) => (
-                <tr key={skill.Id}>
-                  <td>{skill.Id}</td>
-                  <td>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={skill.Name}
-                      onChange={(e) => {
-                        const updatedName = e.target.value;
-                        setSkills((prev) =>
-                          prev.map((s) =>
-                            s.Id === skill.Id ? { ...s, Name: updatedName } : s
-                          )
-                        );
-                      }}
-                      onBlur={() => handleUpdateSkill(skill.Id, skill.Name)}
-                    />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleDeleteSkill(skill.Id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </tbody>
+        </table>
 
-          {/* Pagination */}
+        {/* Pagination with Add Skill Button on the right */}
+        <div className="d-flex justify-content-between align-items-center">
           <nav>
             <ul className="pagination">
               {[...Array(totalPages)].map((_, index) => (
@@ -161,8 +170,16 @@ const SkillControlPanel = () => {
               ))}
             </ul>
           </nav>
-        </>
-      )}
+
+          {/* Add Skill Button - aligned to the right */}
+          <button
+            className="btn btn-success"
+            onClick={() => setShowModal(true)}
+          >
+            +
+          </button>
+        </div>
+      </>
 
       {/* Add Skill Modal */}
       {showModal && (
@@ -185,8 +202,8 @@ const SkillControlPanel = () => {
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
                 />
-                {errorMessage && (
-                  <div className="text-danger mt-2">{errorMessage}</div>
+                {errorMessageModal && (
+                  <div className="text-danger mt-2">{errorMessageModal}</div>
                 )}
               </div>
               <div className="modal-footer">
