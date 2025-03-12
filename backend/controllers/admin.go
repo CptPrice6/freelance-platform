@@ -31,15 +31,6 @@ func (c *AdminController) DeleteUserHandler() {
 		return
 	}
 
-	err = models.DeleteAllRefreshTokensForUser(userID)
-	if err != nil {
-		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
-		c.Ctx.Output.JSON(map[string]string{"error": "Error deleting old refresh token"}, false, false)
-		return
-	}
-
-	// delete all cascading tables!
-
 	c.Ctx.Output.SetStatus(http.StatusOK)
 	c.Data["json"] = map[string]string{"message": "User deletion successful"}
 	c.ServeJSON()

@@ -274,6 +274,14 @@ func AddUpdateSkillValidator(requestBody []byte) (*types.AddUpdateSkillRequest, 
 		return nil, fmt.Errorf("Invalid input")
 	}
 
+	if addUpdateSkillRequest.SkillName == "" {
+		return nil, fmt.Errorf("Skill name cannot be empty")
+	}
+
+	if len(addUpdateSkillRequest.SkillName) > 50 {
+		return nil, fmt.Errorf("Skill name cannot be more than 50 symbols")
+	}
+
 	return addUpdateSkillRequest, nil
 
 }

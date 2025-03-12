@@ -14,8 +14,6 @@ const axiosInstance = axios.create({
   },
 });
 
-let isRefreshing = false;
-
 // Request interceptor to attach access token to the Authorization header
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -46,13 +44,6 @@ axiosInstance.interceptors.response.use(
     ) {
       originalRequest._retry = true;
 
-      // If refresh token is already being refreshed, reject this request directly
-      if (isRefreshing) {
-        return Promise.reject(error);
-      }
-
-      isRefreshing = true;
-
       const refreshToken = getRefreshToken();
 
       if (!refreshToken) {
@@ -80,8 +71,6 @@ axiosInstance.interceptors.response.use(
         localStorage.removeItem("role");
         window.location.href = "/login";
         return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false; // Reset the refresh flag
       }
     }
 

@@ -17,7 +17,6 @@ func init() {
 	web.Router("/user", &controllers.UserController{}, "get:GetUserHandler")
 	web.Router("/user", &controllers.UserController{}, "put:UpdateUserHandler")
 	web.Router("/user", &controllers.UserController{}, "delete:DeleteUserHandler")
-	web.Router("/user/logout", &controllers.AuthController{}, "post:LogoutHandler")
 	web.Router("/user/auth", &controllers.AuthController{}, "get:AuthHandler")
 
 	web.Router("/user/freelancer", &controllers.FreelancerController{}, "put:UpdateFreelancerDataHandler")

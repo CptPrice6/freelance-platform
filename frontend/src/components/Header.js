@@ -9,19 +9,11 @@ function Header() {
   const userRole = localStorage.getItem("role");
 
   const handleLogout = async () => {
-    try {
-      if (isAuthenticated) {
-        await axiosInstance.post("/user/logout");
-      }
-    } catch (error) {
-      console.error("Logout failed:", error);
-    } finally {
-      // Clear all authentication-related data
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("role");
-      navigate("/");
-    }
+    // Clear all authentication-related data
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("role");
+    navigate("/");
   };
 
   const getDashboardRoute = () => {

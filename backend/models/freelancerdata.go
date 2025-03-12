@@ -14,7 +14,7 @@ type FreelancerData struct {
 	HourlyRate   float64  `orm:"null"`
 	WorkType     string   `orm:"size(50);null"`
 	HoursPerWeek int      `orm:"null"`
-	Skills       []*Skill `orm:"rel(m2m);rel_table(freelancer_skills)"`
+	Skills       []*Skill `orm:"rel(m2m);rel_table(freelancer_skills);on_delete(cascade)"`
 }
 
 func init() {
