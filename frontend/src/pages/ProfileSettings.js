@@ -31,7 +31,12 @@ function ProfileSettings() {
   const handleEmailSubmit = (e) => {
     e.preventDefault();
 
-    if (!email || email === user.email) {
+    if (!email) {
+      setUpdateSuccess("");
+      setUpdateError("Email cannot be empty.");
+      return;
+    }
+    if (email === user.email) {
       setUpdateSuccess("");
       setUpdateError("No changes were made to the email.");
       return;
@@ -111,7 +116,7 @@ function ProfileSettings() {
 
   return (
     <div className="container mt-5">
-      <h2>Profile Settings</h2>
+      <h1>Profile Settings</h1>
       {error && (
         <div className="alert alert-danger" role="alert">
           {error}

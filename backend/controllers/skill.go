@@ -146,7 +146,7 @@ func (c *SkillController) AddSkillHandler() {
 	if err != nil {
 		if strings.Contains(err.Error(), "unique constraint") {
 			c.Ctx.Output.SetStatus(http.StatusBadRequest)
-			c.Ctx.Output.JSON(map[string]string{"error": "Skill already exists!"}, false, false)
+			c.Ctx.Output.JSON(map[string]string{"error": "Skill already exists"}, false, false)
 		} else {
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 			c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
@@ -220,7 +220,7 @@ func (c *SkillController) UpdateSkillHandler() {
 	if err != nil {
 		if strings.Contains(err.Error(), "unique constraint") {
 			c.Ctx.Output.SetStatus(http.StatusBadRequest)
-			c.Ctx.Output.JSON(map[string]string{"error": "Skill already exists!"}, false, false)
+			c.Ctx.Output.JSON(map[string]string{"error": "Skill already exists"}, false, false)
 		} else {
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 			c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
