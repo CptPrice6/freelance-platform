@@ -5,9 +5,11 @@ const ITEMS_PER_PAGE = 10;
 
 const SkillControlPanel = () => {
   const [skills, setSkills] = useState([]);
+  const [filteredSkills, setFilteredSkills] = useState([]);
   const [newSkill, setNewSkill] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const [errorMessageModal, setErrorMessageModal] = useState("");
   const [errorMessageMenu, setErrorMessageMenu] = useState("");
 
@@ -15,11 +17,25 @@ const SkillControlPanel = () => {
     fetchSkills();
   }, []);
 
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredSkills(skills);
+    } else {
+      setFilteredSkills(
+        skills.filter((skill) =>
+          skill.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    }
+    setPage(1);
+  }, [skills, searchQuery]);
+
   const fetchSkills = () => {
     axiosInstance
       .get("/skills")
       .then((response) => {
         setSkills(response.data);
+        setFilteredSkills(response.data);
       })
       .catch((error) => {
         console.error("Error fetching skills", error);
@@ -35,14 +51,7 @@ const SkillControlPanel = () => {
       })
       .catch((error) => {
         fetchSkills();
-        if (
-          error.response &&
-          error.response.data.error.includes("already exists")
-        ) {
-          setErrorMessageMenu(error.response.data.error);
-        } else {
-          setErrorMessageMenu("Error updating skill. Please try again.");
-        }
+        setErrorMessageMenu(error.response?.data?.error);
         console.error("Error updating skill", error);
       });
   };
@@ -77,7 +86,7 @@ const SkillControlPanel = () => {
           error.response &&
           error.response.data.error.includes("already exists")
         ) {
-          setErrorMessageModal(error.response.data.error);
+          setErrorMessageModal(error.response?.data?.error);
         } else {
           console.error("Error adding skill", error);
         }
@@ -102,8 +111,8 @@ const SkillControlPanel = () => {
     handleUpdateSkill(skill.id, skill.name);
   };
 
-  const totalPages = Math.ceil(skills.length / ITEMS_PER_PAGE);
-  const paginatedSkills = skills.slice(
+  const totalPages = Math.ceil(filteredSkills.length / ITEMS_PER_PAGE);
+  const paginatedSkills = filteredSkills.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
@@ -111,10 +120,21 @@ const SkillControlPanel = () => {
   return (
     <div className="container mt-4">
       <>
-        {/* Error message section */}
         {errorMessageMenu && (
           <div className="alert alert-danger">{errorMessageMenu}</div>
         )}
+
+        {/* Search Input */}
+        <div className="mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
         <table className="table table-striped">
           <thead>
             <tr>
@@ -151,7 +171,7 @@ const SkillControlPanel = () => {
           </tbody>
         </table>
 
-        {/* Pagination with Add Skill Button on the right */}
+        {/* Pagination and Add Skill Button */}
         <div className="d-flex justify-content-between align-items-center">
           <nav>
             <ul className="pagination">
@@ -171,7 +191,6 @@ const SkillControlPanel = () => {
             </ul>
           </nav>
 
-          {/* Add Skill Button - aligned to the right */}
           <button
             className="btn btn-success"
             onClick={() => setShowModal(true)}
@@ -228,7 +247,6 @@ const SkillControlPanel = () => {
         </div>
       )}
 
-      {/* Modal Backdrop */}
       {showModal && <div className="modal-backdrop show"></div>}
     </div>
   );

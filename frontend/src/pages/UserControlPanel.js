@@ -5,11 +5,26 @@ const ITEMS_PER_PAGE = 10;
 
 const UserControlPanel = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredUsers(users);
+    } else {
+      setFilteredUsers(
+        users.filter((user) =>
+          user.email.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    }
+    setPage(1);
+  }, [users, searchQuery]);
 
   const fetchUsers = () => {
     axiosInstance
@@ -60,89 +75,94 @@ const UserControlPanel = () => {
     handleUpdateUser(user.id, { role: user.role, ban: user.ban });
   };
 
-  const totalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
-  const paginatedUsers = users.slice(
+  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  const paginatedUsers = filteredUsers.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
 
   return (
     <div className="container mt-4">
-      <>
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Ban</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedUsers.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.email}</td>
-                <td>
-                  <select
-                    className="form-select"
-                    value={user.role}
-                    onChange={(e) =>
-                      handleChange(user.id, "role", e.target.value)
-                    }
-                    onBlur={() => handleBlur(user)}
-                  >
-                    <option value="freelancer">Freelancer</option>
-                    <option value="client">Client</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </td>
-                <td>
-                  <select
-                    className="form-select"
-                    value={user.ban.toString()}
-                    onChange={(e) =>
-                      handleChange(user.id, "ban", e.target.value === "true")
-                    }
-                    onBlur={() => handleBlur(user)}
-                  >
-                    <option value="true">Banned</option>
-                    <option value="false">Active</option>
-                  </select>
-                </td>
-                <td>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => handleDeleteUser(user.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search by email..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
 
-        {/* Pagination */}
-        <nav>
-          <ul className="pagination">
-            {[...Array(totalPages)].map((_, index) => (
-              <li
-                key={index}
-                className={`page-item ${page === index + 1 ? "active" : ""}`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setPage(index + 1)}
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Ban</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedUsers.map((user) => (
+            <tr key={user.id}>
+              <td>{user.id}</td>
+              <td>{user.email}</td>
+              <td>
+                <select
+                  className="form-select"
+                  value={user.role}
+                  onChange={(e) =>
+                    handleChange(user.id, "role", e.target.value)
+                  }
+                  onBlur={() => handleBlur(user)}
                 >
-                  {index + 1}
+                  <option value="freelancer">Freelancer</option>
+                  <option value="client">Client</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </td>
+              <td>
+                <select
+                  className="form-select"
+                  value={user.ban.toString()}
+                  onChange={(e) =>
+                    handleChange(user.id, "ban", e.target.value === "true")
+                  }
+                  onBlur={() => handleBlur(user)}
+                >
+                  <option value="true">Banned</option>
+                  <option value="false">Active</option>
+                </select>
+              </td>
+              <td>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleDeleteUser(user.id)}
+                >
+                  Delete
                 </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      <nav>
+        <ul className="pagination">
+          {[...Array(totalPages)].map((_, index) => (
+            <li
+              key={index}
+              className={`page-item ${page === index + 1 ? "active" : ""}`}
+            >
+              <button className="page-link" onClick={() => setPage(index + 1)}>
+                {index + 1}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   );
 };
