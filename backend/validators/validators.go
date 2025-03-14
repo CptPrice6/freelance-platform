@@ -114,6 +114,13 @@ func UpdateUserValidator(requestBody []byte) (*types.UpdateUserRequest, error) {
 			return nil, err
 		}
 	}
+	if updateUserRequest.Password != "" && updateUserRequest.NewPassword == "" {
+		return nil, fmt.Errorf("Missing new password")
+	}
+	if updateUserRequest.NewPassword != "" && updateUserRequest.Password == "" {
+		return nil, fmt.Errorf("Missing old password")
+	}
+
 	if updateUserRequest.NewPassword != "" {
 		err = ValidatePassword(updateUserRequest.NewPassword)
 		if err != nil {

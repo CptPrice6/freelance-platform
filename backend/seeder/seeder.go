@@ -48,9 +48,9 @@ func SeedUsersWithDataAndSkills() {
 	if count == 0 {
 		roles := []string{"client", "freelancer", "admin"}
 		passwords := map[string]string{
-			"client":     "client222",
-			"freelancer": "freelancer222",
-			"admin":      "admin222",
+			"client":     "Client222",
+			"freelancer": "Freelancer222",
+			"admin":      "Admin222",
 		}
 
 		for _, role := range roles {
