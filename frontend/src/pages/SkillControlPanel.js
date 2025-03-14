@@ -12,6 +12,9 @@ const SkillControlPanel = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [errorMessageModal, setErrorMessageModal] = useState("");
   const [errorMessageMenu, setErrorMessageMenu] = useState("");
+  const [successMessageMenu, setSuccessMessageMenu] = useState("");
+  const [editingSkillId, setEditingSkillId] = useState(null);
+  const [editedSkillName, setEditedSkillName] = useState("");
 
   useEffect(() => {
     fetchSkills();
@@ -42,18 +45,38 @@ const SkillControlPanel = () => {
       });
   };
 
-  const handleUpdateSkill = (id, updatedName) => {
+  const handleEditClick = (skill) => {
+    setEditingSkillId(skill.id);
+    setEditedSkillName(skill.name);
+  };
+
+  const handleSave = (id) => {
+    if (!editedSkillName.trim()) {
+      setSuccessMessageMenu("");
+      setErrorMessageMenu("Please enter skill name");
+      return;
+    }
+
     axiosInstance
-      .put(`/admin/skills/${id}`, { skill_name: updatedName })
-      .then(() => {
+      .put(`/admin/skills/${id}`, { skill_name: editedSkillName.trim() })
+      .then((response) => {
         fetchSkills();
+        setEditingSkillId(null);
+        setEditedSkillName("");
         setErrorMessageMenu("");
+        setSuccessMessageMenu(response?.data?.message);
       })
       .catch((error) => {
-        fetchSkills();
-        setErrorMessageMenu(error.response?.data?.error);
         console.error("Error updating skill", error);
+        setSuccessMessageMenu("");
+        setErrorMessageMenu(error.response?.data?.error || error.message);
       });
+  };
+
+  const handleKeyDown = (e, id) => {
+    if (e.key === "Enter") {
+      handleSave(id);
+    }
   };
 
   const handleDeleteSkill = (id) => {
@@ -61,11 +84,17 @@ const SkillControlPanel = () => {
 
     axiosInstance
       .delete(`/admin/skills/${id}`)
-      .then(() => {
+      .then((response) => {
         fetchSkills();
+        const updateMessage = response?.data?.message;
+        setErrorMessageMenu("");
+        setSuccessMessageMenu(updateMessage);
       })
       .catch((error) => {
         console.error("Error deleting skill", error);
+        const errorMessage = error.response?.data?.error || error.message;
+        setSuccessMessageMenu("");
+        setErrorMessageMenu(errorMessage);
       });
   };
 
@@ -75,11 +104,15 @@ const SkillControlPanel = () => {
 
     axiosInstance
       .post("/admin/skills", { skill_name: newSkill.trim() })
-      .then(() => {
+      .then((response) => {
         setNewSkill("");
         setErrorMessageModal("");
         setShowModal(false);
         fetchSkills();
+
+        const updateMessage = response?.data?.message;
+        setErrorMessageMenu("");
+        setSuccessMessageMenu(updateMessage);
       })
       .catch((error) => {
         if (
@@ -99,18 +132,6 @@ const SkillControlPanel = () => {
     setNewSkill("");
   };
 
-  const handleChange = (id, field, value) => {
-    setSkills((prev) =>
-      prev.map((skill) =>
-        skill.id === id ? { ...skill, [field]: value } : skill
-      )
-    );
-  };
-
-  const handleBlur = (skill) => {
-    handleUpdateSkill(skill.id, skill.name);
-  };
-
   const totalPages = Math.ceil(filteredSkills.length / ITEMS_PER_PAGE);
   const paginatedSkills = filteredSkills.slice(
     (page - 1) * ITEMS_PER_PAGE,
@@ -120,8 +141,16 @@ const SkillControlPanel = () => {
   return (
     <div className="container mt-4">
       <>
+        {/* Display Success/Error Messages */}
         {errorMessageMenu && (
-          <div className="alert alert-danger">{errorMessageMenu}</div>
+          <div className="alert alert-danger mt-3" role="alert">
+            {errorMessageMenu}
+          </div>
+        )}
+        {successMessageMenu && (
+          <div className="alert alert-success mt-3" role="alert">
+            {successMessageMenu}
+          </div>
         )}
 
         {/* Search Input */}
@@ -148,17 +177,34 @@ const SkillControlPanel = () => {
               <tr key={skill.id}>
                 <td>{skill.id}</td>
                 <td>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={skill.name}
-                    onChange={(e) =>
-                      handleChange(skill.id, "name", e.target.value)
-                    }
-                    onBlur={() => handleBlur(skill)}
-                  />
+                  {editingSkillId === skill.id ? (
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={editedSkillName}
+                      onChange={(e) => setEditedSkillName(e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, skill.id)}
+                    />
+                  ) : (
+                    skill.name
+                  )}
                 </td>
                 <td>
+                  {editingSkillId === skill.id ? (
+                    <button
+                      className="btn btn-primary me-2"
+                      onClick={() => handleSave(skill.id)}
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-warning me-2"
+                      onClick={() => handleEditClick(skill)}
+                    >
+                      Edit
+                    </button>
+                  )}
                   <button
                     className="btn btn-danger"
                     onClick={() => handleDeleteSkill(skill.id)}
