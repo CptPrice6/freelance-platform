@@ -8,6 +8,8 @@ const UserControlPanel = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [updateError, setUpdateError] = useState("");
+  const [updateSuccess, setUpdateSuccess] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -43,12 +45,18 @@ const UserControlPanel = () => {
   const handleUpdateUser = (id, updatedUser) => {
     axiosInstance
       .put(`/admin/users/${id}`, updatedUser)
-      .then(() => {
+      .then((response) => {
         fetchUsers();
+        const updateMessage = response?.data?.message;
+        setUpdateError("");
+        setUpdateSuccess(updateMessage);
       })
       .catch((error) => {
         fetchUsers();
         console.error("Error updating user", error);
+        const errorMessage = error.response?.data?.error || error.message;
+        setUpdateSuccess("");
+        setUpdateError(errorMessage);
       });
   };
 
@@ -57,22 +65,28 @@ const UserControlPanel = () => {
 
     axiosInstance
       .delete(`/admin/users/${id}`)
-      .then(() => {
+      .then((response) => {
         fetchUsers();
+        const updateMessage = response?.data?.message;
+        setUpdateError("");
+        setUpdateSuccess(updateMessage);
       })
       .catch((error) => {
         console.error("Error deleting user", error);
+        const errorMessage = error.response?.data?.error || error.message;
+        setUpdateSuccess("");
+        setUpdateError(errorMessage);
       });
   };
 
   const handleChange = (id, field, value) => {
-    setUsers((prev) =>
-      prev.map((user) => (user.id === id ? { ...user, [field]: value } : user))
+    const updatedUsers = users.map((user) =>
+      user.id === id ? { ...user, [field]: value } : user
     );
-  };
+    setUsers(updatedUsers);
 
-  const handleBlur = (user) => {
-    handleUpdateUser(user.id, { role: user.role, ban: user.ban });
+    const updatedUser = updatedUsers.find((user) => user.id === id);
+    handleUpdateUser(id, { role: updatedUser.role, ban: updatedUser.ban });
   };
 
   const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
@@ -83,6 +97,18 @@ const UserControlPanel = () => {
 
   return (
     <div className="container mt-4">
+      {/* Display Success/Error Messages */}
+      {updateError && (
+        <div className="alert alert-danger mt-3" role="alert">
+          {updateError}
+        </div>
+      )}
+      {updateSuccess && (
+        <div className="alert alert-success mt-3" role="alert">
+          {updateSuccess}
+        </div>
+      )}
+
       <div className="mb-3">
         <input
           type="text"
@@ -115,7 +141,6 @@ const UserControlPanel = () => {
                   onChange={(e) =>
                     handleChange(user.id, "role", e.target.value)
                   }
-                  onBlur={() => handleBlur(user)}
                 >
                   <option value="freelancer">Freelancer</option>
                   <option value="client">Client</option>
@@ -129,7 +154,6 @@ const UserControlPanel = () => {
                   onChange={(e) =>
                     handleChange(user.id, "ban", e.target.value === "true")
                   }
-                  onBlur={() => handleBlur(user)}
                 >
                   <option value="true">Banned</option>
                   <option value="false">Active</option>
