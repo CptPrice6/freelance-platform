@@ -128,13 +128,13 @@ func UpdateUserValidator(requestBody []byte) (*types.UpdateUserRequest, error) {
 		}
 	}
 	if updateUserRequest.Name != "" {
-		if len(updateUserRequest.Name) > 100 {
-			return nil, fmt.Errorf("Name cannot be longer than 100 symbols")
+		if len(updateUserRequest.Name) > 50 {
+			return nil, fmt.Errorf("Name cannot be longer than 50 symbols")
 		}
 	}
 	if updateUserRequest.Surname != "" {
-		if len(updateUserRequest.Surname) > 100 {
-			return nil, fmt.Errorf("Surname cannot be longer than 100 symbols")
+		if len(updateUserRequest.Surname) > 50 {
+			return nil, fmt.Errorf("Surname cannot be longer than 50 symbols")
 		}
 	}
 
@@ -202,7 +202,7 @@ func UpdateFreelancerDataValidator(requestBody []byte) (*types.UpdateFreelancerD
 		if updateFreelancerDataRequest.HourlyRate > 1000 {
 			return nil, fmt.Errorf("Hourly Rate cannot be more than 1000")
 		}
-		if updateFreelancerDataRequest.HourlyRate <= 1 {
+		if updateFreelancerDataRequest.HourlyRate < 1 {
 			return nil, fmt.Errorf("Hourly Rate cannot be less than 1")
 		}
 	}
@@ -243,14 +243,14 @@ func UpdateClientDataValidator(requestBody []byte) (*types.UpdateClientDataReque
 		fmt.Println("Error parsing request body:", err)
 		return nil, fmt.Errorf("Invalid input")
 	}
-	if len(updateClientDataRequest.CompanyName) > 255 {
-		return nil, fmt.Errorf("Company name cannot be more than 255 symbols")
+	if len(updateClientDataRequest.CompanyName) > 50 {
+		return nil, fmt.Errorf("Company name cannot be more than 50 symbols")
 	}
-	if len(updateClientDataRequest.Industry) > 100 {
-		return nil, fmt.Errorf("Industry name cannot be more than 100 symbols")
+	if len(updateClientDataRequest.Industry) > 50 {
+		return nil, fmt.Errorf("Industry name cannot be more than 50 symbols")
 	}
-	if len(updateClientDataRequest.Location) > 255 {
-		return nil, fmt.Errorf("Location name cannot be more than 255 symbols")
+	if len(updateClientDataRequest.Location) > 50 {
+		return nil, fmt.Errorf("Location name cannot be more than 50 symbols")
 	}
 
 	return updateClientDataRequest, nil

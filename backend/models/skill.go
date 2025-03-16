@@ -4,7 +4,7 @@ import "github.com/beego/beego/v2/client/orm"
 
 type Skill struct {
 	Id   int    `orm:"pk;auto"`
-	Name string `orm:"unique"`
+	Name string `orm:"size(50);unique"`
 }
 
 func init() {
