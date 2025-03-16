@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../utils/axios";
+import { Alert } from "react-bootstrap";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -119,6 +120,7 @@ const SkillControlPanel = () => {
           error.response &&
           error.response.data.error.includes("already exists")
         ) {
+          setSuccessMessageMenu("");
           setErrorMessageModal(error.response?.data?.error);
         } else {
           console.error("Error adding skill", error);
@@ -142,15 +144,23 @@ const SkillControlPanel = () => {
     <div className="container mt-4">
       <>
         {/* Display Success/Error Messages */}
-        {errorMessageMenu && (
-          <div className="alert alert-danger mt-3" role="alert">
-            {errorMessageMenu}
-          </div>
-        )}
         {successMessageMenu && (
-          <div className="alert alert-success mt-3" role="alert">
+          <Alert
+            variant="success"
+            onClose={() => setSuccessMessageMenu("")}
+            dismissible
+          >
             {successMessageMenu}
-          </div>
+          </Alert>
+        )}
+        {errorMessageMenu && (
+          <Alert
+            variant="danger"
+            onClose={() => setErrorMessageMenu("")}
+            dismissible
+          >
+            {errorMessageMenu}
+          </Alert>
         )}
 
         {/* Search Input */}

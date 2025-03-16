@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../utils/axios";
+import { Alert } from "react-bootstrap";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -98,15 +99,19 @@ const UserControlPanel = () => {
   return (
     <div className="container mt-4">
       {/* Display Success/Error Messages */}
-      {updateError && (
-        <div className="alert alert-danger mt-3" role="alert">
-          {updateError}
-        </div>
-      )}
       {updateSuccess && (
-        <div className="alert alert-success mt-3" role="alert">
+        <Alert
+          variant="success"
+          onClose={() => setUpdateSuccess("")}
+          dismissible
+        >
           {updateSuccess}
-        </div>
+        </Alert>
+      )}
+      {updateError && (
+        <Alert variant="danger" onClose={() => setUpdateError("")} dismissible>
+          {updateError}
+        </Alert>
       )}
 
       <div className="mb-3">
