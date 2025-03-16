@@ -175,7 +175,16 @@ const FreelancerDashboard = () => {
                   className="me-2 flex-grow-1 field-box"
                   onClick={() => setEditingField(field)}
                 >
-                  {formData[field]}
+                  {/* Format hourly_rate and hours_per_week fields */}
+                  {field === "hourly_rate"
+                    ? formData[field]
+                      ? `${formData[field]}$/h`
+                      : "Not Set"
+                    : field === "hours_per_week"
+                    ? formData[field]
+                      ? `${formData[field]}h/week`
+                      : "Not Set"
+                    : formData[field] || "Not Set"}{" "}
                 </div>
               )}
               <Button
