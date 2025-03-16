@@ -84,10 +84,10 @@
 }
 
 /* Header styling */
-h5.text-primary {
-  color: #007bff;
+h5.skill-text {
+  color: #05009e;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* Spacing adjustments for buttons and select */

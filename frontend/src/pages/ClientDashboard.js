@@ -125,7 +125,7 @@ const ClientDashboard = () => {
                   className="me-2 flex-grow-1 d-inline-block field-box"
                   onClick={() => setEditingField(field)}
                 >
-                  {formData[field]}
+                  {formData[field] || "Not Set"}
                 </div>
               )}
               <Button

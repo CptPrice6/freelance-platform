@@ -282,7 +282,7 @@ const FreelancerDashboard = () => {
         </Row>
 
         <div className="mt-4">
-          <h5 className="text-center mb-3 text-primary">Skills</h5>
+          <h5 className="text-center mb-3 skill-text">Skills</h5>
           <ul className="list-group mb-4">
             {formData.skills.map((skill) => (
               <li
