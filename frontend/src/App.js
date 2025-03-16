@@ -7,6 +7,8 @@ import ProfileSettings from "./pages/ProfileSettings";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminRoute from "./components/AdminRoute";
 import AdminDashboard from "./pages/AdminDashboard";
+import FreelancerDashboard from "./pages/FreelancerDashboard";
+import ClientDashboard from "./pages/ClientDashboard";
 
 function App() {
   return (
@@ -40,7 +42,7 @@ function App() {
 
             <Route
               path="/freelancer/dashboard"
-              element={<PrivateRoute element={<ProfileSettings />} />}
+              element={<PrivateRoute element={<FreelancerDashboard />} />}
             />
             <Route
               path="/freelancer/applications"
@@ -50,13 +52,21 @@ function App() {
               path="/freelancer/jobs"
               element={<PrivateRoute element={<ProfileSettings />} />}
             />
+            <Route
+              path="/freelancer/jobs/:id"
+              element={<PrivateRoute element={<ProfileSettings />} />}
+            />
 
             <Route
               path="/client/dashboard"
-              element={<PrivateRoute element={<ProfileSettings />} />}
+              element={<PrivateRoute element={<ClientDashboard />} />}
             />
             <Route
               path="/client/jobs"
+              element={<PrivateRoute element={<ProfileSettings />} />}
+            />
+            <Route
+              path="/client/jobs/:id"
               element={<PrivateRoute element={<ProfileSettings />} />}
             />
 

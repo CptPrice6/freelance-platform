@@ -1,0 +1,97 @@
+.field-box {
+  background-color: #e9f7fd; /* Light background color */
+  padding: 5px 10px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Light shadow */
+  font-weight: 500; /* Slightly bold text */
+  font-size: 1.1rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+/* Styling for the skill section */
+.skill-item {
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 1rem;
+  transition: transform 0.2s, box-shadow 0.3s ease;
+}
+
+.skill-item:hover {
+  background-color: #f0f8ff;
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.skill-name {
+  font-weight: 500;
+  color: #555;
+}
+
+.delete-skill-btn {
+  background-color: #ff4d4d;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.delete-skill-btn:hover {
+  background-color: #e60000;
+}
+
+.add-skill-btn {
+  background-color: #28a745;
+  color: white;
+  border-radius: 25px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+}
+
+.add-skill-btn:hover {
+  background-color: #218838;
+}
+
+.skill-select {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* On Focus and Hover Effects */
+.skill-select:hover,
+.skill-select:focus {
+  border-color: #007bff;
+  background-color: #e9f7fd;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+/* Adjust spacing between the button and dropdown */
+.d-flex {
+  gap: 1rem;
+}
+
+/* Header styling */
+h5.text-primary {
+  color: #007bff;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Spacing adjustments for buttons and select */
+button,
+.skill-select {
+  margin-top: 0.5rem;
+}
