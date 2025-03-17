@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../utils/axios";
 import { Card, Container, Row, Col, Pagination } from "react-bootstrap";
-import "../styles/FreelancersPage.css"; // Import CSS for extra styling
+import "../styles/FreelancersPage.css";
+import { Link } from "react-router-dom";
 
 const FreelancersPage = () => {
   const [freelancers, setFreelancers] = useState([]);
@@ -14,7 +15,6 @@ const FreelancersPage = () => {
     });
   }, []);
 
-  // Pagination logic
   const indexOfLastFreelancer = currentPage * freelancersPerPage;
   const indexOfFirstFreelancer = indexOfLastFreelancer - freelancersPerPage;
   const currentFreelancers = freelancers.slice(
@@ -29,21 +29,26 @@ const FreelancersPage = () => {
       <Row>
         {currentFreelancers.map((freelancer) => (
           <Col key={freelancer.id} md={4} sm={6} xs={12} className="mb-4">
-            <Card className="freelancer-card">
-              <Card.Body className="text-center">
-                <h5 className="fw-bold freelancer-name">
-                  {freelancer.name} {freelancer.surname}
-                </h5>
-                <p className="freelancer-title">
-                  {freelancer.title || "No Title"}
-                </p>
-                <p className="freelancer-rate">
-                  {freelancer.hourly_rate
-                    ? `$${freelancer.hourly_rate}/h`
-                    : "Rate Not Set"}
-                </p>
-              </Card.Body>
-            </Card>
+            <Link
+              to={`/freelancers/${freelancer.id}`}
+              className="text-decoration-none"
+            >
+              <Card className="freelancer-card">
+                <Card.Body className="text-center">
+                  <h5 className="fw-bold freelancer-name">
+                    {freelancer.name} {freelancer.surname}
+                  </h5>
+                  <p className="freelancer-title">
+                    {freelancer.title || "No Title"}
+                  </p>
+                  <p className="freelancer-rate">
+                    {freelancer.hourly_rate
+                      ? `$${freelancer.hourly_rate}/h`
+                      : "Rate Not Set"}
+                  </p>
+                </Card.Body>
+              </Card>
+            </Link>
           </Col>
         ))}
       </Row>

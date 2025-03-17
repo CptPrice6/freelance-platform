@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import FreelancersPage from "./pages/FreelancersPage";
+import FreelancerPublicPage from "./pages/FreelancerPublicPage";
 
 function App() {
   return (
@@ -28,7 +29,7 @@ function App() {
             />
             <Route
               path="/freelancers/:id"
-              element={<PrivateRoute element={<ProfileSettings />} />}
+              element={<PrivateRoute element={<FreelancerPublicPage />} />}
             />
             <Route
               path="/jobs"

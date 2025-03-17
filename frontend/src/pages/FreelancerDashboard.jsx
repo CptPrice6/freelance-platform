@@ -11,6 +11,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import "../styles/Dashboard.css";
+import { Link } from "react-router-dom";
 
 const FreelancerDashboard = () => {
   const [editingField, setEditingField] = useState(null);
@@ -28,11 +29,12 @@ const FreelancerDashboard = () => {
   const [newSkill, setNewSkill] = useState(null);
   const [updateError, setUpdateError] = useState(null);
   const inputRef = useRef(null);
+  const [id, setId] = useState(null);
 
-  // Function to fetch user and skills data
   const fetchFreelancer = () => {
     axiosInstance.get("/user").then((res) => {
       const userData = res.data;
+      setId(userData.id);
       setFormData({
         name: userData.name,
         surname: userData.surname,
@@ -47,16 +49,14 @@ const FreelancerDashboard = () => {
     axiosInstance.get("/skills").then((res) => setAllSkills(res.data));
   };
 
-  // Fetch user data on initial render
   useEffect(() => {
     fetchFreelancer();
   }, []);
 
-  // Adjust textarea height dynamically
   useEffect(() => {
     if (inputRef.current && editingField === "description") {
-      inputRef.current.style.height = "auto"; // Reset height for auto resizing
-      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`; // Adjust height based on content
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
     }
   }, [editingField, formData.description]);
 
@@ -137,7 +137,7 @@ const FreelancerDashboard = () => {
           maxWidth: "800px",
           borderRadius: "12px",
           backgroundColor: "#fff",
-          overflow: "hidden", // Prevent card content from overflowing
+          overflow: "hidden",
         }}
       >
         {[
@@ -242,8 +242,8 @@ const FreelancerDashboard = () => {
                 onKeyDown={(e) => {
                   // If Enter is pressed without Shift, save the description
                   if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault(); // Prevent the newline
-                    handleSave("description"); // Save the description
+                    e.preventDefault();
+                    handleSave("description");
                   }
                 }}
                 autoFocus
@@ -327,6 +327,24 @@ const FreelancerDashboard = () => {
               <span className="me-2">➕</span> Add Skill
             </Button>
           </div>
+        </div>
+
+        <div className="d-flex justify-content-center mt-4">
+          <Link to={`/freelancers/${id}`} style={{ textDecoration: "none" }}>
+            <Button
+              variant="primary"
+              size="lg"
+              className="px-5 py-3 rounded-3 shadow-sm"
+              style={{
+                backgroundColor: "#007bff",
+                color: "#fff",
+                fontWeight: "bold",
+                transition: "background-color 0.3s ease",
+              }}
+            >
+              Your Public Page
+            </Button>
+          </Link>
         </div>
       </Card>
     </Container>

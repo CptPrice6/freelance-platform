@@ -1,9 +1,9 @@
 .field-box {
-  background-color: #e9f7fd; /* Light background color */
+  background-color: #e9f7fd;
   padding: 5px 10px;
   border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Light shadow */
-  font-weight: 500; /* Slightly bold text */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
   font-size: 1.1rem;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -11,7 +11,6 @@
   cursor: pointer;
 }
 
-/* Styling for the skill section */
 .skill-item {
   background-color: #f1f1f1;
   border-radius: 8px;
@@ -19,10 +18,9 @@
   font-size: 1rem;
   transition: transform 0.2s, box-shadow 0.3s ease;
 
-  /* Create a subtle 3D effect */
-  border: 1px solid #ccc; /* Light border for realistic depth */
+  border: 1px solid #ccc;
   box-shadow: inset 0px -2px 2px rgba(0, 0, 0, 0.15),
-    /* Inner shadow at bottom */ 0px 2px 4px rgba(0, 0, 0, 0.1); /* Outer shadow */
+    0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .skill-item:hover {
@@ -74,7 +72,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* On Focus and Hover Effects */
 .skill-select:hover,
 .skill-select:focus {
   border-color: #007bff;
@@ -82,19 +79,16 @@
   box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
 }
 
-/* Adjust spacing between the button and dropdown */
 .d-flex {
   gap: 1rem;
 }
 
-/* Header styling */
 h5.skill-text {
   color: #05009e;
   font-size: 1.25rem;
   font-weight: 700;
 }
 
-/* Spacing adjustments for buttons and select */
 button,
 .skill-select {
   margin-top: 0.5rem;

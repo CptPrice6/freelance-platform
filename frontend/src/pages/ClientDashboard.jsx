@@ -32,23 +32,21 @@ const ClientDashboard = () => {
     });
   };
 
-  // Fetch user data on initial render
   useEffect(() => {
     fetchClient();
   }, []);
 
-  // Adjust textarea height dynamically
   useEffect(() => {
     if (inputRef.current && editingField === "description") {
-      inputRef.current.style.height = "auto"; // Reset height for auto resizing
-      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`; // Adjust height based on content
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
     }
   }, [editingField, formData.description]);
 
   const handleSave = (field) => {
     let value = formData[field];
     if (field === "description") {
-      value = value.trim(); // Trim description before saving
+      value = value.trim();
     }
 
     const endpoint =
@@ -92,7 +90,7 @@ const ClientDashboard = () => {
           maxWidth: "800px",
           borderRadius: "12px",
           backgroundColor: "#fff",
-          overflow: "hidden", // Prevent card content from overflowing
+          overflow: "hidden",
         }}
       >
         {[
@@ -155,10 +153,9 @@ const ClientDashboard = () => {
                 }
                 onBlur={() => handleSave("description")}
                 onKeyDown={(e) => {
-                  // If Enter is pressed without Shift, save the description
                   if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault(); // Prevent the newline
-                    handleSave("description"); // Save the description
+                    e.preventDefault();
+                    handleSave("description");
                   }
                 }}
                 autoFocus
