@@ -9,6 +9,7 @@ import AdminRoute from "./components/AdminRoute";
 import AdminDashboard from "./pages/AdminDashboard";
 import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
+import FreelancersPage from "./pages/FreelancersPage";
 
 function App() {
   return (
@@ -21,22 +22,28 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/*Full list of Jobs and Freelancers */}
             <Route
               path="/freelancers"
+              element={<PrivateRoute element={<FreelancersPage />} />}
+            />
+            <Route
+              path="/freelancers/:id"
               element={<PrivateRoute element={<ProfileSettings />} />}
             />
             <Route
               path="/jobs"
               element={<PrivateRoute element={<ProfileSettings />} />}
             />
-            {/* Specific Job and Freelancer Detail Pages */}
             <Route
               path="/jobs/:id"
               element={<PrivateRoute element={<ProfileSettings />} />}
             />
             <Route
-              path="/freelancers/:id"
+              path="/clients"
+              element={<PrivateRoute element={<FreelancersPage />} />}
+            />
+            <Route
+              path="/clients/:id"
               element={<PrivateRoute element={<ProfileSettings />} />}
             />
 

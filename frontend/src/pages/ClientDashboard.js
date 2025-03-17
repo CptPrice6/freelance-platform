@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import React from "react";
 import axiosInstance from "../utils/axios";
 import { Button, Card, Container, Row, Col, Alert } from "react-bootstrap";
-import "./Dashboard.css";
+import "../styles/Dashboard.css";
 
 const ClientDashboard = () => {
   const [editingField, setEditingField] = useState(null);
@@ -24,10 +24,10 @@ const ClientDashboard = () => {
       setFormData({
         name: userData.name,
         surname: userData.surname,
-        description: userData.client_data.description || "",
-        company_name: userData.client_data.company_name || "",
-        industry: userData.client_data.industry || "",
-        location: userData.client_data.location || "",
+        description: userData.client_data?.description || "",
+        company_name: userData.client_data?.company_name || "",
+        industry: userData.client_data?.industry || "",
+        location: userData.client_data?.location || "",
       });
     });
   };

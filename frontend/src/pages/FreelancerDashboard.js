@@ -10,6 +10,7 @@ import {
   Col,
   Alert,
 } from "react-bootstrap";
+import "../styles/Dashboard.css";
 
 const FreelancerDashboard = () => {
   const [editingField, setEditingField] = useState(null);
@@ -35,12 +36,12 @@ const FreelancerDashboard = () => {
       setFormData({
         name: userData.name,
         surname: userData.surname,
-        title: userData.freelancer_data.title || "",
-        description: userData.freelancer_data.description || "",
-        hourly_rate: userData.freelancer_data.hourly_rate || 0,
-        work_type: userData.freelancer_data.work_type || "remote",
-        hours_per_week: userData.freelancer_data.hours_per_week || 0,
-        skills: userData.freelancer_data.skills || [],
+        title: userData.freelancer_data?.title || "",
+        description: userData.freelancer_data?.description || "",
+        hourly_rate: userData.freelancer_data?.hourly_rate || 0,
+        work_type: userData.freelancer_data?.work_type || "remote",
+        hours_per_week: userData.freelancer_data?.hours_per_week || 0,
+        skills: userData.freelancer_data?.skills || [],
       });
     });
     axiosInstance.get("/skills").then((res) => setAllSkills(res.data));
@@ -92,7 +93,6 @@ const FreelancerDashboard = () => {
         setNewSkill(null);
       })
       .catch((error) => {
-        fetchFreelancer();
         setUpdateError(error.response?.data?.error || "An error occurred");
       });
   };
@@ -105,7 +105,6 @@ const FreelancerDashboard = () => {
         setUpdateError(null);
       })
       .catch((error) => {
-        fetchFreelancer();
         setUpdateError(error.response?.data?.error || "An error occurred");
       });
   };
