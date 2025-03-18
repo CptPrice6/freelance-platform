@@ -124,62 +124,64 @@ const UserControlPanel = () => {
         />
       </div>
 
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Ban</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedUsers.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.email}</td>
-              <td>
-                <select
-                  className="form-select"
-                  value={user.role}
-                  onChange={(e) =>
-                    handleChange(user.id, "role", e.target.value)
-                  }
-                >
-                  <option value="freelancer">Freelancer</option>
-                  <option value="client">Client</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </td>
-              <td>
-                <select
-                  className="form-select"
-                  value={user.ban.toString()}
-                  onChange={(e) =>
-                    handleChange(user.id, "ban", e.target.value === "true")
-                  }
-                >
-                  <option value="true">Banned</option>
-                  <option value="false">Active</option>
-                </select>
-              </td>
-              <td>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleDeleteUser(user.id)}
-                >
-                  Delete
-                </button>
-              </td>
+      <div className="table-responsive">
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Ban</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paginatedUsers.map((user) => (
+              <tr key={user.id}>
+                <td>{user.id}</td>
+                <td>{user.email}</td>
+                <td>
+                  <select
+                    className="form-select"
+                    value={user.role}
+                    onChange={(e) =>
+                      handleChange(user.id, "role", e.target.value)
+                    }
+                  >
+                    <option value="freelancer">Freelancer</option>
+                    <option value="client">Client</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </td>
+                <td>
+                  <select
+                    className="form-select"
+                    value={user.ban.toString()}
+                    onChange={(e) =>
+                      handleChange(user.id, "ban", e.target.value === "true")
+                    }
+                  >
+                    <option value="true">Banned</option>
+                    <option value="false">Active</option>
+                  </select>
+                </td>
+                <td>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDeleteUser(user.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
       <nav>
-        <ul className="pagination">
+        <ul className="pagination justify-content-center">
           {[...Array(totalPages)].map((_, index) => (
             <li
               key={index}

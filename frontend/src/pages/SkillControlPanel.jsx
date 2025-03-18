@@ -174,61 +174,71 @@ const SkillControlPanel = () => {
           />
         </div>
 
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Skill Name</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedSkills.map((skill) => (
-              <tr key={skill.id}>
-                <td>{skill.id}</td>
-                <td>
-                  {editingSkillId === skill.id ? (
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={editedSkillName}
-                      onChange={(e) => setEditedSkillName(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, skill.id)}
-                    />
-                  ) : (
-                    skill.name
-                  )}
-                </td>
-                <td>
-                  {editingSkillId === skill.id ? (
-                    <button
-                      className="btn btn-primary me-2"
-                      onClick={() => handleSave(skill.id)}
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <button
-                      className="btn btn-warning me-2"
-                      onClick={() => handleEditClick(skill)}
-                    >
-                      Edit
-                    </button>
-                  )}
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => handleDeleteSkill(skill.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="mb-3">
+          <button
+            className="btn btn-success w-100"
+            onClick={() => setShowModal(true)}
+          >
+            Add a skill
+          </button>
+        </div>
 
-        {/* Pagination and Add Skill Button */}
-        <div className="d-flex justify-content-between align-items-center">
+        <div className="table-responsive">
+          <table className="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Skill Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedSkills.map((skill) => (
+                <tr key={skill.id}>
+                  <td>{skill.id}</td>
+                  <td>
+                    {editingSkillId === skill.id ? (
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={editedSkillName}
+                        onChange={(e) => setEditedSkillName(e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(e, skill.id)}
+                      />
+                    ) : (
+                      skill.name
+                    )}
+                  </td>
+                  <td>
+                    {editingSkillId === skill.id ? (
+                      <button
+                        className="btn btn-primary me-2"
+                        onClick={() => handleSave(skill.id)}
+                      >
+                        Save
+                      </button>
+                    ) : (
+                      <button
+                        className="btn btn-warning me-2"
+                        onClick={() => handleEditClick(skill)}
+                      >
+                        Edit
+                      </button>
+                    )}
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDeleteSkill(skill.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="d-flex flex-wrap justify-content-center align-items-center">
           <nav>
             <ul className="pagination">
               {[...Array(totalPages)].map((_, index) => (
@@ -246,13 +256,6 @@ const SkillControlPanel = () => {
               ))}
             </ul>
           </nav>
-
-          <button
-            className="btn btn-success"
-            onClick={() => setShowModal(true)}
-          >
-            +
-          </button>
         </div>
       </>
 
