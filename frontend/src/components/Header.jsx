@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { getAccessToken } from "../utils/tokens";
+import { useState } from "react";
 
 function Header() {
   const navigate = useNavigate();
   const accessToken = getAccessToken();
   const isAuthenticated = !!accessToken;
   const userRole = localStorage.getItem("role");
+  const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     // Clear all authentication-related data
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
@@ -61,42 +63,40 @@ function Header() {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
-        {/* Left side links */}
-        <div className="navbar-nav">
-          {isAuthenticated && (
-            <>
-              <li className="nav-item">
-                <Link className="nav-link" to="/jobs">
-                  Jobs
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/freelancers">
-                  Freelancers
-                </Link>
-              </li>
-            </>
-          )}
-        </div>
+        <Link className="navbar-brand" to="/">
+          FreelancePlatform
+        </Link>
 
-        {/* Right side links */}
-        <div className="collapse navbar-collapse">
+        {/* Mobile Toggle Button */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          onClick={() => setIsNavbarOpen(!isNavbarOpen)}
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        {/* Navbar Links */}
+        <div
+          className={`collapse navbar-collapse ${isNavbarOpen ? "show" : ""}`}
+        >
           <ul className="navbar-nav ms-auto">
-            {!isAuthenticated ? (
+            {/* Links for authenticated users */}
+            {isAuthenticated ? (
               <>
+                {/* General Links */}
                 <li className="nav-item">
-                  <Link className="nav-link" to="/login">
-                    Login
+                  <Link className="nav-link" to="/jobs">
+                    Jobs
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/register">
-                    Register
+                  <Link className="nav-link" to="/freelancers">
+                    Freelancers
                   </Link>
                 </li>
-              </>
-            ) : (
-              <>
+
+                {/* Dashboard Link */}
                 <li className="nav-item">
                   <Link className="nav-link" to={getDashboardRoute()}>
                     Dashboard
@@ -107,7 +107,11 @@ function Header() {
                     Settings
                   </Link>
                 </li>
+
+                {/* Role-specific Links */}
                 {renderRoleSpecificLinks()}
+
+                {/* Logout Button */}
                 <li className="nav-item">
                   <button
                     className="nav-link btn btn-link"
@@ -115,6 +119,20 @@ function Header() {
                   >
                     Logout
                   </button>
+                </li>
+              </>
+            ) : (
+              <>
+                {/* Links for unauthenticated users */}
+                <li className="nav-item">
+                  <Link className="nav-link" to="/login">
+                    Login
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/register">
+                    Register
+                  </Link>
                 </li>
               </>
             )}
