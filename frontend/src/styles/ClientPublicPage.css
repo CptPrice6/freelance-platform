@@ -1,0 +1,49 @@
+.public-client-card {
+  max-width: 900px;
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  padding: 30px;
+}
+
+.public-client-card h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #004085;
+  margin-bottom: 10px;
+}
+
+.public-client-card h5 {
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.public-client-card p {
+  font-size: 1rem;
+  color: #495057;
+  line-height: 1.6;
+}
+
+.text-muted {
+  font-style: italic;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .public-client-card {
+    padding: 20px;
+  }
+
+  .public-client-card h2 {
+    font-size: 2rem;
+  }
+
+  .public-client-card h5 {
+    font-size: 1rem;
+  }
+
+  .public-client-card p {
+    font-size: 0.95rem;
+  }
+}
