@@ -11,6 +11,8 @@ import FreelancerDashboard from "./pages/FreelancerDashboard";
 import ClientDashboard from "./pages/ClientDashboard";
 import FreelancersPage from "./pages/FreelancersPage";
 import FreelancerPublicPage from "./pages/FreelancerPublicPage";
+import ClientsPage from "./pages/ClientsPage";
+import ClientPublicPage from "./pages/ClientPublicPage";
 
 function App() {
   return (
@@ -30,6 +32,14 @@ function App() {
             <Route
               path="/freelancers/:id"
               element={<PrivateRoute element={<FreelancerPublicPage />} />}
+            />
+            <Route
+              path="/clients"
+              element={<PrivateRoute element={<ClientsPage />} />}
+            />
+            <Route
+              path="/clients/:id"
+              element={<PrivateRoute element={<ClientPublicPage />} />}
             />
             <Route
               path="/jobs"
