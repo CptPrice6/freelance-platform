@@ -107,6 +107,9 @@ type FreelancerInfo struct {
 	HourlyRate float64 `json:"hourly_rate"`
 }
 
-type GetFreelancersResponse struct {
-	Freelancers []FreelancerInfo `json:"freelancers"`
+type ClientInfo struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Surname     string `json:"surname"`
+	CompanyName string `json:"company_name"`
 }

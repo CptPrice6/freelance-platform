@@ -10,9 +10,9 @@ type ClientData struct {
 	Id          int    `orm:"pk;auto"`
 	User        *User  `orm:"rel(fk);on_delete(cascade);unique"`
 	Description string `orm:"type(text);null"`
-	CompanyName string `orm:"size(50);null"`
-	Industry    string `orm:"size(50);null"`
-	Location    string `orm:"size(50);null"`
+	CompanyName string `orm:"size(30);null"`
+	Industry    string `orm:"size(30);null"`
+	Location    string `orm:"size(30);null"`
 }
 
 func init() {

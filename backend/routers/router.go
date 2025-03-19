@@ -41,4 +41,8 @@ func init() {
 	web.Router("/freelancers", &controllers.FreelancerController{}, "get:GetFreelancersHandler")
 	web.Router("/freelancers/:id", &controllers.FreelancerController{}, "get:GetFreelancerHandler")
 
+	web.InsertFilter("/clients/*", web.BeforeRouter, middleware.UserAuthMiddleware)
+	web.Router("/clients", &controllers.ClientController{}, "get:GetClientsHandler")
+	web.Router("/clients/:id", &controllers.ClientController{}, "get:GetClientHandler")
+
 }

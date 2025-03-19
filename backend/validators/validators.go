@@ -243,14 +243,14 @@ func UpdateClientDataValidator(requestBody []byte) (*types.UpdateClientDataReque
 		fmt.Println("Error parsing request body:", err)
 		return nil, fmt.Errorf("Invalid input")
 	}
-	if len(updateClientDataRequest.CompanyName) > 50 {
-		return nil, fmt.Errorf("Company name cannot be more than 50 symbols")
+	if len(updateClientDataRequest.CompanyName) > 30 {
+		return nil, fmt.Errorf("Company name cannot be more than 30 symbols")
 	}
-	if len(updateClientDataRequest.Industry) > 50 {
-		return nil, fmt.Errorf("Industry name cannot be more than 50 symbols")
+	if len(updateClientDataRequest.Industry) > 30 {
+		return nil, fmt.Errorf("Industry name cannot be more than 30 symbols")
 	}
-	if len(updateClientDataRequest.Location) > 50 {
-		return nil, fmt.Errorf("Location name cannot be more than 50 symbols")
+	if len(updateClientDataRequest.Location) > 30 {
+		return nil, fmt.Errorf("Location name cannot be more than 30 symbols")
 	}
 
 	return updateClientDataRequest, nil
