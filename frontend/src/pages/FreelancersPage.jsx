@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const FreelancersPage = () => {
   const [freelancers, setFreelancers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const freelancersPerPage = 6;
+  const freelancersPerPage = 9;
 
   useEffect(() => {
     axiosInstance.get("/freelancers").then((res) => {

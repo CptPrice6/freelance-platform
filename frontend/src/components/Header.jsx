@@ -95,6 +95,11 @@ function Header() {
                     Freelancers
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/clients">
+                    Clients
+                  </Link>
+                </li>
 
                 {/* Dashboard Link */}
                 <li className="nav-item">
