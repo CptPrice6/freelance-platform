@@ -12,7 +12,7 @@ type User struct {
 	Password  string    `orm:"size(255)"`
 	Name      string    `orm:"size(30)"`
 	Surname   string    `orm:"size(30)"`
-	CreatedAt time.Time `orm:"auto_now_add;type(datetime)"`
+	CreatedAt time.Time `orm:"auto_now_add;type(timestamp)"`
 	Role      string    `orm:"size(20)"`
 	Ban       bool      `orm:"default(false)"`
 }
