@@ -113,3 +113,14 @@ type ClientInfo struct {
 	Surname     string `json:"surname"`
 	CompanyName string `json:"company_name"`
 }
+
+type CreateJobRequest struct {
+	Title        string   `json:"title"`
+	Description  string   `json:"description"`
+	Type         string   `json:"type"`
+	Rate         string   `json:"rate"`
+	Amount       int      `json:"amount"`
+	Length       string   `json:"length"`
+	HoursPerWeek string   `json:"hours_per_week"`
+	Skills       []*Skill `json:"skills"`
+}

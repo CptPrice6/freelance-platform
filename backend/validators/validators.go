@@ -46,15 +46,12 @@ func RegisterValidator(requestBody []byte) (*types.RegisterRequest, error) {
 		return nil, err
 	}
 
-	if registerRequest.Name != "" {
-		if len(registerRequest.Name) > 100 {
-			return nil, fmt.Errorf("Name cannot be longer than 100 symbols")
-		}
+	if len(registerRequest.Name) > 30 {
+		return nil, fmt.Errorf("Name cannot be longer than 30 symbols")
 	}
-	if registerRequest.Surname != "" {
-		if len(registerRequest.Surname) > 100 {
-			return nil, fmt.Errorf("Surname cannot be longer than 100 symbols")
-		}
+
+	if len(registerRequest.Surname) > 30 {
+		return nil, fmt.Errorf("Surname cannot be longer than 30 symbols")
 	}
 
 	return registerRequest, nil
@@ -208,7 +205,7 @@ func UpdateFreelancerDataValidator(requestBody []byte) (*types.UpdateFreelancerD
 	}
 	if updateFreelancerDataRequest.WorkType != "" {
 		if updateFreelancerDataRequest.WorkType != "remote" && updateFreelancerDataRequest.WorkType != "on-site" && updateFreelancerDataRequest.WorkType != "hybrid" {
-			return nil, fmt.Errorf("Work type should be remote or on-site or hybrid")
+			return nil, fmt.Errorf("Invalid Work type: must be 'remote', 'on-site' or hybrid")
 		}
 	}
 	if updateFreelancerDataRequest.HoursPerWeek != 0 {
@@ -290,5 +287,63 @@ func AddUpdateSkillValidator(requestBody []byte) (*types.AddUpdateSkillRequest, 
 	}
 
 	return addUpdateSkillRequest, nil
+
+}
+
+func CreateJobValidator(requestBody []byte) (*types.CreateJobRequest, error) {
+
+	var createJobRequest = new(types.CreateJobRequest)
+
+	err := json.Unmarshal(requestBody, &createJobRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+	if createJobRequest.Title == "" {
+		return nil, fmt.Errorf("Missing required fields: title")
+	} else if createJobRequest.Description == "" {
+		return nil, fmt.Errorf("Missing required fields: description")
+	} else if createJobRequest.Type == "" {
+		return nil, fmt.Errorf("Missing required fields: type")
+	} else if createJobRequest.Rate == "" {
+		return nil, fmt.Errorf("Missing required fields: rate")
+	} else if createJobRequest.Amount == 0 {
+		return nil, fmt.Errorf("Missing required fields: amount")
+	} else if createJobRequest.Length == "" {
+		return nil, fmt.Errorf("Missing required fields: length")
+	} else if createJobRequest.HoursPerWeek == "" {
+		return nil, fmt.Errorf("Missing required fields: hours_per_week")
+	}
+
+	if len(createJobRequest.Title) > 30 {
+		return nil, fmt.Errorf("Title cannot be longer than 30 symbols")
+	}
+	if len(createJobRequest.Description) > 1000 {
+		return nil, fmt.Errorf("Description cannot be longer than 1000 symbols")
+	}
+
+	if !types.ValidProjectTypes[createJobRequest.Type] {
+		return nil, errors.New("invalid project type: must be 'ongoing' or 'one-time'")
+	}
+
+	if !types.ValidProjectRates[createJobRequest.Rate] {
+		return nil, errors.New("invalid project rate: must be 'hourly' or 'fixed'")
+	}
+	if createJobRequest.Amount < 1 {
+		return nil, errors.New("amount cannot be less than 1")
+	}
+	if createJobRequest.Rate == "hourly" && createJobRequest.Amount > 1000 {
+		return nil, errors.New("amount cannot be more than 1000 if rate is hourly")
+	}
+
+	if !types.ValidProjectLengths[createJobRequest.Length] {
+		return nil, errors.New("invalid project length: must be '<1', '1-3', '3-6', '6-12', or '12+'")
+	}
+
+	if !types.ValidProjectHoursPerWeek[createJobRequest.HoursPerWeek] {
+		return nil, errors.New("invalid project hours per week: must be '<10', '10-20', '20-40', '40-60', or '80+'")
+	}
+
+	return createJobRequest, nil
 
 }
