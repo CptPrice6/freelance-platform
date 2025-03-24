@@ -20,6 +20,10 @@ ALTER TABLE applications
 ALTER TABLE attachments
   ADD CONSTRAINT fk_attachment_application FOREIGN KEY (application_id) REFERENCES applications(id) ON DELETE CASCADE;
 
+ALTER TABLE job_skills
+  ADD CONSTRAINT fk_job FOREIGN KEY (jobs_id) REFERENCES jobs(id) ON DELETE CASCADE,
+  ADD CONSTRAINT fk_skill FOREIGN KEY (skills_id) REFERENCES skills(id) ON DELETE CASCADE;
+
 
 
 
@@ -28,8 +32,8 @@ ALTER TABLE client_data DROP CONSTRAINT fk_client_user;
 ALTER TABLE freelancer_data DROP CONSTRAINT fk_freelancer_user;
 
 ALTER TABLE freelancer_skills 
-DROP CONSTRAINT fk_freelancer, 
-DROP CONSTRAINT fk_skill;
+  DROP CONSTRAINT fk_freelancer, 
+  DROP CONSTRAINT fk_skill;
 
 ALTER TABLE jobs
   DROP CONSTRAINT fk_job_client,
@@ -41,3 +45,7 @@ ALTER TABLE applications
 
 ALTER TABLE attachments
   DROP CONSTRAINT fk_attachment_application;
+
+ALTER TABLE job_skills 
+  DROP CONSTRAINT fk_job, 
+  DROP CONSTRAINT fk_skill;
