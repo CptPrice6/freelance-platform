@@ -1,6 +1,10 @@
 package models
 
-import "github.com/beego/beego/v2/client/orm"
+import (
+	"backend/types"
+
+	"github.com/beego/beego/v2/client/orm"
+)
 
 type Job struct {
 	Id           int      `orm:"pk;auto"`
@@ -23,4 +27,40 @@ func init() {
 
 func (s *Job) TableName() string {
 	return "jobs"
+}
+
+func CreateJob(client *User, title, description, projectType, rate, length, hoursPerWeek string, amount int, skills []*types.Skill) error {
+	o := orm.NewOrm()
+
+	// Create a new Job instance
+	job := Job{
+		Client:       client,
+		Title:        title,
+		Description:  description,
+		Type:         projectType,
+		Rate:         rate,
+		Amount:       amount,
+		Length:       length,
+		HoursPerWeek: hoursPerWeek,
+		Status:       "open", // Default status
+	}
+
+	_, err := o.Insert(&job)
+	if err != nil {
+		return err
+	}
+
+	// Associate skills if provided
+	if len(skills) > 0 {
+		m2m := o.QueryM2M(&job, "Skills")
+		for _, skillReq := range skills {
+			var skill Skill
+			err := o.QueryTable("skills").Filter("Id", skillReq.Id).One(&skill)
+			if err == nil { // Only add existing skills
+				m2m.Add(&skill)
+			}
+		}
+	}
+
+	return nil
 }
