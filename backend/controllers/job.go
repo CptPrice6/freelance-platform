@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"backend/models"
+	"backend/types"
 	"backend/validators"
 	"net/http"
+	"strconv"
 
 	"github.com/beego/beego/v2/server/web"
 )
@@ -13,9 +15,85 @@ type JobController struct {
 }
 
 func (c *JobController) GetJobsHandler() {
+	jobs, err := models.GetOpenJobs()
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error fetching jobs"}, false, false)
+		return
+	}
+
+	var jobList []types.JobInfo
+
+	for _, job := range jobs {
+		var skillList []types.Skill
+
+		for _, skill := range job.Skills {
+			skillList = append(skillList, types.Skill{
+				Id:   skill.Id,
+				Name: skill.Name,
+			})
+		}
+
+		jobInfo := types.JobInfo{
+			ID:           job.Id,
+			Title:        job.Title,
+			Description:  job.Description,
+			Type:         job.Type,
+			Rate:         job.Rate,
+			Amount:       job.Amount,
+			Length:       job.Length,
+			HoursPerWeek: job.HoursPerWeek,
+			ClientID:     job.Client.Id,
+			Skills:       skillList,
+		}
+
+		jobList = append(jobList, jobInfo)
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = jobList
+	c.ServeJSON()
 }
 
 func (c *JobController) GetJobHandler() {
+	jobID, err := strconv.Atoi(c.Ctx.Input.Param(":id"))
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid job ID"}, false, false)
+		return
+	}
+
+	job, err := models.GetJobByID(jobID)
+	if err != nil || job.Status != "open" {
+		c.Ctx.Output.SetStatus(http.StatusNotFound)
+		c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
+		return
+	}
+
+	var skillList []types.Skill
+	for _, skill := range job.Skills {
+		skillList = append(skillList, types.Skill{
+			Id:   skill.Id,
+			Name: skill.Name,
+		})
+	}
+
+	jobInfo := types.JobInfo{
+		ID:           job.Id,
+		Title:        job.Title,
+		Description:  job.Description,
+		Type:         job.Type,
+		Rate:         job.Rate,
+		Amount:       job.Amount,
+		Length:       job.Length,
+		HoursPerWeek: job.HoursPerWeek,
+		ClientID:     job.Client.Id,
+		Skills:       skillList,
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = jobInfo
+	c.ServeJSON()
 }
 
 func (c *JobController) CreateJobHandler() {
@@ -68,9 +146,7 @@ func (c *JobController) GetClientJobHandler() {
 }
 
 func (c *JobController) GetFreelancerJobsHandler() {
-
 }
 
 func (c *JobController) GetFreelancerJobHandler() {
-
 }
