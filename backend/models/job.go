@@ -64,3 +64,39 @@ func CreateJob(client *User, title, description, projectType, rate, length, hour
 
 	return nil
 }
+
+func GetOpenJobs() ([]Job, error) {
+	o := orm.NewOrm()
+	var jobs []Job
+
+	_, err := o.QueryTable(new(Job)).Filter("Status", "open").All(&jobs)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range jobs {
+		_, err := o.LoadRelated(&jobs[i], "Skills")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return jobs, nil
+}
+
+func GetJobByID(jobID int) (*Job, error) {
+	o := orm.NewOrm()
+	job := Job{Id: jobID}
+
+	err := o.Read(&job)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = o.LoadRelated(&job, "Skills")
+	if err != nil {
+		return nil, err
+	}
+
+	return &job, nil
+}

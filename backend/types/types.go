@@ -124,3 +124,16 @@ type CreateJobRequest struct {
 	HoursPerWeek string   `json:"hours_per_week"`
 	Skills       []*Skill `json:"skills"`
 }
+
+type JobInfo struct {
+	ID           int     `json:"id"`
+	Title        string  `json:"title"`
+	Description  string  `json:"description"`
+	Type         string  `json:"type"`
+	Rate         string  `json:"rate"`
+	Amount       int     `json:"amount"`
+	Length       string  `json:"length"`
+	HoursPerWeek string  `json:"hours_per_week"`
+	ClientID     int     `json:"client_id"`
+	Skills       []Skill `json:"skills"`
+}
