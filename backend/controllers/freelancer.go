@@ -96,7 +96,7 @@ func (c *FreelancerController) GetFreelancerHandler() {
 	userID, err := strconv.Atoi(idStr)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
-		c.Ctx.Output.JSON(map[string]string{"error": "Invalid user ID"}, false, false)
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid freelancer ID"}, false, false)
 		return
 	}
 
