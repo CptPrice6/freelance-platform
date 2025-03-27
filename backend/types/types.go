@@ -125,6 +125,17 @@ type CreateJobRequest struct {
 	Skills       []*Skill `json:"skills"`
 }
 
+type UpdateJobRequest struct {
+	Title        string   `json:"title"`
+	Description  string   `json:"description"`
+	Type         string   `json:"type"`
+	Rate         string   `json:"rate"`
+	Amount       int      `json:"amount"`
+	Length       string   `json:"length"`
+	HoursPerWeek string   `json:"hours_per_week"`
+	Skills       []*Skill `json:"skills"`
+}
+
 type JobInfo struct {
 	ID           int     `json:"id"`
 	Title        string  `json:"title"`

@@ -134,6 +134,74 @@ func (c *JobController) CreateJobHandler() {
 }
 
 func (c *JobController) UpdateClientJobHandler() {
+
+	jobID, err := strconv.Atoi(c.Ctx.Input.Param(":id"))
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid job ID"}, false, false)
+		return
+	}
+
+	id := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(id)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
+	job, err := models.GetJobByID(jobID)
+	if err != nil || job.Status != "open" {
+		c.Ctx.Output.SetStatus(http.StatusNotFound)
+		c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
+		return
+	}
+
+	if job.Client.Id != user.Id {
+		c.Ctx.Output.SetStatus(http.StatusForbidden)
+		c.Ctx.Output.JSON(map[string]string{"error": "Clients are only allowed to update their own jobs"}, false, false)
+		return
+	}
+
+	updateJobRequest, err := validators.UpdateJobValidator(c.Ctx.Input.RequestBody)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		return
+	}
+	if updateJobRequest.Title != "" {
+		job.Title = updateJobRequest.Title
+	}
+	if updateJobRequest.Description != "" {
+		job.Description = updateJobRequest.Description
+	}
+	if updateJobRequest.Type != "" {
+		job.Type = updateJobRequest.Type
+	}
+	if updateJobRequest.Rate != "" {
+		job.Rate = updateJobRequest.Rate
+	}
+	if updateJobRequest.Amount != 0 {
+		job.Amount = updateJobRequest.Amount
+	}
+	if updateJobRequest.Length != "" {
+		job.Length = updateJobRequest.Length
+	}
+	if updateJobRequest.HoursPerWeek != "" {
+		job.HoursPerWeek = updateJobRequest.HoursPerWeek
+	}
+
+	err = models.UpdateJob(job, updateJobRequest.Skills)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error updating job"}, false, false)
+		return
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = map[string]string{"message": "Job data updated successfully"}
+	c.ServeJSON()
+
 }
 
 func (c *JobController) DeleteClientJobHandler() {

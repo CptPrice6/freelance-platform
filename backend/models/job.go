@@ -2,6 +2,7 @@ package models
 
 import (
 	"backend/types"
+	"fmt"
 
 	"github.com/beego/beego/v2/client/orm"
 )
@@ -53,6 +54,40 @@ func CreateJob(client *User, title, description, projectType, rate, length, hour
 	// Associate skills if provided
 	if len(skills) > 0 {
 		m2m := o.QueryM2M(&job, "Skills")
+		for _, skillReq := range skills {
+			var skill Skill
+			err := o.QueryTable("skills").Filter("Id", skillReq.Id).One(&skill)
+			if err == nil { // Only add existing skills
+				m2m.Add(&skill)
+			}
+		}
+	}
+
+	return nil
+}
+
+func UpdateJob(job *Job, skills []*types.Skill) error {
+	o := orm.NewOrm()
+
+	// Update the job basic information
+	_, err := o.Update(job)
+	if err != nil {
+		return err
+	}
+
+	// Get M2M relationship handler
+	m2m := o.QueryM2M(job, "Skills")
+	if m2m == nil {
+		return fmt.Errorf("failed to get M2M relationship")
+	}
+
+	_, err = m2m.Clear()
+	if err != nil {
+		return err
+	}
+
+	// Add new skills if provided
+	if len(skills) > 0 {
 		for _, skillReq := range skills {
 			var skill Skill
 			err := o.QueryTable("skills").Filter("Id", skillReq.Id).One(&skill)

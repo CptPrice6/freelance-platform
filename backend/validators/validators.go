@@ -347,3 +347,61 @@ func CreateJobValidator(requestBody []byte) (*types.CreateJobRequest, error) {
 	return createJobRequest, nil
 
 }
+
+func UpdateJobValidator(requestBody []byte) (*types.UpdateJobRequest, error) {
+
+	var updateJobRequest = new(types.UpdateJobRequest)
+
+	err := json.Unmarshal(requestBody, &updateJobRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+	if updateJobRequest.Title != "" {
+		if len(updateJobRequest.Title) > 30 {
+			return nil, fmt.Errorf("Title cannot be longer than 30 symbols")
+		}
+	}
+	if updateJobRequest.Description != "" {
+		if len(updateJobRequest.Description) > 1000 {
+			return nil, fmt.Errorf("Description cannot be longer than 1000 symbols")
+		}
+	}
+
+	if updateJobRequest.Type != "" {
+		if !types.ValidProjectTypes[updateJobRequest.Type] {
+			return nil, errors.New("invalid project type: must be 'ongoing' or 'one-time'")
+		}
+	}
+
+	if updateJobRequest.Rate != "" {
+		if !types.ValidProjectRates[updateJobRequest.Rate] {
+			return nil, errors.New("invalid project rate: must be 'hourly' or 'fixed'")
+		}
+	}
+	if updateJobRequest.Amount != 0 {
+		if updateJobRequest.Amount < 1 {
+			return nil, errors.New("amount cannot be less than 1")
+		}
+	}
+	if updateJobRequest.Rate != "" && updateJobRequest.Amount != 0 {
+		if updateJobRequest.Rate == "hourly" && updateJobRequest.Amount > 1000 {
+			return nil, errors.New("amount cannot be more than 1000 if rate is hourly")
+		}
+	}
+
+	if updateJobRequest.Length != "" {
+		if !types.ValidProjectLengths[updateJobRequest.Length] {
+			return nil, errors.New("invalid project length: must be '<1', '1-3', '3-6', '6-12', or '12+'")
+		}
+	}
+
+	if updateJobRequest.HoursPerWeek != "" {
+		if !types.ValidProjectHoursPerWeek[updateJobRequest.HoursPerWeek] {
+			return nil, errors.New("invalid project hours per week: must be '<10', '10-20', '20-40', '40-60', or '80+'")
+		}
+	}
+
+	return updateJobRequest, nil
+
+}
