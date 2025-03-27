@@ -23,7 +23,7 @@ ALTER TABLE attachments
 ALTER TABLE job_skills
   ADD CONSTRAINT fk_job FOREIGN KEY (jobs_id) REFERENCES jobs(id) ON DELETE CASCADE,
   ADD CONSTRAINT fk_skill FOREIGN KEY (skills_id) REFERENCES skills(id) ON DELETE CASCADE;
-
+  ADD CONSTRAINT unique_job_skill UNIQUE (jobs_id, skills_id);
 
 
 
@@ -47,5 +47,6 @@ ALTER TABLE attachments
   DROP CONSTRAINT fk_attachment_application;
 
 ALTER TABLE job_skills 
+  DROP CONSTRAINT unique_job_skill,
   DROP CONSTRAINT fk_job, 
   DROP CONSTRAINT fk_skill;
