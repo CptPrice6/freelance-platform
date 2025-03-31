@@ -53,6 +53,9 @@ func init() {
 	web.Router("/admin/skills/:id", &controllers.SkillController{}, "delete:DeleteSkillHandler")
 	web.Router("/admin/skills/:id", &controllers.SkillController{}, "put:UpdateSkillHandler")
 
+	//TODO:
+	web.Router("/admin/jobs/:id", &controllers.JobController{}, "delete:DeleteJobHandler")
+
 	// public freelancer logic
 	web.InsertFilter("/freelancers/*", web.BeforeRouter, middleware.UserAuthMiddleware)
 	web.Router("/freelancers", &controllers.FreelancerController{}, "get:GetFreelancersHandler")
