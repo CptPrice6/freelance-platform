@@ -42,16 +42,16 @@ func CreateUser(email, password, role, name, surname string, ban bool) error {
 	}
 
 	switch role {
-	case "client":
+	case "client", "freelancer":
 		err := CreateClientData(int(userID))
 		if err != nil {
 			return err
 		}
-	case "freelancer":
-		err := CreateFreelancerData(int(userID))
+		err = CreateFreelancerData(int(userID))
 		if err != nil {
 			return err
 		}
+
 	default:
 		// No role-specific data to create for "admin"
 	}

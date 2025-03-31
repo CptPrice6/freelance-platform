@@ -42,10 +42,6 @@ func CreateClientData(userID int) error {
 		return errors.New("user not found")
 	}
 
-	if user.Role != "client" {
-		return errors.New("user is not a client")
-	}
-
 	clientData := &ClientData{
 		User: &user,
 	}

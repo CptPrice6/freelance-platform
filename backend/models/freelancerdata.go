@@ -51,10 +51,6 @@ func CreateFreelancerData(userID int) error {
 		return errors.New("user not found")
 	}
 
-	if user.Role != "freelancer" {
-		return errors.New("user is not a freelancer")
-	}
-
 	freelancerData := &FreelancerData{
 		User: &user,
 	}

@@ -104,6 +104,12 @@ func SeedUsersWithDataAndSkills() {
 							log.Printf("Error adding skill %s to freelancer %d: %v", skill.Name, userID, err)
 						}
 					}
+					clientData := models.ClientData{}
+					clientData.User = &models.User{Id: int(userID)}
+
+					if _, err := o.Insert(&clientData); err != nil {
+						log.Printf("Error inserting client data: %v", err)
+					}
 
 				case "client":
 					clientData := models.ClientData{}
@@ -117,6 +123,15 @@ func SeedUsersWithDataAndSkills() {
 						log.Printf("Error inserting client data: %v", err)
 						continue
 					}
+
+					freelancerData := models.FreelancerData{}
+					freelancerData.User = &models.User{Id: int(userID)}
+
+					if _, err := o.Insert(&freelancerData); err != nil {
+						log.Printf("Error inserting freelancer data: %v", err)
+						continue
+					}
+
 				}
 
 			}

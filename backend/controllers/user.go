@@ -52,6 +52,10 @@ func (c *UserController) GetUserHandler() {
 				WorkType:     freelancerData.WorkType,
 				HoursPerWeek: freelancerData.HoursPerWeek,
 			}
+		} else {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": "Error fetching freelancer data"}, false, false)
+			return
 		}
 	case "client":
 		clientData, err := models.GetClientDataByUserID(user.Id)
@@ -62,6 +66,10 @@ func (c *UserController) GetUserHandler() {
 				Industry:    clientData.Industry,
 				Location:    clientData.Location,
 			}
+		} else {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": "Error fetching client data"}, false, false)
+			return
 		}
 	}
 
