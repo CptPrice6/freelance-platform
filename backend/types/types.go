@@ -147,4 +147,5 @@ type JobInfo struct {
 	HoursPerWeek string  `json:"hours_per_week"`
 	ClientID     int     `json:"client_id"`
 	Skills       []Skill `json:"skills"`
+	Applied      bool    `json:"applied"`
 }

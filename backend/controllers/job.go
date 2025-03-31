@@ -70,6 +70,22 @@ func (c *JobController) GetJobHandler() {
 		return
 	}
 
+	userID := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(userID)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
+	applied := false
+	if user.Role == "freelancer" {
+		application, err := models.GetApplicationByUserAndJob(userID, jobID)
+		if err == nil && application != nil {
+			applied = true
+		}
+	}
+
 	var skillList []types.Skill
 	for _, skill := range job.Skills {
 		skillList = append(skillList, types.Skill{
@@ -89,6 +105,7 @@ func (c *JobController) GetJobHandler() {
 		HoursPerWeek: job.HoursPerWeek,
 		ClientID:     job.Client.Id,
 		Skills:       skillList,
+		Applied:      applied,
 	}
 
 	c.Ctx.Output.SetStatus(http.StatusOK)
@@ -217,4 +234,8 @@ func (c *JobController) GetFreelancerJobsHandler() {
 }
 
 func (c *JobController) GetFreelancerJobHandler() {
+}
+
+// Admin function
+func (c *JobController) DeleteJobHandler() {
 }
