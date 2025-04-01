@@ -21,3 +21,21 @@ func init() {
 func (s *Attachment) TableName() string {
 	return "attachments"
 }
+
+func GetAttachmentByApplicationID(applicationID int) (*Attachment, error) {
+	o := orm.NewOrm()
+	var attachment Attachment
+
+	err := o.QueryTable(new(Attachment)).
+		Filter("Application__Id", applicationID).
+		One(&attachment)
+
+	if err != nil {
+		if err == orm.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &attachment, nil
+}

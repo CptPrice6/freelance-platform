@@ -135,3 +135,35 @@ func GetJobByID(jobID int) (*Job, error) {
 
 	return &job, nil
 }
+
+func DeleteJobByID(jobID int) error {
+
+	o := orm.NewOrm()
+	job := Job{Id: jobID}
+
+	_, err := o.Delete(&job)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetJobsByClientID(clientID int) ([]Job, error) {
+	o := orm.NewOrm()
+	var jobs []Job
+
+	_, err := o.QueryTable(new(Job)).Filter("Client__Id", clientID).All(&jobs)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range jobs {
+		_, err := o.LoadRelated(&jobs[i], "Skills")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return jobs, nil
+}

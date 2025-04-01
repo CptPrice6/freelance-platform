@@ -42,3 +42,26 @@ func GetApplicationByUserAndJob(userID, jobID int) (*Application, error) {
 	}
 	return &application, nil
 }
+
+func GetApplicationCountForJob(jobID int) (int, error) {
+	o := orm.NewOrm()
+	count, err := o.QueryTable(new(Application)).Filter("Job__Id", jobID).Count()
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
+}
+
+func GetApplicationsByJobID(jobID int) ([]Application, error) {
+	o := orm.NewOrm()
+	var applications []Application
+
+	_, err := o.QueryTable(new(Application)).
+		Filter("Job__Id", jobID).All(&applications)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return applications, nil
+}
