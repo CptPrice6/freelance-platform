@@ -11,7 +11,9 @@ import (
 )
 
 func SeedDatabase() {
-	SeedUsersWithDataAndSkills()
+	SeedSkills()
+	SeedUsers()
+	SeedJobs()
 }
 
 var workType = map[int]string{
@@ -35,9 +37,7 @@ func getSkills() []string {
 	}
 }
 
-// TODO: Add client and freelancer data tables creation!
-func SeedUsersWithDataAndSkills() {
-	SeedSkillsTable()
+func SeedUsers() {
 	o := orm.NewOrm()
 
 	count, err := o.QueryTable(new(models.User)).Count()
@@ -143,7 +143,7 @@ func SeedUsersWithDataAndSkills() {
 }
 
 // Add 100 skills
-func SeedSkillsTable() {
+func SeedSkills() {
 	o := orm.NewOrm()
 
 	count, err := o.QueryTable(new(models.Skill)).Count()
@@ -165,4 +165,88 @@ func SeedSkillsTable() {
 		}
 	}
 
+}
+
+func SeedJobs() {
+	o := orm.NewOrm()
+
+	// Check if jobs table already has data
+	count, err := o.QueryTable(new(models.Job)).Count()
+	if err != nil {
+		log.Fatalf("Error checking count in Jobs table: %v", err)
+		return
+	}
+	if count > 0 {
+		log.Println("Jobs table already contains data.")
+		return
+	}
+
+	// Job type and rate options
+	projectTypes := []string{"ongoing", "one-time"}
+	rateTypes := []string{"hourly", "fixed"}
+	lengthOptions := []string{"<1", "1-3", "3-6", "6-12", "12+"}
+	hoursPerWeekOptions := []string{"<10", "10-20", "20-40", "40-60", "80+"}
+
+	// Get all clients
+	var clients []models.User
+	_, err = o.QueryTable(new(models.User)).Filter("role", "client").All(&clients)
+	if err != nil {
+		log.Printf("Error fetching clients: %v", err)
+		return
+	}
+
+	// Create 0-5 jobs for each client
+	for _, client := range clients {
+		numJobs := rand.IntN(6) // Random number between 0 and 5
+
+		for range numJobs {
+			rateType := rateTypes[rand.IntN(len(rateTypes))]
+
+			// Set amount based on rate type
+			var amount int
+			if rateType == "hourly" {
+				amount = rand.IntN(81) + 20
+			} else {
+				amount = rand.IntN(101) + 10
+				amount *= 1000
+			}
+
+			job := models.Job{
+				Client:       &client,
+				Title:        faker.Sentence()[:30], // Limit to 30 chars
+				Description:  faker.Paragraph(),
+				Type:         projectTypes[rand.IntN(len(projectTypes))],
+				Rate:         rateType,
+				Amount:       amount,
+				Length:       lengthOptions[rand.IntN(len(lengthOptions))],
+				HoursPerWeek: hoursPerWeekOptions[rand.IntN(len(hoursPerWeekOptions))],
+				Status:       "open",
+			}
+
+			// Insert job
+			jobID, err := o.Insert(&job)
+			if err != nil {
+				log.Printf("Error inserting job: %v", err)
+				continue
+			}
+
+			// Add random skills (1-3) to the job
+			var skills []models.Skill
+			_, err = o.Raw("SELECT * FROM skills ORDER BY RANDOM() LIMIT ?", rand.IntN(3)+1).QueryRows(&skills)
+			if err != nil {
+				log.Printf("Error fetching random skills: %v", err)
+				continue
+			}
+
+			// Add skills to job using m2m relationship
+			m2m := o.QueryM2M(&job, "Skills")
+			for _, skill := range skills {
+				if _, err := m2m.Add(&skill); err != nil {
+					log.Printf("Error adding skill %s to job %d: %v", skill.Name, jobID, err)
+				}
+			}
+		}
+	}
+
+	log.Println("Jobs table seeded successfully")
 }
