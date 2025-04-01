@@ -222,12 +222,207 @@ func (c *JobController) UpdateClientJobHandler() {
 }
 
 func (c *JobController) DeleteClientJobHandler() {
+
+	jobID, err := strconv.Atoi(c.Ctx.Input.Param(":id"))
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid job ID"}, false, false)
+		return
+	}
+
+	id := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(id)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
+	job, err := models.GetJobByID(jobID)
+	if err != nil || job.Status != "open" {
+		c.Ctx.Output.SetStatus(http.StatusNotFound)
+		c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
+		return
+	}
+
+	if job.Client.Id != user.Id {
+		c.Ctx.Output.SetStatus(http.StatusForbidden)
+		c.Ctx.Output.JSON(map[string]string{"error": "Clients are only allowed to delete their own jobs"}, false, false)
+		return
+	}
+
+	err = models.DeleteJobByID(jobID)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error deleting job"}, false, false)
+		return
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = map[string]string{"message": "Job deleted successfully"}
+	c.ServeJSON()
+
 }
 
 func (c *JobController) GetClientJobsHandler() {
+
+	userID := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(userID)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
+	if user.Role != "client" {
+		c.Ctx.Output.SetStatus(http.StatusForbidden)
+		c.Ctx.Output.JSON(map[string]string{"error": "Only clients can access their jobs"}, false, false)
+		return
+	}
+
+	jobs, err := models.GetJobsByClientID(userID)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error fetching jobs"}, false, false)
+		return
+	}
+
+	var jobList []types.ClientJobInfo
+	for _, job := range jobs {
+		var skillList []types.Skill
+		for _, skill := range job.Skills {
+			skillList = append(skillList, types.Skill{
+				Id:   skill.Id,
+				Name: skill.Name,
+			})
+		}
+
+		// Get application count for this job
+		applicationCount, err := models.GetApplicationCountForJob(job.Id)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": "Error fetching application count"}, false, false)
+			return
+		}
+
+		jobInfo := types.ClientJobInfo{
+			ID:               job.Id,
+			Title:            job.Title,
+			Description:      job.Description,
+			Type:             job.Type,
+			Rate:             job.Rate,
+			Amount:           job.Amount,
+			Length:           job.Length,
+			HoursPerWeek:     job.HoursPerWeek,
+			Status:           job.Status,
+			ClientID:         job.Client.Id,
+			Skills:           skillList,
+			ApplicationCount: applicationCount,
+		}
+
+		jobList = append(jobList, jobInfo)
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = jobList
+	c.ServeJSON()
 }
 
 func (c *JobController) GetClientJobHandler() {
+
+	jobID, err := strconv.Atoi(c.Ctx.Input.Param(":id"))
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid job ID"}, false, false)
+		return
+	}
+
+	userID := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(userID)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+	if user.Role != "client" {
+		c.Ctx.Output.SetStatus(http.StatusForbidden)
+		c.Ctx.Output.JSON(map[string]string{"error": "Only clients can access their job details"}, false, false)
+		return
+	}
+
+	job, err := models.GetJobByID(jobID)
+	if err != nil || job.Client.Id != user.Id {
+		c.Ctx.Output.SetStatus(http.StatusNotFound)
+		c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
+		return
+	}
+
+	var skillList []types.Skill
+	for _, skill := range job.Skills {
+		skillList = append(skillList, types.Skill{
+			Id:   skill.Id,
+			Name: skill.Name,
+		})
+	}
+
+	applications, err := models.GetApplicationsByJobID(jobID)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error fetching applications"}, false, false)
+		return
+	}
+
+	var applicationList []types.Application
+	for _, application := range applications {
+
+		attachment, err := models.GetAttachmentByApplicationID(application.Id)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": "Error fetching attachment"}, false, false)
+			return
+		}
+
+		var attachmentInfo *types.Attachment
+		if attachment != nil {
+			attachmentInfo = &types.Attachment{
+				ID:            attachment.Id,
+				ApplicationID: attachment.Application.Id,
+				FileName:      attachment.FileName,
+				FilePath:      attachment.FilePath,
+				CreatedAt:     attachment.CreatedAt,
+			}
+		}
+
+		applicationList = append(applicationList, types.Application{
+			ID:              application.Id,
+			UserID:          application.User.Id,
+			JobID:           application.Job.Id,
+			Description:     application.Description,
+			RejectionReason: application.RejectionReason,
+			Status:          application.Status,
+			CreatedAt:       application.CreatedAt,
+			Attachment:      attachmentInfo,
+		})
+	}
+
+	jobInfo := types.ClientJobDetailedInfo{
+		ID:           job.Id,
+		Title:        job.Title,
+		Description:  job.Description,
+		Type:         job.Type,
+		Rate:         job.Rate,
+		Amount:       job.Amount,
+		Length:       job.Length,
+		HoursPerWeek: job.HoursPerWeek,
+		Status:       job.Status,
+		ClientID:     job.Client.Id,
+		Skills:       skillList,
+		Applications: applicationList,
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Data["json"] = jobInfo
+	c.ServeJSON()
 }
 
 func (c *JobController) GetFreelancerJobsHandler() {
@@ -238,4 +433,5 @@ func (c *JobController) GetFreelancerJobHandler() {
 
 // Admin function
 func (c *JobController) DeleteJobHandler() {
+
 }
