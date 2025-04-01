@@ -149,3 +149,52 @@ type JobInfo struct {
 	Skills       []Skill `json:"skills"`
 	Applied      bool    `json:"applied"`
 }
+
+type ClientJobInfo struct {
+	ID               int     `json:"id"`
+	Title            string  `json:"title"`
+	Description      string  `json:"description"`
+	Type             string  `json:"type"`
+	Rate             string  `json:"rate"`
+	Amount           int     `json:"amount"`
+	Length           string  `json:"length"`
+	HoursPerWeek     string  `json:"hours_per_week"`
+	Status           string  `json:"status"`
+	ClientID         int     `json:"client_id"`
+	Skills           []Skill `json:"skills"`
+	ApplicationCount int     `json:"application_count"`
+}
+
+type ClientJobDetailedInfo struct {
+	ID           int           `json:"id"`
+	Title        string        `json:"title"`
+	Description  string        `json:"description"`
+	Type         string        `json:"type"`
+	Rate         string        `json:"rate"`
+	Amount       int           `json:"amount"`
+	Length       string        `json:"length"`
+	HoursPerWeek string        `json:"hours_per_week"`
+	Status       string        `json:"status"`
+	ClientID     int           `json:"client_id"`
+	Skills       []Skill       `json:"skills"`
+	Applications []Application `json:"applications"`
+}
+
+type Application struct {
+	ID              int         `json:"id"`
+	UserID          int         `json:"user_id"`
+	JobID           int         `json:"job_id"`
+	Description     string      `json:"description"`
+	RejectionReason string      `json:"rejection_reason"`
+	Status          string      `json:"status"`
+	CreatedAt       time.Time   `json:"created_at"`
+	Attachment      *Attachment `json:"attachment,omitempty"`
+}
+
+type Attachment struct {
+	ID            int       `json:"id"`
+	ApplicationID int       `json:"application_id"`
+	FileName      string    `json:"file_name"`
+	FilePath      string    `json:"file_path"`
+	CreatedAt     time.Time `json:"created_at"`
+}
