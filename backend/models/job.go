@@ -167,3 +167,22 @@ func GetJobsByClientID(clientID int) ([]Job, error) {
 
 	return jobs, nil
 }
+
+func GetJobsByFreelancerID(freelancerID int) ([]Job, error) {
+	o := orm.NewOrm()
+	var jobs []Job
+
+	_, err := o.QueryTable(new(Job)).Filter("Freelancer__Id", freelancerID).All(&jobs)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range jobs {
+		_, err := o.LoadRelated(&jobs[i], "Skills")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return jobs, nil
+}

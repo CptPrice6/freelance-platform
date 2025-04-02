@@ -165,6 +165,21 @@ type ClientJobInfo struct {
 	ApplicationCount int     `json:"application_count"`
 }
 
+type FreelancerJobInfo struct {
+	ID            int     `json:"id"`
+	Title         string  `json:"title"`
+	Description   string  `json:"description"`
+	Type          string  `json:"type"`
+	Rate          string  `json:"rate"`
+	Amount        int     `json:"amount"`
+	Length        string  `json:"length"`
+	HoursPerWeek  string  `json:"hours_per_week"`
+	Status        string  `json:"status"`
+	ClientID      int     `json:"client_id"`
+	Skills        []Skill `json:"skills"`
+	ApplicationID int     `json:"application_id"`
+}
+
 type ClientJobDetailedInfo struct {
 	ID           int           `json:"id"`
 	Title        string        `json:"title"`
