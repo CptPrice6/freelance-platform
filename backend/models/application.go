@@ -65,3 +65,22 @@ func GetApplicationsByJobID(jobID int) ([]Application, error) {
 
 	return applications, nil
 }
+
+func CreateApplication(user *User, job *Job, description string) (int, error) {
+	o := orm.NewOrm()
+
+	application := Application{
+		User:        user,
+		Job:         job,
+		Description: description,
+		Status:      "pending",
+		CreatedAt:   time.Now(),
+	}
+
+	id, err := o.Insert(&application)
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
+}

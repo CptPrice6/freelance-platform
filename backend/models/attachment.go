@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/beego/beego/v2/client/orm"
@@ -10,7 +11,7 @@ type Attachment struct {
 	Id          int          `orm:"pk;auto"`
 	Application *Application `orm:"rel(fk);on_delete(cascade)"`
 	FileName    string       `orm:"size(255)"` // Original filename
-	FilePath    string       `orm:"size(255)"` // Path with generated UUID name
+	FilePath    string       `orm:"size(255)"` // Path with unique name
 	CreatedAt   time.Time    `orm:"auto_now_add;type(timestamp)"`
 }
 
@@ -38,4 +39,26 @@ func GetAttachmentByApplicationID(applicationID int) (*Attachment, error) {
 	}
 
 	return &attachment, nil
+}
+
+func CreateAttachment(applicationId int, fileName, filePath string) error {
+	o := orm.NewOrm()
+
+	exists := o.QueryTable(new(Application)).Filter("Id", applicationId).Exist()
+	if !exists {
+		return errors.New("application not found")
+	}
+
+	attachment := Attachment{
+		Application: &Application{Id: applicationId},
+		FileName:    fileName,
+		FilePath:    filePath,
+		CreatedAt:   time.Now(),
+	}
+	_, err := o.Insert(&attachment)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
