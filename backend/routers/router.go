@@ -21,6 +21,8 @@ func init() {
 	web.Router("/user", &controllers.UserController{}, "delete:DeleteUserHandler")
 	web.Router("/user/auth", &controllers.AuthController{}, "get:AuthHandler")
 
+	web.Router("/user/attachments/:id", &controllers.AttachmentController{}, "get:DownloadAttachment")
+
 	// freelancer role-specific logic
 	web.Router("/user/freelancer", &controllers.FreelancerController{}, "put:UpdateFreelancerDataHandler")
 
@@ -29,6 +31,12 @@ func init() {
 
 	web.Router("/user/freelancer/jobs", &controllers.JobController{}, "get:GetFreelancerJobsHandler")
 	web.Router("/user/freelancer/jobs/:id", &controllers.JobController{}, "get:GetFreelancerJobHandler")
+
+	web.Router("/user/freelancer/applications", &controllers.ApplicationController{}, "post:SubmitApplication")
+	web.Router("/user/freelancer/applications", &controllers.ApplicationController{}, "get:GetFreelancerApplications")
+	web.Router("/user/freelancer/applications/:id", &controllers.ApplicationController{}, "get:GetFreelancerApplication")
+	web.Router("/user/freelancer/applications/:id", &controllers.ApplicationController{}, "delete:DeleteApplication")
+	web.Router("/user/freelancer/applications/:id", &controllers.ApplicationController{}, "put:UpdateApplication")
 
 	// skill logic
 	web.InsertFilter("/skills/*", web.BeforeRouter, middleware.UserAuthMiddleware)
@@ -42,6 +50,8 @@ func init() {
 	web.Router("/user/client/jobs/:id", &controllers.JobController{}, "get:GetClientJobHandler")
 	web.Router("/user/client/jobs/:id", &controllers.JobController{}, "delete:DeleteClientJobHandler")
 	web.Router("/user/client/jobs/:id", &controllers.JobController{}, "put:UpdateClientJobHandler")
+
+	web.Router("/user/client/applications/:id", &controllers.ApplicationController{}, "get:ChangeApplicationStatus")
 
 	// admin role-specific logic
 	web.InsertFilter("/admin/*", web.BeforeRouter, middleware.AdminAuthMiddleware)
