@@ -213,3 +213,10 @@ type Attachment struct {
 	FilePath      string    `json:"file_path"`
 	CreatedAt     time.Time `json:"created_at"`
 }
+
+type SubmitApplicationRequest struct {
+	JobID       int    `json:"job_id"`
+	Description string `json:"description"`
+	FileName    string `json:"file_name"`
+	FileBase64  string `json:"file_base64"`
+}

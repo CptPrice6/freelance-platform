@@ -405,3 +405,30 @@ func UpdateJobValidator(requestBody []byte) (*types.UpdateJobRequest, error) {
 	return updateJobRequest, nil
 
 }
+
+func SubmitApplicationValidator(requestBody []byte) (*types.SubmitApplicationRequest, error) {
+
+	var submitApplicationRequest = new(types.SubmitApplicationRequest)
+
+	err := json.Unmarshal(requestBody, &submitApplicationRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	if submitApplicationRequest.JobID <= 0 {
+		return nil, fmt.Errorf("Job ID must be a positive integer")
+	}
+
+	if submitApplicationRequest.Description == "" {
+		return nil, fmt.Errorf("Missing required fields: description")
+	}
+	if submitApplicationRequest.FileBase64 != "" && submitApplicationRequest.FileName == "" {
+		return nil, fmt.Errorf("File name cannot be empty")
+	}
+	if submitApplicationRequest.FileBase64 == "" && submitApplicationRequest.FileName != "" {
+		return nil, fmt.Errorf("File cannot be empty")
+	}
+
+	return submitApplicationRequest, nil
+}
