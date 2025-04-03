@@ -56,6 +56,15 @@ func (c *JobController) GetJobsHandler() {
 }
 
 func (c *JobController) GetJobHandler() {
+
+	userID := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(userID)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
 	jobID, err := strconv.Atoi(c.Ctx.Input.Param(":id"))
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
@@ -64,18 +73,27 @@ func (c *JobController) GetJobHandler() {
 	}
 
 	job, err := models.GetJobByID(jobID)
-	if err != nil || job.Status != "open" {
+	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusNotFound)
 		c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
 		return
 	}
 
-	userID := c.Ctx.Input.GetData("id").(int)
-	user, err := models.GetUserById(userID)
-	if user == nil || err != nil {
-		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
-		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
-		return
+	if job.Status != "open" {
+		if user.Role == "freelancer" {
+			application, err := models.GetApplicationByUserAndJob(user.Id, jobID)
+			if err != nil || application == nil {
+				c.Ctx.Output.SetStatus(http.StatusNotFound)
+				c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
+				return
+			}
+		} else if user.Role == "client" && job.Client.Id == user.Id {
+			// Allow client to access their own job
+		} else {
+			c.Ctx.Output.SetStatus(http.StatusNotFound)
+			c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
+			return
+		}
 	}
 
 	applied := false
