@@ -137,17 +137,17 @@ type UpdateJobRequest struct {
 }
 
 type JobInfo struct {
-	ID           int     `json:"id"`
-	Title        string  `json:"title"`
-	Description  string  `json:"description"`
-	Type         string  `json:"type"`
-	Rate         string  `json:"rate"`
-	Amount       int     `json:"amount"`
-	Length       string  `json:"length"`
-	HoursPerWeek string  `json:"hours_per_week"`
-	ClientID     int     `json:"client_id"`
-	Skills       []Skill `json:"skills"`
-	Applied      bool    `json:"applied"`
+	ID            int     `json:"id"`
+	Title         string  `json:"title"`
+	Description   string  `json:"description"`
+	Type          string  `json:"type"`
+	Rate          string  `json:"rate"`
+	Amount        int     `json:"amount"`
+	Length        string  `json:"length"`
+	HoursPerWeek  string  `json:"hours_per_week"`
+	ClientID      int     `json:"client_id"`
+	Skills        []Skill `json:"skills"`
+	ApplicationID int     `json:"application_id"`
 }
 
 type ClientJobInfo struct {

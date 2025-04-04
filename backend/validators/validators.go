@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/go-passwd/validator"
 )
@@ -428,6 +429,12 @@ func SubmitApplicationValidator(requestBody []byte) (*types.SubmitApplicationReq
 	}
 	if submitApplicationRequest.FileBase64 == "" && submitApplicationRequest.FileName != "" {
 		return nil, fmt.Errorf("File cannot be empty")
+	}
+
+	if submitApplicationRequest.FileName != "" {
+		if !strings.HasSuffix(strings.ToLower(submitApplicationRequest.FileName), ".pdf") {
+			return nil, fmt.Errorf("Only PDF files are allowed")
+		}
 	}
 
 	return submitApplicationRequest, nil
