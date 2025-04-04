@@ -87,6 +87,7 @@ func (c *JobController) GetJobHandler() {
 				c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
 				return
 			}
+			// Allow freelancers to access their applied job
 		} else if user.Role == "client" && job.Client.Id == user.Id {
 			// Allow client to access their own job
 		} else {
@@ -96,11 +97,11 @@ func (c *JobController) GetJobHandler() {
 		}
 	}
 
-	applied := false
+	applicationID := 0
 	if user.Role == "freelancer" {
 		application, err := models.GetApplicationByUserAndJob(userID, jobID)
 		if err == nil && application != nil {
-			applied = true
+			applicationID = application.Id
 		}
 	}
 
@@ -113,17 +114,17 @@ func (c *JobController) GetJobHandler() {
 	}
 
 	jobInfo := types.JobInfo{
-		ID:           job.Id,
-		Title:        job.Title,
-		Description:  job.Description,
-		Type:         job.Type,
-		Rate:         job.Rate,
-		Amount:       job.Amount,
-		Length:       job.Length,
-		HoursPerWeek: job.HoursPerWeek,
-		ClientID:     job.Client.Id,
-		Skills:       skillList,
-		Applied:      applied,
+		ID:            job.Id,
+		Title:         job.Title,
+		Description:   job.Description,
+		Type:          job.Type,
+		Rate:          job.Rate,
+		Amount:        job.Amount,
+		Length:        job.Length,
+		HoursPerWeek:  job.HoursPerWeek,
+		ClientID:      job.Client.Id,
+		Skills:        skillList,
+		ApplicationID: applicationID,
 	}
 
 	c.Ctx.Output.SetStatus(http.StatusOK)

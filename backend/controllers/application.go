@@ -121,12 +121,12 @@ func (c *ApplicationController) DeleteApplication() {
 
 func (c *ApplicationController) ChangeApplicationStatus() {
 
-	// only CLIENT can change and only STATUS
+	// only CLIENT can change and only STATUS + rejection reason
 
 	// if applications status is accepted or rejected it cannot be changed
 
 	// if rejected it can be only changed to accepted or rejected
 
-	// when rejected -> just change status
-	// when accepeted -> change status and reject ALL other applications
+	// when rejected -> change status + add rejection reason ( if present )
+	// when accepeted -> change status, reject ALL other applications and add some basic same rejection reason
 }

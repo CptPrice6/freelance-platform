@@ -84,3 +84,15 @@ func CreateApplication(user *User, job *Job, description string) (int, error) {
 
 	return int(id), nil
 }
+
+func GetApplicationByID(applicationID int) (*Application, error) {
+	o := orm.NewOrm()
+	application := Application{Id: applicationID}
+
+	err := o.Read(&application, "Id")
+	if err != nil {
+		return nil, err
+	}
+
+	return &application, nil
+}

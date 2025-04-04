@@ -62,3 +62,20 @@ func CreateAttachment(applicationId int, fileName, filePath string) error {
 
 	return nil
 }
+
+func GetAttachmentByID(attachmentID int) (*Attachment, error) {
+	o := orm.NewOrm()
+	attachment := Attachment{Id: attachmentID}
+
+	err := o.Read(&attachment, "Id")
+
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := o.LoadRelated(&attachment, "Application"); err != nil {
+		return nil, err
+	}
+
+	return &attachment, nil
+}
