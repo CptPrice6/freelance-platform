@@ -220,3 +220,9 @@ type SubmitApplicationRequest struct {
 	FileName    string `json:"file_name"`
 	FileBase64  string `json:"file_base64"`
 }
+
+type UpdateApplicationRequest struct {
+	Description string `json:"description"`
+	FileName    string `json:"file_name"`
+	FileBase64  string `json:"file_base64"`
+}

@@ -439,3 +439,22 @@ func SubmitApplicationValidator(requestBody []byte) (*types.SubmitApplicationReq
 
 	return submitApplicationRequest, nil
 }
+
+func UpdateApplicationValidator(requestBody []byte) (*types.UpdateApplicationRequest, error) {
+
+	var updateApplicationRequest = new(types.UpdateApplicationRequest)
+
+	err := json.Unmarshal(requestBody, &updateApplicationRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	if updateApplicationRequest.FileName != "" {
+		if !strings.HasSuffix(strings.ToLower(updateApplicationRequest.FileName), ".pdf") {
+			return nil, fmt.Errorf("Only PDF files are allowed")
+		}
+	}
+
+	return updateApplicationRequest, nil
+}
