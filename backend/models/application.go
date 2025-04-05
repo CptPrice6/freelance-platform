@@ -96,3 +96,27 @@ func GetApplicationByID(applicationID int) (*Application, error) {
 
 	return &application, nil
 }
+
+func UpdateApplication(application *Application) error {
+	o := orm.NewOrm()
+
+	_, err := o.Update(application)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteApplicationByID(applicationID int) error {
+
+	o := orm.NewOrm()
+	application := Application{Id: applicationID}
+
+	_, err := o.Delete(&application)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -79,3 +79,16 @@ func GetAttachmentByID(attachmentID int) (*Attachment, error) {
 
 	return &attachment, nil
 }
+
+func DeleteAttachmentByID(attachmentID int) error {
+
+	o := orm.NewOrm()
+	attachment := Attachment{Id: attachmentID}
+
+	_, err := o.Delete(&attachment)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
