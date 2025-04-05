@@ -14,6 +14,7 @@ func SeedDatabase() {
 	SeedSkills()
 	SeedUsers()
 	SeedJobs()
+	SeedApplications()
 }
 
 var workType = map[int]string{
@@ -249,4 +250,64 @@ func SeedJobs() {
 	}
 
 	log.Println("Jobs table seeded successfully")
+}
+
+func SeedApplications() {
+	o := orm.NewOrm()
+
+	count, err := o.QueryTable(new(models.Application)).Count()
+	if err != nil {
+		log.Fatalf("Error checking applications table: %v", err)
+		return
+	}
+	if count > 0 {
+		log.Println("Applications table already contains data.")
+		return
+	}
+
+	var jobs []models.Job
+	_, err = o.QueryTable(new(models.Job)).All(&jobs)
+	if err != nil {
+		log.Printf("Error fetching jobs: %v", err)
+		return
+	}
+
+	var freelancers []models.User
+	_, err = o.QueryTable(new(models.User)).Filter("role", "freelancer").All(&freelancers)
+	if err != nil {
+		log.Printf("Error fetching freelancers: %v", err)
+		return
+	}
+
+	// Seed applications: 3 for each job
+	for _, job := range jobs {
+		used := make(map[int]bool) // track used freelancer IDs
+
+		appCount := 0
+		for appCount < 3 {
+			randIndex := rand.IntN(len(freelancers))
+			freelancer := freelancers[randIndex]
+
+			if used[freelancer.Id] {
+				continue
+			}
+
+			used[freelancer.Id] = true
+
+			app := models.Application{
+				User:        &freelancer,
+				Job:         &job,
+				Description: faker.Paragraph(),
+				Status:      "pending",
+			}
+
+			if _, err := o.Insert(&app); err != nil {
+				log.Printf("Error inserting application for freelancer %d on job %d: %v", freelancer.Id, job.Id, err)
+			} else {
+				appCount++
+			}
+		}
+	}
+
+	log.Println("Applications seeded successfully.")
 }
