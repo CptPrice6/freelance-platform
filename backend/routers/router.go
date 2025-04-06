@@ -51,7 +51,7 @@ func init() {
 	web.Router("/user/client/jobs/:id", &controllers.JobController{}, "delete:DeleteClientJobHandler")
 	web.Router("/user/client/jobs/:id", &controllers.JobController{}, "put:UpdateClientJobHandler")
 
-	web.Router("/user/client/applications/:id", &controllers.ApplicationController{}, "get:ChangeApplicationStatus")
+	web.Router("/user/client/jobs/applications/:id", &controllers.ApplicationController{}, "post:ChangeApplicationStatus")
 
 	// admin role-specific logic
 	web.InsertFilter("/admin/*", web.BeforeRouter, middleware.AdminAuthMiddleware)

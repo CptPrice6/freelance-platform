@@ -284,10 +284,16 @@ func (c *ApplicationController) ChangeApplicationStatus() {
 
 	// only CLIENT can change and only STATUS + rejection reason
 
+	// CHECK application.Job.Client.Id == user.Id
+	// CHECK application.Job.Status == "open"
+
 	// if applications status is accepted or rejected it cannot be changed
 
 	// if rejected it can be only changed to accepted or rejected
 
 	// when rejected -> change status + add rejection reason ( if present )
-	// when accepeted -> change status, reject ALL other applications and add some basic same rejection reason
+	// when accepeted ->
+	// change status, reject ALL other applications and add some basic same rejection reason
+	// also add that freelancer to the job and change status to "in progress"
+
 }
