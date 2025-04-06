@@ -19,9 +19,9 @@ var ValidProjectLengths = map[string]bool{
 }
 
 var ValidProjectHoursPerWeek = map[string]bool{
-	"<10":   true,
-	"10-20": true,
+	"<20":   true,
 	"20-40": true,
 	"40-60": true,
+	"60-80": true,
 	"80+":   true,
 }

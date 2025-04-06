@@ -17,7 +17,7 @@ type Job struct {
 	Rate         string   `orm:"size(30)"` // hourly, fixed
 	Amount       int      // if hourly, amount per hour, if fixed, total amount
 	Length       string   `orm:"size(30)"`               // <1, 1-3, 3-6, 6-12, 12+ ( months )
-	HoursPerWeek string   `orm:"size(30)"`               // <10, 10-20, 20-40, 40-60, 80+ ( hours )
+	HoursPerWeek string   `orm:"size(30)"`               // <20, 20-40, 40-60, 60-80, 80+ ( hours )
 	Status       string   `orm:"size(30);default(open)"` // open, in-progress, completed
 	Skills       []*Skill `orm:"rel(m2m);rel_table(job_skills);on_delete(cascade)"`
 }

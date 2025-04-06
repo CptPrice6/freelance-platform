@@ -38,8 +38,7 @@ type UpdateFreelancerDataRequest struct {
 	Title        string  `json:"title"`
 	Description  string  `json:"description"`
 	HourlyRate   float64 `json:"hourly_rate"`
-	WorkType     string  `json:"work_type"`
-	HoursPerWeek int     `json:"hours_per_week"`
+	HoursPerWeek string  `json:"hours_per_week"`
 }
 
 type UpdateClientDataRequest struct {
@@ -66,8 +65,7 @@ type FreelancerData struct {
 	Description  string  `json:"description"`
 	Skills       []Skill `json:"skills"`
 	HourlyRate   float64 `json:"hourly_rate"`
-	WorkType     string  `json:"work_type"`
-	HoursPerWeek int     `json:"hours_per_week"`
+	HoursPerWeek string  `json:"hours_per_week"`
 }
 
 type ClientData struct {

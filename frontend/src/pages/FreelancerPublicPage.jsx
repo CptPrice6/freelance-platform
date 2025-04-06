@@ -30,7 +30,7 @@ const FreelancerPublicPage = () => {
             {freelancer.freelancer_data.title || "No Title"}
           </h5>
 
-          <Row className="mt-4">
+          <Row className="mt-4 justify-content-center">
             <Col md={4} className="d-flex justify-content-center">
               <div className="circle-info">
                 <p className="circle-label">Pay Rate</p>
@@ -38,14 +38,6 @@ const FreelancerPublicPage = () => {
                   {freelancer.freelancer_data.hourly_rate
                     ? `$${freelancer.freelancer_data.hourly_rate}/h`
                     : "Not Set"}
-                </p>
-              </div>
-            </Col>
-            <Col md={4} className="d-flex justify-content-center">
-              <div className="circle-info">
-                <p className="circle-label">Job Location</p>
-                <p className="circle-value">
-                  {freelancer.freelancer_data.work_type || "Not Set"}
                 </p>
               </div>
             </Col>

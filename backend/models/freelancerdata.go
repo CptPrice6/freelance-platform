@@ -13,8 +13,7 @@ type FreelancerData struct {
 	Title        string   `orm:"size(30);null"`
 	Description  string   `orm:"type(text);null"`
 	HourlyRate   float64  `orm:"null"`
-	WorkType     string   `orm:"size(30);null"`
-	HoursPerWeek int      `orm:"null"`
+	HoursPerWeek string   `orm:"size(30);null"` // <20, 20-40, 40-60, 60-80, 80+ ( hours )
 	Skills       []*Skill `orm:"rel(m2m);rel_table(freelancer_skills);on_delete(cascade)"`
 }
 

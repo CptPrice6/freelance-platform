@@ -34,10 +34,7 @@ func (c *FreelancerController) UpdateFreelancerDataHandler() {
 	if updateFreelancerRequest.HourlyRate > 0 {
 		freelancerData.HourlyRate = updateFreelancerRequest.HourlyRate
 	}
-	if updateFreelancerRequest.WorkType != "" {
-		freelancerData.WorkType = updateFreelancerRequest.WorkType
-	}
-	if updateFreelancerRequest.HoursPerWeek > 0 {
+	if updateFreelancerRequest.HoursPerWeek != "" {
 		freelancerData.HoursPerWeek = updateFreelancerRequest.HoursPerWeek
 	}
 	if updateFreelancerRequest.Description != "" {
@@ -137,7 +134,6 @@ func (c *FreelancerController) GetFreelancerHandler() {
 			Description:  freelancerData.Description,
 			Skills:       skillList,
 			HourlyRate:   freelancerData.HourlyRate,
-			WorkType:     freelancerData.WorkType,
 			HoursPerWeek: freelancerData.HoursPerWeek,
 		}
 	}

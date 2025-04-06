@@ -119,7 +119,6 @@ func (c *AdminController) GetUsersHandler() {
 					Description:  freelancerData.Description,
 					Skills:       skillList,
 					HourlyRate:   freelancerData.HourlyRate,
-					WorkType:     freelancerData.WorkType,
 					HoursPerWeek: freelancerData.HoursPerWeek,
 				}
 			}

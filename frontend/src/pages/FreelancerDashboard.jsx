@@ -21,8 +21,7 @@ const FreelancerDashboard = () => {
     title: "",
     description: "",
     hourly_rate: 0,
-    work_type: "remote",
-    hours_per_week: 0,
+    hours_per_week: "",
     skills: [],
   });
   const [allSkills, setAllSkills] = useState([]);
@@ -41,8 +40,7 @@ const FreelancerDashboard = () => {
         title: userData.freelancer_data?.title || "",
         description: userData.freelancer_data?.description || "",
         hourly_rate: userData.freelancer_data?.hourly_rate || 0,
-        work_type: userData.freelancer_data?.work_type || "remote",
-        hours_per_week: userData.freelancer_data?.hours_per_week || 0,
+        hours_per_week: userData.freelancer_data?.hours_per_week || "",
         skills: userData.freelancer_data?.skills || [],
       });
     });
@@ -62,7 +60,7 @@ const FreelancerDashboard = () => {
 
   const handleSave = (field) => {
     let value = formData[field];
-    if (field === "hourly_rate" || field === "hours_per_week") {
+    if (field === "hourly_rate") {
       value = parseInt(value, 10);
     }
 
@@ -145,7 +143,6 @@ const FreelancerDashboard = () => {
           { field: "surname", label: "Surname" },
           { field: "title", label: "Title" },
           { field: "hourly_rate", label: "Hourly Rate" },
-          { field: "hours_per_week", label: "Hours per Week" },
         ].map(({ field, label }) => (
           <Row className="mb-4" key={field}>
             <Col md={4} className="d-flex align-items-center">
@@ -155,11 +152,7 @@ const FreelancerDashboard = () => {
               {editingField === field ? (
                 <input
                   ref={inputRef}
-                  type={
-                    field === "hourly_rate" || field === "hours_per_week"
-                      ? "number"
-                      : "text"
-                  }
+                  type={field === "hourly_rate" ? "number" : "text"}
                   className="form-control me-2"
                   value={formData[field]}
                   onChange={(e) =>
@@ -174,14 +167,10 @@ const FreelancerDashboard = () => {
                   className="me-2 flex-grow-1 field-box"
                   onClick={() => setEditingField(field)}
                 >
-                  {/* Format hourly_rate and hours_per_week fields */}
+                  {/* Format hourly_rate  */}
                   {field === "hourly_rate"
                     ? formData[field]
                       ? `${formData[field]}$/h`
-                      : "Not Set"
-                    : field === "hours_per_week"
-                    ? formData[field]
-                      ? `${formData[field]}h/week`
                       : "Not Set"
                     : formData[field] || "Not Set"}{" "}
                 </div>
@@ -204,11 +193,11 @@ const FreelancerDashboard = () => {
           <Col md={8}>
             <div>
               <Form.Select
-                value={formData.work_type}
+                value={formData.hours_per_week}
                 onChange={(e) =>
-                  setFormData({ ...formData, work_type: e.target.value })
+                  setFormData({ ...formData, hours_per_week: e.target.value })
                 }
-                onBlur={() => handleSave("work_type")}
+                onBlur={() => handleSave("hours_per_week")}
                 style={{
                   backgroundColor: "#e9f7fd",
                   borderRadius: "10px",
@@ -216,9 +205,11 @@ const FreelancerDashboard = () => {
                   fontWeight: 500,
                 }}
               >
-                <option value="on-site">On-Site</option>
-                <option value="remote">Remote</option>
-                <option value="hybrid">Hybrid</option>
+                <option value="<20">Less than 20 hours/week</option>
+                <option value="20-40">20-40 hours/week</option>
+                <option value="40-60">40-60 hours/week</option>
+                <option value="60-80">60-80 hours/week</option>
+                <option value="80+">More than 80 hours/week</option>
               </Form.Select>
             </div>
           </Col>

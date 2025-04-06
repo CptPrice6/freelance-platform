@@ -17,11 +17,10 @@ func SeedDatabase() {
 	SeedApplications()
 }
 
-var workType = map[int]string{
-	1: "on-site",
-	2: "remote",
-	3: "hybrid",
-}
+var projectTypes = []string{"ongoing", "one-time"}
+var rateTypes = []string{"hourly", "fixed"}
+var lengthOptions = []string{"<1", "1-3", "3-6", "6-12", "12+"}
+var hoursPerWeekOptions = []string{"<20", "20-40", "40-60", "60-80", "80+"}
 
 func getSkills() []string {
 	return []string{
@@ -83,9 +82,8 @@ func SeedUsers() {
 					freelancerData.User = &models.User{Id: int(userID)}
 					freelancerData.Description = faker.Paragraph()
 					freelancerData.HourlyRate = float64(rand.IntN(50) + 10)
-					freelancerData.HoursPerWeek = rand.IntN(100) + 10
+					freelancerData.HoursPerWeek = hoursPerWeekOptions[rand.IntN(len(hoursPerWeekOptions))]
 					freelancerData.Title = faker.Word() + " " + faker.Word()
-					freelancerData.WorkType = workType[rand.IntN(3)+1]
 
 					if _, err := o.Insert(&freelancerData); err != nil {
 						log.Printf("Error inserting freelancer data: %v", err)
@@ -186,8 +184,7 @@ func SeedJobs() {
 	projectTypes := []string{"ongoing", "one-time"}
 	rateTypes := []string{"hourly", "fixed"}
 	lengthOptions := []string{"<1", "1-3", "3-6", "6-12", "12+"}
-	hoursPerWeekOptions := []string{"<10", "10-20", "20-40", "40-60", "80+"}
-
+	hoursPerWeekOptions := []string{"<20", "20-40", "40-60", "60-80", "80+"}
 	// Get all clients
 	var clients []models.User
 	_, err = o.QueryTable(new(models.User)).Filter("role", "client").All(&clients)

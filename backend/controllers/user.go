@@ -49,7 +49,6 @@ func (c *UserController) GetUserHandler() {
 				Description:  freelancerData.Description,
 				Skills:       skillList,
 				HourlyRate:   freelancerData.HourlyRate,
-				WorkType:     freelancerData.WorkType,
 				HoursPerWeek: freelancerData.HoursPerWeek,
 			}
 		} else {

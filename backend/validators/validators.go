@@ -204,17 +204,10 @@ func UpdateFreelancerDataValidator(requestBody []byte) (*types.UpdateFreelancerD
 			return nil, fmt.Errorf("Hourly Rate cannot be less than 1")
 		}
 	}
-	if updateFreelancerDataRequest.WorkType != "" {
-		if updateFreelancerDataRequest.WorkType != "remote" && updateFreelancerDataRequest.WorkType != "on-site" && updateFreelancerDataRequest.WorkType != "hybrid" {
-			return nil, fmt.Errorf("Invalid Work type: must be 'remote', 'on-site' or hybrid")
-		}
-	}
-	if updateFreelancerDataRequest.HoursPerWeek != 0 {
-		if updateFreelancerDataRequest.HoursPerWeek < 1 {
-			return nil, fmt.Errorf("Hours per week cannot be less than 1")
-		}
-		if updateFreelancerDataRequest.HoursPerWeek > 168 {
-			return nil, fmt.Errorf("Hours per week cannot be more than 168")
+
+	if updateFreelancerDataRequest.HoursPerWeek != "" {
+		if !types.ValidProjectHoursPerWeek[updateFreelancerDataRequest.HoursPerWeek] {
+			return nil, errors.New("invalid hours per week: must be '<20', '20-40', '40-60', '60-80' or '80+'")
 		}
 	}
 	if updateFreelancerDataRequest.Description != "" {
@@ -342,7 +335,7 @@ func CreateJobValidator(requestBody []byte) (*types.CreateJobRequest, error) {
 	}
 
 	if !types.ValidProjectHoursPerWeek[createJobRequest.HoursPerWeek] {
-		return nil, errors.New("invalid project hours per week: must be '<10', '10-20', '20-40', '40-60', or '80+'")
+		return nil, errors.New("invalid hours per week: must be '<20', '20-40', '40-60', '60-80' or '80+'")
 	}
 
 	return createJobRequest, nil
@@ -399,7 +392,7 @@ func UpdateJobValidator(requestBody []byte) (*types.UpdateJobRequest, error) {
 
 	if updateJobRequest.HoursPerWeek != "" {
 		if !types.ValidProjectHoursPerWeek[updateJobRequest.HoursPerWeek] {
-			return nil, errors.New("invalid project hours per week: must be '<10', '10-20', '20-40', '40-60', or '80+'")
+			return nil, errors.New("invalid hours per week: must be '<20', '20-40', '40-60', '60-80' or '80+'")
 		}
 	}
 
