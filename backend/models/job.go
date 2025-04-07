@@ -66,7 +66,7 @@ func CreateJob(client *User, title, description, projectType, rate, length, hour
 	return nil
 }
 
-func UpdateJob(job *Job, skills []*types.Skill) error {
+func UpdateJobWithSkills(job *Job, skills []*types.Skill) error {
 	o := orm.NewOrm()
 
 	// Update the job basic information
@@ -95,6 +95,17 @@ func UpdateJob(job *Job, skills []*types.Skill) error {
 				m2m.Add(&skill)
 			}
 		}
+	}
+
+	return nil
+}
+
+func UpdateJob(job *Job) error {
+	o := orm.NewOrm()
+
+	_, err := o.Update(job)
+	if err != nil {
+		return err
 	}
 
 	return nil
