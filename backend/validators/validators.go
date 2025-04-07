@@ -451,3 +451,24 @@ func UpdateApplicationValidator(requestBody []byte) (*types.UpdateApplicationReq
 
 	return updateApplicationRequest, nil
 }
+
+func ChangeApplicationStatusValidator(requestBody []byte) (*types.ChangeApplicationStatusRequest, error) {
+
+	var changeApplicationStatusRequest = new(types.ChangeApplicationStatusRequest)
+
+	err := json.Unmarshal(requestBody, &changeApplicationStatusRequest)
+	if err != nil {
+		fmt.Println("Error parsing request body:", err)
+		return nil, fmt.Errorf("Invalid input")
+	}
+
+	if changeApplicationStatusRequest.Status == "" {
+		return nil, fmt.Errorf("Missing required fields: status")
+	}
+
+	if changeApplicationStatusRequest.Status != "accepted" && changeApplicationStatusRequest.Status != "rejected" {
+		return nil, fmt.Errorf("Invalid status. Status must be either 'accepted' or 'rejected'")
+	}
+
+	return changeApplicationStatusRequest, nil
+}
