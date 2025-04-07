@@ -159,6 +159,7 @@ type ClientJobInfo struct {
 	HoursPerWeek     string  `json:"hours_per_week"`
 	Status           string  `json:"status"`
 	ClientID         int     `json:"client_id"`
+	FreelancerID     int     `json:"freelancer_id"`
 	Skills           []Skill `json:"skills"`
 	ApplicationCount int     `json:"application_count"`
 }
@@ -189,6 +190,7 @@ type ClientJobDetailedInfo struct {
 	HoursPerWeek string        `json:"hours_per_week"`
 	Status       string        `json:"status"`
 	ClientID     int           `json:"client_id"`
+	FreelancerID int           `json:"freelancer_id"`
 	Skills       []Skill       `json:"skills"`
 	Applications []Application `json:"applications"`
 }
@@ -223,4 +225,9 @@ type UpdateApplicationRequest struct {
 	Description string `json:"description"`
 	FileName    string `json:"file_name"`
 	FileBase64  string `json:"file_base64"`
+}
+
+type ChangeApplicationStatusRequest struct {
+	Status          string `json:"status"`
+	RejectionReason string `json:"rejection_reason"`
 }
