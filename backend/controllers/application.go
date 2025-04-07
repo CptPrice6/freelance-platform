@@ -35,6 +35,8 @@ func (c *ApplicationController) SubmitApplication() {
 		c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
 		return
 	}
+	
+	// Can apply only to open jobs
 
 	userID := c.Ctx.Input.GetData("id").(int)
 	user, err := models.GetUserById(userID)
