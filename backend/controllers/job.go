@@ -621,3 +621,5 @@ func (c *JobController) DeleteJobHandler() {
 	c.Data["json"] = map[string]string{"message": "Job deleted successfully"}
 	c.ServeJSON()
 }
+
+// Add a function to complete a job ( in-progress -> completed )
