@@ -50,6 +50,7 @@ func init() {
 	web.Router("/user/client/jobs/:id", &controllers.JobController{}, "get:GetClientJobHandler")
 	web.Router("/user/client/jobs/:id", &controllers.JobController{}, "delete:DeleteClientJobHandler")
 	web.Router("/user/client/jobs/:id", &controllers.JobController{}, "put:UpdateClientJobHandler")
+	web.Router("/user/client/jobs/:id/complete", &controllers.JobController{}, "post:CompleteJobHandler")
 
 	web.Router("/user/client/jobs/applications/:id", &controllers.ApplicationController{}, "post:ChangeApplicationStatus")
 

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"backend/models"
+	"backend/types"
 	"backend/validators"
 	"encoding/base64"
 	"net/http"
@@ -17,9 +18,131 @@ type ApplicationController struct {
 	web.Controller
 }
 
-func (c *ApplicationController) GetFreelancerApplications() {}
+func (c *ApplicationController) GetFreelancerApplications() {
 
-func (c *ApplicationController) GetFreelancerApplication() {}
+	userID := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(userID)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
+	if user.Role != "freelancer" {
+		c.Ctx.Output.SetStatus(http.StatusForbidden)
+		c.Ctx.Output.JSON(map[string]string{"error": "Only freelancer can access their applications"}, false, false)
+		return
+	}
+
+	applications, err := models.GetApplicationByUserID(userID)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error fetching jobs"}, false, false)
+		return
+	}
+
+	var applicationList []types.Application
+	for _, application := range applications {
+
+		attachment, err := models.GetAttachmentByApplicationID(application.Id)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": "Error fetching attachment"}, false, false)
+			return
+		}
+
+		var attachmentInfo *types.Attachment
+		if attachment != nil {
+			attachmentInfo = &types.Attachment{
+				ID:            attachment.Id,
+				ApplicationID: attachment.Application.Id,
+				FileName:      attachment.FileName,
+				FilePath:      attachment.FilePath,
+				CreatedAt:     attachment.CreatedAt,
+			}
+		}
+
+		applicationList = append(applicationList, types.Application{
+			ID:              application.Id,
+			UserID:          application.User.Id,
+			JobID:           application.Job.Id,
+			Description:     application.Description,
+			RejectionReason: application.RejectionReason,
+			Status:          application.Status,
+			CreatedAt:       application.CreatedAt,
+			Attachment:      attachmentInfo,
+		})
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Ctx.Output.JSON(applicationList, false, false)
+	c.ServeJSON()
+
+}
+
+func (c *ApplicationController) GetFreelancerApplication() {
+
+	applicationID, err := strconv.Atoi(c.Ctx.Input.Param(":id"))
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid application ID"}, false, false)
+		return
+	}
+
+	userID := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(userID)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
+
+	if user.Role != "freelancer" {
+		c.Ctx.Output.SetStatus(http.StatusForbidden)
+		c.Ctx.Output.JSON(map[string]string{"error": "Only freelancer can access their application details"}, false, false)
+		return
+	}
+
+	application, err := models.GetApplicationByID(applicationID)
+	if application == nil || err != nil || application.User.Id != userID {
+		c.Ctx.Output.SetStatus(http.StatusNotFound)
+		c.Ctx.Output.JSON(map[string]string{"error": "Application not found"}, false, false)
+		return
+	}
+
+	attachment, err := models.GetAttachmentByApplicationID(application.Id)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+		c.Ctx.Output.JSON(map[string]string{"error": "Error fetching attachment"}, false, false)
+		return
+	}
+	var attachmentInfo *types.Attachment
+	if attachment != nil {
+		attachmentInfo = &types.Attachment{
+			ID:            attachment.Id,
+			ApplicationID: attachment.Application.Id,
+			FileName:      attachment.FileName,
+			FilePath:      attachment.FilePath,
+			CreatedAt:     attachment.CreatedAt,
+		}
+	}
+
+	applicationInfo := types.Application{
+		ID:              application.Id,
+		UserID:          application.User.Id,
+		JobID:           application.Job.Id,
+		Description:     application.Description,
+		RejectionReason: application.RejectionReason,
+		Status:          application.Status,
+		CreatedAt:       application.CreatedAt,
+		Attachment:      attachmentInfo,
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Ctx.Output.JSON(applicationInfo, false, false)
+	c.ServeJSON()
+
+}
 
 func (c *ApplicationController) SubmitApplication() {
 
@@ -35,8 +158,12 @@ func (c *ApplicationController) SubmitApplication() {
 		c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
 		return
 	}
-	
-	// Can apply only to open jobs
+
+	if job.Status != "open" {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Job is not open for applications"}, false, false)
+		return
+	}
 
 	userID := c.Ctx.Input.GetData("id").(int)
 	user, err := models.GetUserById(userID)
@@ -284,18 +411,122 @@ func (c *ApplicationController) DeleteApplication() {
 
 func (c *ApplicationController) ChangeApplicationStatus() {
 
-	// only CLIENT can change and only STATUS + rejection reason
+	changeApplicationStatusRequest, err := validators.ChangeApplicationStatusValidator(c.Ctx.Input.RequestBody)
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": err.Error()}, false, false)
+		return
+	}
 
-	// CHECK application.Job.Client.Id == user.Id
-	// CHECK application.Job.Status == "open"
+	applicationID, err := strconv.Atoi(c.Ctx.Input.Param(":id"))
+	if err != nil {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "Invalid application ID"}, false, false)
+		return
+	}
 
-	// if applications status is accepted or rejected it cannot be changed
+	userID := c.Ctx.Input.GetData("id").(int)
+	user, err := models.GetUserById(userID)
+	if user == nil || err != nil {
+		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
+		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
+		return
+	}
 
-	// if rejected it can be only changed to accepted or rejected
+	if user.Role != "client" {
+		c.Ctx.Output.SetStatus(http.StatusForbidden)
+		c.Ctx.Output.JSON(map[string]string{"error": "Only clients can change application status"}, false, false)
+		return
+	}
 
-	// when rejected -> change status + add rejection reason ( if present )
-	// when accepeted ->
-	// change status, reject ALL other applications and add some basic same rejection reason
-	// also add that freelancer to the job and change status to "in progress"
+	application, err := models.GetApplicationByID(applicationID)
+	if err != nil || application == nil {
+		c.Ctx.Output.SetStatus(http.StatusNotFound)
+		c.Ctx.Output.JSON(map[string]string{"error": "Application not found"}, false, false)
+		return
+	}
+
+	if application.Job.Client.Id != user.Id {
+		c.Ctx.Output.SetStatus(http.StatusForbidden)
+		c.Ctx.Output.JSON(map[string]string{"error": "You can only change application status of your jobs"}, false, false)
+		return
+	}
+
+	if application.Job.Status != "open" {
+		c.Ctx.Output.SetStatus(http.StatusForbidden)
+		c.Ctx.Output.JSON(map[string]string{"error": "You can only change application status of open jobs"}, false, false)
+		return
+	}
+
+	if application.Status != "pending" {
+		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.JSON(map[string]string{"error": "You can only change application status of pending applications"}, false, false)
+		return
+	}
+
+	if changeApplicationStatusRequest.Status == "rejected" {
+
+		if changeApplicationStatusRequest.RejectionReason == "" { // if no reason is provided, set a default one
+			application.RejectionReason = "Your application was rejected."
+		} else {
+			application.RejectionReason = changeApplicationStatusRequest.RejectionReason
+		}
+
+		application.Status = "rejected"
+
+		err = models.UpdateApplication(application)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": "Failed to update application status"}, false, false)
+			return
+		}
+
+	} else if changeApplicationStatusRequest.Status == "accepted" {
+
+		// reject all other applications for this job
+		applications, err := models.GetApplicationsByJobID(application.Job.Id)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": "Failed to get applications for this job"}, false, false)
+			return
+		}
+		for _, app := range applications {
+			if app.Id != applicationID && app.Status == "pending" {
+
+				app.Status = "rejected"
+				app.RejectionReason = "Your application was automatically rejected because another application was accepted."
+
+				err = models.UpdateApplication(&app)
+				if err != nil {
+					c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+					c.Ctx.Output.JSON(map[string]string{"error": "Failed to reject other applications"}, false, false)
+					return
+				}
+			}
+		}
+
+		// update the status of the accepted application
+		application.Status = "accepted"
+		application.Job.Status = "in-progress"
+		application.Job.Freelancer = application.User
+
+		err = models.UpdateApplication(application)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": "Failed to update application status"}, false, false)
+			return
+		}
+		err = models.UpdateJob(application.Job)
+		if err != nil {
+			c.Ctx.Output.SetStatus(http.StatusInternalServerError)
+			c.Ctx.Output.JSON(map[string]string{"error": "Failed to update job status"}, false, false)
+			return
+		}
+
+	}
+
+	c.Ctx.Output.SetStatus(http.StatusOK)
+	c.Ctx.Output.JSON(map[string]string{"message": "Application status updated successfully"}, false, false)
+	c.ServeJSON()
 
 }

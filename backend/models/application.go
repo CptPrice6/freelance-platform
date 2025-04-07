@@ -94,7 +94,38 @@ func GetApplicationByID(applicationID int) (*Application, error) {
 		return nil, err
 	}
 
+	_, err = o.LoadRelated(&application, "User")
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = o.LoadRelated(&application, "Job")
+	if err != nil {
+		return nil, err
+	}
+
 	return &application, nil
+}
+
+func GetApplicationByUserID(userID int) ([]Application, error) {
+	o := orm.NewOrm()
+	var applications []Application
+
+	_, err := o.QueryTable(new(Application)).
+		Filter("User__Id", userID).All(&applications)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range applications {
+		_, err := o.LoadRelated(&applications[i], "Job")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return applications, nil
 }
 
 func UpdateApplication(application *Application) error {
