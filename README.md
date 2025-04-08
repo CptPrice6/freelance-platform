@@ -20,7 +20,7 @@ This is a **Freelance Platform** developed as part of a university project. The 
 
 ✔ **User Authentication:** Clients & Freelancers can register and log in.  
 ✔ **Job Management:** Clients can post, edit, and delete jobs.  
-✔ **Applications:** Freelancers can browse and apply for jobs with a proposal & bid.  
+✔ **Applications:** Freelancers can browse and apply for jobs. 
 ✔ **Role-Based Access:** Different permissions for Clients, Freelancers (PrivateRoute) and Admins (AdminRoute).  
 ✔ **Database ORM:** Efficient data handling using Beego's ORM.  
 ✔ **File Uploads:** Attachments for applications.  
@@ -50,6 +50,7 @@ This is a **Freelance Platform** developed as part of a university project. The 
 │   ├── src/
 │   │   ├── components/      # Reusable components
 │   │   ├── pages/           # Page-level components
+│   │   ├── styles/          # CSS styling files for pages
 │   │   ├── utils/           # Utility functions
 │   │   ├── App.js           # Main React component
 │   │   └── index.js         # Entry point
