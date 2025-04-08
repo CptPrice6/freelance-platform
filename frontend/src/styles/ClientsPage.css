@@ -1,6 +1,7 @@
 .client-section-title {
   background: linear-gradient(145deg, #12a2db, #04023b);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   font-size: 2rem;
   font-weight: bold;

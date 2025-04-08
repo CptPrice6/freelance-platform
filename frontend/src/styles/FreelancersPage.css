@@ -1,6 +1,7 @@
 .freelancer-section-title {
   background: linear-gradient(145deg, #2c9149, #052d0e);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   font-size: 2rem;
   font-weight: bold;

@@ -1,6 +1,7 @@
 .job-section-title {
   background: linear-gradient(145deg, #181b49, #020011);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   font-size: 2rem;
   font-weight: bold;
