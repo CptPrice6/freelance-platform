@@ -23,7 +23,7 @@ const FreelancerPublicPage = () => {
     <Container className="py-5 d-flex justify-content-center">
       <Card className="public-freelancer-card shadow-lg p-4">
         <Card.Body>
-          <h2 className="text-center text-primary">
+          <h2 className="text-center">
             {freelancer.name} {freelancer.surname}{" "}
           </h2>
           <h5 className="text-center text-muted">

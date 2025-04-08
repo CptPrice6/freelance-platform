@@ -24,7 +24,9 @@ const FreelancersPage = () => {
 
   return (
     <Container className="py-5">
-      <h2 className="text-center mb-4 section-title">Meet Our Freelancers</h2>
+      <h2 className="text-center mb-4 freelancer-section-title">
+        Meet Our Freelancers
+      </h2>
 
       <Row>
         {currentFreelancers.map((freelancer) => (

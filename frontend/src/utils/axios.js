@@ -104,6 +104,7 @@ axiosInstance.interceptors.response.use(
     }
 
     // If the error is not a 401 or another issue, reject the promise
+    window.location.href = "/";
     return Promise.reject(error);
   }
 );

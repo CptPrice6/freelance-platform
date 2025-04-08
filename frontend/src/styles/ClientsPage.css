@@ -1,5 +1,7 @@
-.section-title {
-  color: #007bff;
+.client-section-title {
+  background: linear-gradient(145deg, #12a2db, #04023b);
+  -webkit-background-clip: text;
+  color: transparent;
   font-size: 2rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -8,10 +10,10 @@
 }
 
 .client-card {
-  background: white;
+  background: linear-gradient(180deg, #f7fbff 0%, #edf7ff 100%);
   border-radius: 12px;
   border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   cursor: pointer;
 }

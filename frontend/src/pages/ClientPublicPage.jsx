@@ -20,7 +20,7 @@ const ClientPublicPage = () => {
     <Container className="py-5 d-flex justify-content-center">
       <Card className="public-client-card shadow-lg p-4">
         <Card.Body>
-          <h2 className="text-center text-primary">
+          <h2 className="text-center">
             {client.name} {client.surname}
           </h2>
           <h5 className="text-center text-muted">
