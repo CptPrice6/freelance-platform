@@ -21,7 +21,9 @@ const ClientsPage = () => {
 
   return (
     <Container className="py-5">
-      <h2 className="text-center mb-4 section-title">Our Valued Clients</h2>
+      <h2 className="text-center mb-4 client-section-title">
+        Our Valued Clients
+      </h2>
 
       <Row>
         {currentClients.map((client) => (

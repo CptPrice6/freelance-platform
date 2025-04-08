@@ -13,6 +13,9 @@ import FreelancersPage from "./pages/FreelancersPage";
 import FreelancerPublicPage from "./pages/FreelancerPublicPage";
 import ClientsPage from "./pages/ClientsPage";
 import ClientPublicPage from "./pages/ClientPublicPage";
+import DownloadAttachment from "./pages/DownloadAttachment";
+import JobsPage from "./pages/JobsPage";
+import JobPublicPage from "./pages/JobPublicPage";
 
 function App() {
   return (
@@ -43,19 +46,11 @@ function App() {
             />
             <Route
               path="/jobs"
-              element={<PrivateRoute element={<ProfileSettings />} />}
+              element={<PrivateRoute element={<JobsPage />} />}
             />
             <Route
               path="/jobs/:id"
-              element={<PrivateRoute element={<ProfileSettings />} />}
-            />
-            <Route
-              path="/clients"
-              element={<PrivateRoute element={<FreelancersPage />} />}
-            />
-            <Route
-              path="/clients/:id"
-              element={<PrivateRoute element={<ProfileSettings />} />}
+              element={<PrivateRoute element={<JobPublicPage />} />}
             />
 
             <Route
@@ -68,7 +63,7 @@ function App() {
             />
             <Route
               path="/freelancer/jobs"
-              element={<PrivateRoute element={<ProfileSettings />} />}
+              element={<PrivateRoute element={<DownloadAttachment />} />}
             />
             <Route
               path="/freelancer/jobs/:id"
