@@ -16,6 +16,7 @@ import ClientPublicPage from "./pages/ClientPublicPage";
 import DownloadAttachment from "./pages/DownloadAttachment";
 import JobsPage from "./pages/JobsPage";
 import JobPublicPage from "./pages/JobPublicPage";
+import ClientJobsPage from "./pages/ClientJobsPage";
 
 function App() {
   return (
@@ -76,7 +77,7 @@ function App() {
             />
             <Route
               path="/client/jobs"
-              element={<PrivateRoute element={<ProfileSettings />} />}
+              element={<PrivateRoute element={<ClientJobsPage />} />}
             />
             <Route
               path="/client/jobs/:id"

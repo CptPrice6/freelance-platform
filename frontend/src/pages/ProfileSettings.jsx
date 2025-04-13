@@ -1,14 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axiosInstance from "../utils/axios";
+import {
+  Container,
+  Card,
+  Row,
+  Col,
+  Form,
+  Button,
+  Alert,
+} from "react-bootstrap";
+import "../styles/Dashboard.css"; // use dashboard styles for consistent design
 
 function ProfileSettings() {
   const [user, setUser] = useState(null);
-  const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [updateError, setUpdateError] = useState("");
   const [updateSuccess, setUpdateSuccess] = useState("");
+  const [editingEmail, setEditingEmail] = useState(false);
+  const emailRef = useRef(null);
 
   useEffect(() => {
     fetchSettings();
@@ -17,75 +28,55 @@ function ProfileSettings() {
   const fetchSettings = () => {
     axiosInstance
       .get("/user")
-      .then((response) => {
-        setUser(response.data);
-        setEmail(response.data.email);
+      .then((res) => {
+        setUser(res.data);
+        setEmail(res.data.email);
       })
       .catch((err) => {
-        const errorMessage = err.response?.data?.error || err.message;
-        setError(errorMessage);
+        setUpdateError(
+          err.response?.data?.error || "Failed to load user data."
+        );
       });
   };
 
-  // Handle email update
-  const handleEmailSubmit = (e) => {
-    e.preventDefault();
-
-    if (!email) {
-      setUpdateSuccess("");
-      setUpdateError("Email cannot be empty.");
-      return;
-    }
+  const handleEmailSave = () => {
     if (email === user.email) {
-      setUpdateSuccess("");
-      setUpdateError("No changes were made to the email.");
+      setEditingEmail(false);
       return;
     }
-
-    const updatedData = { email };
 
     axiosInstance
-      .put("/user", updatedData)
+      .put("/user", { email })
       .then(() => {
-        setUser((prevUser) => ({
-          ...prevUser,
-          email: email,
-        }));
-        setUpdateSuccess("Email updated successfully.");
+        fetchSettings();
         setUpdateError("");
+        setUser((prev) => ({ ...prev, email }));
       })
       .catch((err) => {
         fetchSettings();
-        setUpdateError(
-          err.response?.data?.error || "An unknown error occurred."
-        );
+        setUpdateError(err.response?.data?.error || "An error occurred.");
         setUpdateSuccess("");
-      });
+      })
+      .finally(() => setEditingEmail(false));
   };
 
   const handlePasswordSubmit = (e) => {
     e.preventDefault();
-
-    if (!password || !newPassword) {
-      setUpdateSuccess("");
-      setUpdateError("Please provide both old and new passwords.");
-      return;
-    }
-
-    const updatedData = { password, new_password: newPassword };
+    if (!password || !newPassword)
+      return setUpdateError("Both fields are required.");
 
     axiosInstance
-      .put("/user", updatedData)
+      .put("/user", { password, new_password: newPassword })
       .then(() => {
+        fetchSettings();
         setUpdateSuccess("Password updated successfully.");
         setUpdateError("");
         setPassword("");
         setNewPassword("");
       })
       .catch((err) => {
-        setUpdateError(
-          err.response?.data?.error || "An unknown error occurred."
-        );
+        fetchSettings();
+        setUpdateError(err.response?.data?.error || "An error occurred.");
         setUpdateSuccess("");
       });
   };
@@ -95,119 +86,141 @@ function ProfileSettings() {
       axiosInstance
         .delete("/user")
         .then(() => {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("refreshToken");
-          localStorage.removeItem("role");
-
+          localStorage.clear();
           window.location.replace("/");
-
-          setUser(null);
-
-          alert("Your account has been deleted.");
         })
         .catch((err) => {
-          setError(
-            err.response?.data?.error ||
-              "An unknown error occurred during deletion."
+          setUpdateError(
+            err.response?.data?.error || "Account deletion failed."
           );
         });
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h1>Profile Settings</h1>
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
+    <Container
+      fluid
+      className="d-flex flex-column align-items-center p-5"
+      style={{ backgroundColor: "#f8f9fa" }}
+    >
+      <h2 className="mb-4 text-center text-primary">Profile Settings</h2>
+
+      {(updateError || updateSuccess) && (
+        <Alert
+          variant={updateError ? "danger" : "success"}
+          onClose={() => {
+            setUpdateError("");
+            setUpdateSuccess("");
+          }}
+          dismissible
+        >
+          {updateError || updateSuccess}
+        </Alert>
       )}
 
-      {user ? (
-        <div>
-          <p>
-            <strong>Email:</strong> {user.email}
-          </p>
+      <Card
+        className="p-4 shadow-lg w-100"
+        style={{
+          maxWidth: "800px",
+          borderRadius: "12px",
+          backgroundColor: "#fff",
+          overflow: "hidden",
+        }}
+      >
+        {user && (
+          <>
+            {/* Email Row */}
+            <Row className="align-items-center mb-4">
+              <Col md={4} className="d-flex align-items-center">
+                <label className="fw-bold text-dark">Email:</label>
+              </Col>
+              <Col md={8} className="d-flex align-items-center">
+                {editingEmail ? (
+                  <Form.Control
+                    type="email"
+                    className="form-control"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onBlur={handleEmailSave}
+                    onKeyDown={(e) => e.key === "Enter" && handleEmailSave()}
+                    ref={emailRef}
+                    autoFocus
+                    required
+                  />
+                ) : (
+                  <div
+                    className="me-2 flex-grow-1 field-box"
+                    onClick={() => setEditingEmail(true)}
+                  >
+                    {email}
+                  </div>
+                )}
+                <Button
+                  variant="outline-primary btn-sm"
+                  onClick={() => setEditingEmail(true)}
+                  style={{ marginLeft: "10px" }}
+                >
+                  ✏️
+                </Button>
+              </Col>
+            </Row>
 
-          {/* Email Update Section */}
-          <section>
-            <h3>Update Email</h3>
-            <form onSubmit={handleEmailSubmit}>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">
-                  Change Email:
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  className="form-control"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)} // Update email state
-                />
-              </div>
-              <button type="submit" className="btn btn-primary">
-                Update Email
-              </button>
-            </form>
-          </section>
+            {/* Password Update */}
+            <h5 className="section-heading mt-4 mb-3">Update Password</h5>
+            <Form onSubmit={handlePasswordSubmit}>
+              <Row className="mb-4 align-items-center">
+                <Col md={4}>
+                  <label className="fw-bold text-dark">Old Password:</label>
+                </Col>
+                <Col md={8}>
+                  <Form.Control
+                    type="password"
+                    className="form-control"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </Col>
+              </Row>
 
-          {/* Password Update Section */}
-          <section className="mt-5">
-            <h3>Update Password</h3>
-            <form onSubmit={handlePasswordSubmit}>
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Old Password:
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  className="form-control"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)} // Update old password state
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="new_password" className="form-label">
-                  New Password:
-                </label>
-                <input
-                  type="password"
-                  id="new_password"
-                  className="form-control"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)} // Update new password state
-                />
-              </div>
-              <button type="submit" className="btn btn-primary">
-                Update Password
-              </button>
-            </form>
-          </section>
+              <Row className="mb-4 align-items-center">
+                <Col md={4}>
+                  <label className="fw-bold text-dark">New Password:</label>
+                </Col>
+                <Col md={8}>
+                  <Form.Control
+                    type="password"
+                    className="form-control"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                  />
+                </Col>
+              </Row>
 
-          {/* Display Success/Error Messages */}
-          {updateError && (
-            <div className="alert alert-danger mt-3" role="alert">
-              {updateError}
-            </div>
-          )}
-          {updateSuccess && (
-            <div className="alert alert-success mt-3" role="alert">
-              {updateSuccess}
-            </div>
-          )}
+              <Row className="mb-4">
+                <Col md={{ span: 8, offset: 4 }}>
+                  <Button variant="primary" type="submit">
+                    Update
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
 
-          {/* Delete Account Section */}
-          <section className="mt-5">
-            <button className="btn btn-danger" onClick={handleDeleteAccount}>
-              Delete Account
-            </button>
-          </section>
-        </div>
-      ) : (
-        <p>Loading user data...</p>
-      )}
-    </div>
+            <hr />
+
+            {/* Delete Account */}
+            <Row className="mt-3">
+              <Col md={4}>
+                <Button variant="outline-danger" onClick={handleDeleteAccount}>
+                  Delete Account
+                </Button>
+              </Col>
+            </Row>
+          </>
+        )}
+      </Card>
+    </Container>
   );
 }
 
