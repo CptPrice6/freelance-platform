@@ -66,10 +66,6 @@ function App() {
               path="/freelancer/jobs"
               element={<PrivateRoute element={<DownloadAttachment />} />}
             />
-            <Route
-              path="/freelancer/jobs/:id"
-              element={<PrivateRoute element={<ProfileSettings />} />}
-            />
 
             <Route
               path="/client/dashboard"
