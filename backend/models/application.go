@@ -57,7 +57,7 @@ func GetApplicationsByJobID(jobID int) ([]Application, error) {
 	var applications []Application
 
 	_, err := o.QueryTable(new(Application)).
-		Filter("Job__Id", jobID).All(&applications)
+		Filter("Job__Id", jobID).OrderBy("id").All(&applications)
 
 	if err != nil {
 		return nil, err
@@ -107,12 +107,12 @@ func GetApplicationByID(applicationID int) (*Application, error) {
 	return &application, nil
 }
 
-func GetApplicationByUserID(userID int) ([]Application, error) {
+func GetApplicationsByUserID(userID int) ([]Application, error) {
 	o := orm.NewOrm()
 	var applications []Application
 
 	_, err := o.QueryTable(new(Application)).
-		Filter("User__Id", userID).All(&applications)
+		Filter("User__Id", userID).OrderBy("id").All(&applications)
 
 	if err != nil {
 		return nil, err

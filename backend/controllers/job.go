@@ -94,8 +94,9 @@ func (c *JobController) GetJobHandler() {
 			// Allow freelancers to access their applied job
 		} else if user.Role == "client" && job.Client.Id == user.Id {
 			// Allow client to access their own job
-			// Add else if for admins and allow to access, then else -> not found
-		} else  {
+		} else if user.Role == "admin" {
+			// Allow admins to access all jobs
+		} else {
 			c.Ctx.Output.SetStatus(http.StatusNotFound)
 			c.Ctx.Output.JSON(map[string]string{"error": "Job not found"}, false, false)
 			return

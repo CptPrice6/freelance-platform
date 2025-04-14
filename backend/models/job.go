@@ -164,7 +164,7 @@ func GetJobsByClientID(clientID int) ([]Job, error) {
 	o := orm.NewOrm()
 	var jobs []Job
 
-	_, err := o.QueryTable(new(Job)).Filter("Client__Id", clientID).All(&jobs)
+	_, err := o.QueryTable(new(Job)).Filter("Client__Id", clientID).OrderBy("id").All(&jobs)
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +183,7 @@ func GetJobsByFreelancerID(freelancerID int) ([]Job, error) {
 	o := orm.NewOrm()
 	var jobs []Job
 
-	_, err := o.QueryTable(new(Job)).Filter("Freelancer__Id", freelancerID).All(&jobs)
+	_, err := o.QueryTable(new(Job)).Filter("Freelancer__Id", freelancerID).OrderBy("id").All(&jobs)
 	if err != nil {
 		return nil, err
 	}

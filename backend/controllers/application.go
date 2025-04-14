@@ -34,7 +34,7 @@ func (c *ApplicationController) GetFreelancerApplications() {
 		return
 	}
 
-	applications, err := models.GetApplicationByUserID(userID)
+	applications, err := models.GetApplicationsByUserID(userID)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
 		c.Ctx.Output.JSON(map[string]string{"error": "Error fetching jobs"}, false, false)

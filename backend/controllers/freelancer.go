@@ -99,12 +99,12 @@ func (c *FreelancerController) GetFreelancerHandler() {
 
 	user, err := models.GetUserById(userID)
 	if user == nil || err != nil {
-		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.SetStatus(http.StatusNotFound)
 		c.Ctx.Output.JSON(map[string]string{"error": "User not found"}, false, false)
 		return
 	}
 	if user.Role != "freelancer" {
-		c.Ctx.Output.SetStatus(http.StatusBadRequest)
+		c.Ctx.Output.SetStatus(http.StatusNotFound)
 		c.Ctx.Output.JSON(map[string]string{"error": "Freelancer not found"}, false, false)
 		return
 	}
