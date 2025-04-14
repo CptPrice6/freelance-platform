@@ -1,19 +1,46 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../utils/axios";
-import { Card, Container, Row, Col, Pagination } from "react-bootstrap";
+import { Card, Container, Row, Col, Pagination, Alert } from "react-bootstrap";
 import "../styles/ClientsPage.css";
 import { Link } from "react-router-dom";
 
 const ClientsPage = () => {
-  const [clients, setClients] = useState([]);
+  const [clients, setClients] = useState(null);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const clientsPerPage = 9;
 
   useEffect(() => {
-    axiosInstance.get("/clients").then((res) => {
-      setClients(res.data);
-    });
+    const fetchClients = async () => {
+      try {
+        const res = await axiosInstance.get("/clients");
+        setClients(res.data || []);
+      } catch (err) {
+        setError("Failed to load clients. Please try again later.");
+        setClients([]);
+      }
+    };
+
+    fetchClients();
   }, []);
+
+  if (clients === null) {
+    return <p className="text-center mt-5">Loading...</p>;
+  }
+
+  if (error) {
+    return (
+      <Container className="py-5">
+        <Alert variant="danger" className="text-center">
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (clients.length === 0) {
+    return <p className="text-center mt-5 text-muted">No clients found.</p>;
+  }
 
   const indexOfLastClient = currentPage * clientsPerPage;
   const indexOfFirstClient = indexOfLastClient - clientsPerPage;

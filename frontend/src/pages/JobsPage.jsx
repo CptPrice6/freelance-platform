@@ -8,12 +8,14 @@ import {
   Pagination,
   Form,
   DropdownButton,
+  Alert,
 } from "react-bootstrap";
 import "../styles/JobsPage.css";
 import { Link } from "react-router-dom";
 
 const JobsPage = () => {
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState(null);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     type: [],
@@ -24,12 +26,19 @@ const JobsPage = () => {
   const jobsPerPage = 9;
 
   useEffect(() => {
-    axiosInstance.get("/jobs").then((res) => {
-      setJobs(res.data);
-    });
+    const fetchJobs = async () => {
+      try {
+        const res = await axiosInstance.get("/jobs");
+        setJobs(res.data || []);
+      } catch (err) {
+        setError("Failed to load jobs. Please try again later.");
+        setJobs([]);
+      }
+    };
+
+    fetchJobs();
   }, []);
 
-  // Formatters for displaying job info
   const formatHoursPerWeek = (value) => {
     if (!value) return "N/A";
     if (value === "<20") return "Less than 20 hours/week";
@@ -39,74 +48,76 @@ const JobsPage = () => {
 
   const formatProjectType = (type) => {
     if (!type) return "N/A";
-    if (type === "ongoing") return "Ongoing";
-    if (type === "one-time") return "One-Time";
-    return type;
+    return type === "ongoing" ? "Ongoing" : "One-Time";
   };
 
   const formatProjectLength = (length) => {
-    if (!length) return "N/A";
-    if (length === "<1") return "Less than 1 month";
-    if (length === "1-3") return "1–3 months";
-    if (length === "3-6") return "3–6 months";
-    if (length === "6-12") return "6–12 months";
-    if (length === "12+") return "More than 12 months";
-    return length;
+    switch (length) {
+      case "<1":
+        return "Less than 1 month";
+      case "1-3":
+        return "1–3 months";
+      case "3-6":
+        return "3–6 months";
+      case "6-12":
+        return "6–12 months";
+      case "12+":
+        return "More than 12 months";
+      default:
+        return "N/A";
+    }
   };
 
-  // Handle filter change for dropdowns with checkboxes
   const handleFilterChange = (e, filterName) => {
     const { value, checked } = e.target;
 
-    setFilters((prevFilters) => {
-      let updatedFilter = [...prevFilters[filterName]];
-
-      if (checked) {
-        updatedFilter.push(value);
-      } else {
-        updatedFilter = updatedFilter.filter((item) => item !== value);
-      }
-
-      return { ...prevFilters, [filterName]: updatedFilter };
+    setFilters((prev) => {
+      let updated = [...prev[filterName]];
+      updated = checked
+        ? [...updated, value]
+        : updated.filter((item) => item !== value);
+      return { ...prev, [filterName]: updated };
     });
   };
 
-  // Apply filters to the jobs list
-  const filteredJobs = jobs.filter((job) => {
-    // Filter by type
-    if (filters.type.length > 0 && !filters.type.includes(job.type))
+  const filteredJobs = (jobs || []).filter((job) => {
+    if (filters.type.length && !filters.type.includes(job.type)) return false;
+    if (filters.length.length && !filters.length.includes(job.length))
       return false;
-
-    // Filter by length
-    if (filters.length.length > 0 && !filters.length.includes(job.length))
-      return false;
-
-    // Filter by rate
-    if (filters.rate.length > 0 && !filters.rate.includes(job.rate))
-      return false;
-
-    // Filter by availability (hours per week)
+    if (filters.rate.length && !filters.rate.includes(job.rate)) return false;
     if (
-      filters.availability.length > 0 &&
+      filters.availability.length &&
       !filters.availability.includes(job.hours_per_week)
     )
       return false;
-
     return true;
   });
 
-  // Pagination logic
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
   const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
+
+  if (jobs === null) {
+    return <p className="text-center mt-5">Loading...</p>;
+  }
+
+  if (error) {
+    return (
+      <Container className="py-5">
+        <Alert variant="danger" className="text-center">
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
 
   return (
     <Container className="py-5">
       <h2 className="text-center mb-4 job-section-title">Available Jobs</h2>
 
-      {/* Filters Section */}
+      {/* Filters */}
       <Row className="mb-4">
-        {/* Project Type Dropdown */}
+        {/* Project Type Filter */}
         <Col md={3}>
           <DropdownButton
             variant="secondary"
@@ -134,7 +145,7 @@ const JobsPage = () => {
           </DropdownButton>
         </Col>
 
-        {/* Project Length Dropdown */}
+        {/* Project Length Filter */}
         <Col md={3}>
           <DropdownButton
             variant="secondary"
@@ -145,45 +156,26 @@ const JobsPage = () => {
                 : "Select Project Length"
             }
           >
-            <Form.Check
-              type="checkbox"
-              label="Less than 1 month"
-              value="<1"
-              checked={filters.length.includes("<1")}
-              onChange={(e) => handleFilterChange(e, "length")}
-            />
-            <Form.Check
-              type="checkbox"
-              label="1–3 months"
-              value="1-3"
-              checked={filters.length.includes("1-3")}
-              onChange={(e) => handleFilterChange(e, "length")}
-            />
-            <Form.Check
-              type="checkbox"
-              label="3–6 months"
-              value="3-6"
-              checked={filters.length.includes("3-6")}
-              onChange={(e) => handleFilterChange(e, "length")}
-            />
-            <Form.Check
-              type="checkbox"
-              label="6–12 months"
-              value="6-12"
-              checked={filters.length.includes("6-12")}
-              onChange={(e) => handleFilterChange(e, "length")}
-            />
-            <Form.Check
-              type="checkbox"
-              label="More than 12 months"
-              value="12+"
-              checked={filters.length.includes("12+")}
-              onChange={(e) => handleFilterChange(e, "length")}
-            />
+            {[
+              { label: "Less than 1 month", value: "<1" },
+              { label: "1–3 months", value: "1-3" },
+              { label: "3–6 months", value: "3-6" },
+              { label: "6–12 months", value: "6-12" },
+              { label: "More than 12 months", value: "12+" },
+            ].map(({ label, value }) => (
+              <Form.Check
+                key={value}
+                type="checkbox"
+                label={label}
+                value={value}
+                checked={filters.length.includes(value)}
+                onChange={(e) => handleFilterChange(e, "length")}
+              />
+            ))}
           </DropdownButton>
         </Col>
 
-        {/* Rate Dropdown */}
+        {/* Rate Filter */}
         <Col md={3}>
           <DropdownButton
             variant="secondary"
@@ -211,7 +203,7 @@ const JobsPage = () => {
           </DropdownButton>
         </Col>
 
-        {/* Availability Dropdown */}
+        {/* Availability Filter */}
         <Col md={3}>
           <DropdownButton
             variant="secondary"
@@ -222,46 +214,27 @@ const JobsPage = () => {
                 : "Select Availability"
             }
           >
-            <Form.Check
-              type="checkbox"
-              label="Less than 20 hours/week"
-              value="<20"
-              checked={filters.availability.includes("<20")}
-              onChange={(e) => handleFilterChange(e, "availability")}
-            />
-            <Form.Check
-              type="checkbox"
-              label="20-40hours/week"
-              value="20-40"
-              checked={filters.availability.includes("20-40")}
-              onChange={(e) => handleFilterChange(e, "availability")}
-            />
-            <Form.Check
-              type="checkbox"
-              label="40-60hours/week"
-              value="40-60"
-              checked={filters.availability.includes("40-60")}
-              onChange={(e) => handleFilterChange(e, "availability")}
-            />
-            <Form.Check
-              type="checkbox"
-              label="60-80hours/week"
-              value="60-80"
-              checked={filters.availability.includes("60-80")}
-              onChange={(e) => handleFilterChange(e, "availability")}
-            />
-            <Form.Check
-              type="checkbox"
-              label="More than 80 hours/week"
-              value="80+"
-              checked={filters.availability.includes("80+")}
-              onChange={(e) => handleFilterChange(e, "availability")}
-            />
+            {[
+              { label: "Less than 20 hours/week", value: "<20" },
+              { label: "20–40 hours/week", value: "20-40" },
+              { label: "40–60 hours/week", value: "40-60" },
+              { label: "60–80 hours/week", value: "60-80" },
+              { label: "More than 80 hours/week", value: "80+" },
+            ].map(({ label, value }) => (
+              <Form.Check
+                key={value}
+                type="checkbox"
+                label={label}
+                value={value}
+                checked={filters.availability.includes(value)}
+                onChange={(e) => handleFilterChange(e, "availability")}
+              />
+            ))}
           </DropdownButton>
         </Col>
       </Row>
 
-      {/* No jobs found message */}
+      {/* Empty State */}
       {filteredJobs.length === 0 ? (
         <div className="text-center my-4">
           <p>No suitable jobs were found.</p>
@@ -283,19 +256,19 @@ const JobsPage = () => {
                         • {job.rate}
                       </p>
                       <p className="job-meta">
-                        <strong>Project Type:</strong>
+                        <strong>Project Type:</strong>{" "}
                         <span className="job-meta-value">
                           {formatProjectType(job.type)}
                         </span>
                       </p>
                       <p className="job-meta">
-                        <strong>Project Length:</strong>
+                        <strong>Project Length:</strong>{" "}
                         <span className="job-meta-value">
                           {formatProjectLength(job.length)}
                         </span>
                       </p>
                       <p className="job-meta">
-                        <strong>Availability:</strong>
+                        <strong>Availability:</strong>{" "}
                         <span className="job-meta-value">
                           {formatHoursPerWeek(job.hours_per_week)}
                         </span>

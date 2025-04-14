@@ -1,19 +1,46 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../utils/axios";
-import { Card, Container, Row, Col, Pagination } from "react-bootstrap";
+import { Card, Container, Row, Col, Pagination, Alert } from "react-bootstrap";
 import "../styles/FreelancersPage.css";
 import { Link } from "react-router-dom";
 
 const FreelancersPage = () => {
-  const [freelancers, setFreelancers] = useState([]);
+  const [freelancers, setFreelancers] = useState(null);
+  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const freelancersPerPage = 9;
 
   useEffect(() => {
-    axiosInstance.get("/freelancers").then((res) => {
-      setFreelancers(res.data);
-    });
+    const fetchFreelancers = async () => {
+      try {
+        const res = await axiosInstance.get("/freelancers");
+        setFreelancers(res.data || []);
+      } catch (err) {
+        setError("Failed to load freelancers. Please try again later.");
+        setFreelancers([]);
+      }
+    };
+
+    fetchFreelancers();
   }, []);
+
+  if (freelancers === null) {
+    return <p className="text-center mt-5">Loading...</p>;
+  }
+
+  if (error) {
+    return (
+      <Container className="py-5">
+        <Alert variant="danger" className="text-center">
+          {error}
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (freelancers.length === 0) {
+    return <p className="text-center mt-5 text-muted">No freelancers found.</p>;
+  }
 
   const indexOfLastFreelancer = currentPage * freelancersPerPage;
   const indexOfFirstFreelancer = indexOfLastFreelancer - freelancersPerPage;
