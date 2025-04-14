@@ -28,15 +28,27 @@ const JobPublicPage = () => {
     if (role === "admin") setIsAdmin(true);
     if (role === "freelancer") setIsFreelancer(true);
 
-    axiosInstance.get(`/jobs/${id}`).then((res) => {
-      setJob(res.data);
-      if (role === "freelancer" && res.data.application_id !== 0) {
-        setIsApplied(true);
-      }
-    });
+    axiosInstance
+      .get(`/jobs/${id}`)
+      .then((res) => {
+        setJob(res.data);
+        if (role === "freelancer" && res.data.application_id !== 0) {
+          setIsApplied(true);
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.status === 404) {
+          setJob("not-found");
+        } else {
+          console.error("Failed to fetch job:", err);
+        }
+      });
   }, [id]);
 
-  if (!job) return <p className="text-center mt-5">Loading...</p>;
+  if (job === null) return <p className="text-center mt-5">Loading...</p>;
+  if (job === "not-found") {
+    return <p className="text-center mt-5 text-danger">Job not found.</p>;
+  }
 
   const handleApplyClick = () => {
     // Show the modal for applying to the job

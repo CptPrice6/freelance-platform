@@ -10,14 +10,29 @@ const FreelancerPublicPage = () => {
   const [skills, setSkills] = useState([]);
 
   useEffect(() => {
-    axiosInstance.get(`/freelancers/${id}`).then((res) => {
-      const freelancerData = res.data.freelancer_data;
-      setFreelancer(res.data);
-      setSkills(freelancerData.skills || []);
-    });
+    axiosInstance
+      .get(`/freelancers/${id}`)
+      .then((res) => {
+        const freelancerData = res.data.freelancer_data;
+        setFreelancer(res.data);
+        setSkills(freelancerData.skills || []);
+      })
+      .catch((err) => {
+        if (err.response && err.response.status === 404) {
+          setFreelancer("not-found");
+        } else {
+          console.error("Failed to fetch freelancer:", err);
+        }
+      });
   }, [id]);
 
-  if (!freelancer) return <p className="text-center mt-5">Loading...</p>;
+  if (freelancer === null)
+    return <p className="text-center mt-5">Loading...</p>;
+  if (freelancer === "not-found") {
+    return (
+      <p className="text-center mt-5 text-danger">Freelancer not found.</p>
+    );
+  }
 
   return (
     <Container className="py-5 d-flex justify-content-center">

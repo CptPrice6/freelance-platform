@@ -9,12 +9,24 @@ const ClientPublicPage = () => {
   const [client, setClient] = useState(null);
 
   useEffect(() => {
-    axiosInstance.get(`/clients/${id}`).then((res) => {
-      setClient(res.data);
-    });
+    axiosInstance
+      .get(`/clients/${id}`)
+      .then((res) => {
+        setClient(res.data);
+      })
+      .catch((err) => {
+        if (err.response && err.response.status === 404) {
+          setClient("not-found");
+        } else {
+          console.error("Failed to fetch client:", err);
+        }
+      });
   }, [id]);
 
-  if (!client) return <p className="text-center mt-5">Loading...</p>;
+  if (client === null) return <p className="text-center mt-5">Loading...</p>;
+  if (client === "not-found") {
+    return <p className="text-center mt-5 text-danger">Client not found.</p>;
+  }
 
   return (
     <Container className="py-5 d-flex justify-content-center">
