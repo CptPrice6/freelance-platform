@@ -13,10 +13,11 @@ import FreelancersPage from "./pages/FreelancersPage";
 import FreelancerPublicPage from "./pages/FreelancerPublicPage";
 import ClientsPage from "./pages/ClientsPage";
 import ClientPublicPage from "./pages/ClientPublicPage";
-import DownloadAttachment from "./pages/DownloadAttachment";
 import JobsPage from "./pages/JobsPage";
 import JobPublicPage from "./pages/JobPublicPage";
 import ClientJobsPage from "./pages/ClientJobsPage";
+import FreelancerJobsPage from "./pages/FreelancerJobsPage";
+import FreelancerApplicationsPage from "./pages/FreelancerApplicationsPage";
 
 function App() {
   return (
@@ -60,11 +61,13 @@ function App() {
             />
             <Route
               path="/freelancer/applications"
-              element={<PrivateRoute element={<ProfileSettings />} />}
+              element={
+                <PrivateRoute element={<FreelancerApplicationsPage />} />
+              }
             />
             <Route
               path="/freelancer/jobs"
-              element={<PrivateRoute element={<DownloadAttachment />} />}
+              element={<PrivateRoute element={<FreelancerJobsPage />} />}
             />
 
             <Route
