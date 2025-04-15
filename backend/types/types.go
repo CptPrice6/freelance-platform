@@ -199,6 +199,7 @@ type Application struct {
 	ID              int         `json:"id"`
 	UserID          int         `json:"user_id"`
 	JobID           int         `json:"job_id"`
+	JobTitle        string      `json:"job_title,omitempty"`
 	Description     string      `json:"description"`
 	RejectionReason string      `json:"rejection_reason"`
 	Status          string      `json:"status"`

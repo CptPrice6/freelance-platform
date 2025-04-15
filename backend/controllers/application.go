@@ -66,6 +66,7 @@ func (c *ApplicationController) GetFreelancerApplications() {
 			ID:              application.Id,
 			UserID:          application.User.Id,
 			JobID:           application.Job.Id,
+			JobTitle:        application.Job.Title,
 			Description:     application.Description,
 			RejectionReason: application.RejectionReason,
 			Status:          application.Status,
