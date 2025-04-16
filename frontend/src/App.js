@@ -18,6 +18,7 @@ import JobPublicPage from "./pages/JobPublicPage";
 import ClientJobsPage from "./pages/ClientJobsPage";
 import FreelancerJobsPage from "./pages/FreelancerJobsPage";
 import FreelancerApplicationsPage from "./pages/FreelancerApplicationsPage";
+import ClientJobPage from "./pages/ClientJobPage";
 
 function App() {
   return (
@@ -80,7 +81,7 @@ function App() {
             />
             <Route
               path="/client/jobs/:id"
-              element={<PrivateRoute element={<ProfileSettings />} />}
+              element={<PrivateRoute element={<ClientJobPage />} />}
             />
 
             <Route

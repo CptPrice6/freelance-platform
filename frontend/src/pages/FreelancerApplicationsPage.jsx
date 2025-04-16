@@ -13,7 +13,6 @@ import {
 import axiosInstance from "../utils/axios";
 import moment from "moment";
 import "../styles/FreelancerApplicationsPage.css";
-// TODO: Add rejection reason to modal!
 const FreelancerApplicationsPage = () => {
   const [applications, setApplications] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
@@ -193,7 +192,7 @@ const FreelancerApplicationsPage = () => {
                       <strong>ID:</strong> {app.id}
                     </p>
                     <p className="mb-0 text-muted">
-                      <strong>Submitted:</strong>{" "}
+                      <strong>Submitted at:</strong>{" "}
                       {moment(app.created_at).format("LLL")}
                     </p>
                   </Card.Body>
@@ -236,7 +235,9 @@ const FreelancerApplicationsPage = () => {
             </div>
 
             <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
+              <div>
+                <strong>Description:</strong>{" "}
+              </div>
               <Form.Control
                 as="textarea"
                 rows={4}
@@ -247,7 +248,9 @@ const FreelancerApplicationsPage = () => {
             </Form.Group>
 
             <div className="mb-3">
-              <Form.Label>Attachment</Form.Label>
+              <div>
+                <strong>Attachment:</strong>{" "}
+              </div>
               {selectedApp.attachment?.file_name ? (
                 <div>
                   <Button
@@ -278,6 +281,19 @@ const FreelancerApplicationsPage = () => {
                 {selectedApp.status}
               </Badge>
             </div>
+
+            {selectedApp.status === "rejected" &&
+              selectedApp.rejection_reason && (
+                <div className="mb-3">
+                  <strong>Rejection Reason:</strong>
+                  <Form.Control
+                    as="textarea"
+                    rows={4}
+                    value={selectedApp.rejection_reason}
+                    disabled
+                  />
+                </div>
+              )}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseModal}>
