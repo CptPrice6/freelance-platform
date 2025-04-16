@@ -13,7 +13,7 @@ import {
 import axiosInstance from "../utils/axios";
 import moment from "moment";
 import "../styles/FreelancerApplicationsPage.css";
-
+// TODO: Add rejection reason to modal!
 const FreelancerApplicationsPage = () => {
   const [applications, setApplications] = useState([]);
   const [selectedApp, setSelectedApp] = useState(null);
