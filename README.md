@@ -18,26 +18,26 @@ This is a **Freelance Platform** developed as part of a university project. The 
 
 ## Features
 
-✔ **User Authentication:** Clients & Freelancers can register and log in.  
+✔ **User Authentication:** Clients & Freelancers can register and log in.
+✔ **Admin functionality:** Admins can delete jobs, manage users and skills.
 ✔ **Job Management:** Clients can post, edit, and delete jobs.  
-✔ **Applications:** Freelancers can browse and apply for jobs. 
+✔ **Applications:** Freelancers can browse and apply for jobs.
 ✔ **Role-Based Access:** Different permissions for Clients, Freelancers (PrivateRoute) and Admins (AdminRoute).  
 ✔ **Database ORM:** Efficient data handling using Beego's ORM.  
-✔ **File Uploads:** Attachments for applications.  
-✔ **API Integration:** External APIs can be used for data retrieval.
+✔ **File Uploads:** Attachments for applications.
 
 ## Project Structure
 
 ```
 ├── backend/                 # Beego backend (GoLang)
-│   ├── controllers/         # Handles request logic
-│   ├── models/              # Database models (Users, Jobs, Applications)
-│   ├── routers/             # API routes
+│   ├── controllers/         # Request handlers
+│   ├── models/              # Database models (Users, Jobs, Applications etc.)
+│   ├── routers/             # routes
 │   ├── middleware/          # Authentication middleware
 │   ├── database/            # Database connections and configurations
 │   ├── migrations/          # Database migration files
 │   ├── seeder/              # Database seeding scripts
-│   ├── types/               # Type definitions for requests and responses
+│   ├── types/               # Type definitions for requests and responses or for valid values
 │   ├── utils/               # Utility functions
 │   ├── validators/          # Input validation logic
 │   ├── Dockerfile           # Docker configuration for backend
@@ -51,7 +51,7 @@ This is a **Freelance Platform** developed as part of a university project. The 
 │   │   ├── components/      # Reusable components
 │   │   ├── pages/           # Page-level components
 │   │   ├── styles/          # CSS styling files for pages
-│   │   ├── utils/           # Utility functions
+│   │   ├── utils/           # Axios instance functionality and other utility functions
 │   │   ├── App.js           # Main React component
 │   │   └── index.js         # Entry point
 │   ├── Dockerfile           # Docker configuration for frontend
