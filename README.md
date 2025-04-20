@@ -19,12 +19,19 @@ This is a **Freelance Platform** developed as part of a university project. The 
 ## Features
 
 ✔ **User Authentication:** Clients & Freelancers can register and log in.
+
 ✔ **Admin functionality:** Admins can delete jobs, manage users and skills.
+
 ✔ **Job Management:** Clients can post, edit, and delete jobs.  
+
 ✔ **Applications:** Freelancers can browse and apply for jobs.
+
 ✔ **Role-Based Access:** Different permissions for Clients, Freelancers (PrivateRoute) and Admins (AdminRoute).  
+
 ✔ **Database ORM:** Efficient data handling using Beego's ORM.  
+
 ✔ **File Uploads:** Attachments for applications.
+
 
 ## Project Structure
 
