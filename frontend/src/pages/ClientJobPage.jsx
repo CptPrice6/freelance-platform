@@ -429,7 +429,7 @@ const ClientJobPage = () => {
         </Tab>
 
         <Tab eventKey="applications" title="Applications">
-          {job.applications.length === 0 ? (
+          {!job.applications || job.applications.length === 0 ? (
             <p>No applications yet.</p>
           ) : (
             <Row>
@@ -659,20 +659,24 @@ const ClientJobPage = () => {
           <div className="mt-3">
             <label>Skills</label>
             <div className="d-flex flex-wrap gap-2">
-              {allSkills.map((skill) => (
-                <Button
-                  key={skill.id}
-                  size="sm"
-                  variant={
-                    formData.skills.some((s) => s.id === skill.id)
-                      ? "success"
-                      : "outline-secondary"
-                  }
-                  onClick={() => handleSkillToggle(skill.id)}
-                >
-                  {skill.name}
-                </Button>
-              ))}
+              {allSkills.length === 0 ? (
+                <p>No skills available. Please try again later.</p>
+              ) : (
+                allSkills.map((skill) => (
+                  <Button
+                    key={skill.id}
+                    size="sm"
+                    variant={
+                      formData.skills.some((s) => s.id === skill.id)
+                        ? "success"
+                        : "outline-secondary"
+                    }
+                    onClick={() => handleSkillToggle(skill.id)}
+                  >
+                    {skill.name}
+                  </Button>
+                ))
+              )}
             </div>
           </div>
         </Modal.Body>

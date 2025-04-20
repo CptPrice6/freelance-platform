@@ -169,7 +169,7 @@ const FreelancerApplicationsPage = () => {
       ) : (
         <>
           <Row>
-            {applications.map((app) => (
+            {currentApplications.map((app) => (
               <Col key={app.id} xs={12} className="mb-3">
                 <Card
                   onClick={() => handleCardClick(app)}

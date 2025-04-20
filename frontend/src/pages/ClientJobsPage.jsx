@@ -8,6 +8,7 @@ import {
   Pagination,
   Badge,
   Modal,
+  Button,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "../styles/ClientJobsPage.css";
@@ -326,18 +327,18 @@ const ClientJobsPage = () => {
                 <p>No skills available. Please try again later.</p>
               ) : (
                 allSkills.map((skill) => (
-                  <button
-                    type="button"
+                  <Button
                     key={skill.id}
-                    className={`btn btn-sm ${
+                    size="sm"
+                    variant={
                       formData.skills.some((s) => s.id === skill.id)
-                        ? "btn btn-success"
-                        : "btn btn-outline-secondary"
-                    }`}
+                        ? "success"
+                        : "outline-secondary"
+                    }
                     onClick={() => handleSkillToggle(skill.id)}
                   >
                     {skill.name}
-                  </button>
+                  </Button>
                 ))
               )}
             </div>
