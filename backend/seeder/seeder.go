@@ -47,17 +47,28 @@ func SeedUsers() {
 	}
 	if count == 0 {
 		roles := []string{"client", "freelancer", "admin"}
+
 		passwords := map[string]string{
 			"client":     "Client222",
 			"freelancer": "Freelancer222",
 			"admin":      "Admin222",
 		}
+		roleCounts := map[string]int{
+			"client":     45,
+			"freelancer": 45,
+			"admin":      10,
+		}
 
 		for _, role := range roles {
-			for range 10 {
+			for i := 0; i < roleCounts[role]; i++ {
 				user := models.User{}
 
-				user.Email = faker.Username() + "@gmail.com"
+				if i == 0 {
+					user.Email = role + "@gmail.com"
+				} else {
+					user.Email = faker.Username() + "@gmail.com"
+				}
+
 				user.Role = role
 				user.Ban = false
 				user.Name = faker.Name()
