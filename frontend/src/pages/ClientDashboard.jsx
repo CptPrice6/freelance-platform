@@ -17,7 +17,6 @@ const ClientDashboard = () => {
   const [updateError, setUpdateError] = useState(null);
   const inputRef = useRef(null);
 
-  // Function to fetch user and client data
   const fetchClient = () => {
     axiosInstance.get("/user").then((res) => {
       const userData = res.data;
@@ -65,7 +64,6 @@ const ClientDashboard = () => {
       });
   };
 
-  // Render Client Dashboard
   return (
     <Container
       fluid

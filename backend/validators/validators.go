@@ -169,7 +169,6 @@ func ValidateEmail(email string) error {
 }
 
 func ValidatePassword(password string) error {
-	// Create a new validator instance
 	v := validator.New(validator.MinLength(8, errors.New("Password must contain at least 8 characters")),
 		validator.MaxLength(20, errors.New("Password must not exceed 20 characters")),
 		validator.CommonPassword(errors.New("Password cannot be common, please choose something unique")),
@@ -177,7 +176,6 @@ func ValidatePassword(password string) error {
 		validator.ContainsAtLeast("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 1, errors.New("Password must contain at least one uppercase letter")),
 		validator.ContainsAtLeast("abcdefghijklmnopqrstuvwxyz", 1, errors.New("Password must contain at least one lowercase letter")),
 	)
-	// Applying validation rules
 	err := v.Validate(password)
 	if err != nil {
 		return err

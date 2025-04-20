@@ -37,7 +37,6 @@ func DeleteSkillByID(skillID int) error {
 
 	skill := Skill{Id: skillID}
 
-	// Delete the skill by ID
 	_, err := o.Delete(&skill)
 	if err != nil {
 		return err
@@ -49,7 +48,6 @@ func DeleteSkillByID(skillID int) error {
 func UpdateSkill(skill *Skill) error {
 	o := orm.NewOrm()
 
-	// Update skill
 	_, err := o.Update(skill)
 	if err != nil {
 		return err

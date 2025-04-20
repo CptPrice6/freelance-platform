@@ -51,7 +51,6 @@ const JobPublicPage = () => {
   }
 
   const handleApplyClick = () => {
-    // Show the modal for applying to the job
     setShowModal(true);
   };
 
@@ -82,7 +81,7 @@ const JobPublicPage = () => {
         alert("Application submitted successfully!");
         setTimeout(() => {
           window.location.href = "/freelancer/applications";
-        }, 1000); // waits 1 second before redirecting
+        }, 1000);
       })
       .catch((err) => {
         console.error(err);
@@ -91,12 +90,10 @@ const JobPublicPage = () => {
   };
 
   const handleDeleteJob = () => {
-    // Delete job request (for admin)
     axiosInstance
       .delete(`/admin/jobs/${id}`)
       .then(() => {
         alert("Job deleted successfully!");
-        // Redirect to the job listings or some other page
         window.location.href = "/jobs";
       })
       .catch((err) => console.log(err));
@@ -121,11 +118,9 @@ const JobPublicPage = () => {
   };
 
   const handleClientProfileClick = () => {
-    // Redirect to the client's profile page
     window.location.href = `/clients/${job.client_id}`;
   };
 
-  // Formatters for displaying job info
   const formatHoursPerWeek = (value) => {
     if (!value) return "N/A";
     if (value === "<20") return "Less than 20 hours/week";
@@ -152,12 +147,12 @@ const JobPublicPage = () => {
 
   const formatRate = (rate) => {
     if (!rate) return "N/A";
-    return rate.charAt(0).toUpperCase() + rate.slice(1); // Capitalize the rate
+    return rate.charAt(0).toUpperCase() + rate.slice(1);
   };
 
   const formatAmount = (amount, rate) => {
     if (!amount) return "N/A";
-    return rate === "hourly" ? `$${amount}/h` : `$${amount}`; // Add '/h' if hourly
+    return rate === "hourly" ? `$${amount}/h` : `$${amount}`;
   };
 
   return (

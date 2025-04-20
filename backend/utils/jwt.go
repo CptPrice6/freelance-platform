@@ -16,7 +16,6 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// GenerateJWT creates a new JWT token
 func GenerateAccessToken(id int, role string) (string, error) {
 	claims := Claims{
 		Id:        id,

@@ -180,7 +180,6 @@ func (c *ApplicationController) SubmitApplication() {
 		return
 	}
 
-	// Check if freelancer already applied
 	existingApplication, err := models.GetApplicationByUserAndJob(userID, submitApplicationRequest.JobID)
 
 	if err != nil {
@@ -202,7 +201,6 @@ func (c *ApplicationController) SubmitApplication() {
 		return
 	}
 
-	// Handle file (if provided)
 	if submitApplicationRequest.FileName != "" && submitApplicationRequest.FileBase64 != "" {
 		decodedFile, err := base64.StdEncoding.DecodeString(submitApplicationRequest.FileBase64)
 		if err != nil {
@@ -211,12 +209,10 @@ func (c *ApplicationController) SubmitApplication() {
 			return
 		}
 
-		// Generate unique filename
 		uniqueFileName := time.Now().Format("20060102_150405") + "_" + submitApplicationRequest.FileName
 		uploadDir := "uploads"
 		os.MkdirAll(uploadDir, os.ModePerm)
 
-		// Save file
 		filePath := filepath.Join(uploadDir, uniqueFileName)
 		err = os.WriteFile(filePath, decodedFile, 0644)
 		if err != nil {
@@ -234,7 +230,6 @@ func (c *ApplicationController) SubmitApplication() {
 		}
 	}
 
-	// Success response
 	c.Ctx.Output.SetStatus(http.StatusOK)
 	c.Ctx.Output.JSON(map[string]string{"message": "Application submitted successfully"}, false, false)
 	c.ServeJSON()

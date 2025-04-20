@@ -57,7 +57,6 @@ func CreateClientData(userID int) error {
 func UpdateClientData(clientData *ClientData) error {
 	o := orm.NewOrm()
 
-	// Update user
 	_, err := o.Update(clientData)
 	if err != nil {
 		return err

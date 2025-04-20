@@ -2,7 +2,6 @@ package types
 
 import "time"
 
-// request structure for register
 type RegisterRequest struct {
 	Name     string `json:"name"`
 	Surname  string `json:"surname"`
@@ -11,7 +10,6 @@ type RegisterRequest struct {
 	Role     string `json:"role"`
 }
 
-// request structure for login
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`

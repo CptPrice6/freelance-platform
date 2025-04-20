@@ -8,7 +8,7 @@ import {
 } from "./tokens.js";
 
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL, // Your API base URL
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -28,7 +28,7 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle token refresh on 401 errors
+// Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
@@ -36,7 +36,6 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config; // Original request that caused the error
 
-    // Check if the error is a 401 and if a refresh token exists
     if (
       error.response.status === 401 &&
       !originalRequest._retry &&
@@ -65,7 +64,6 @@ axiosInstance.interceptors.response.use(
 
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        // If refresh failed, remove tokens and redirect to login
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("role");
@@ -103,7 +101,6 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // If the error is not a 401 or another issue, reject the promise
     return Promise.reject(error);
   }
 );

@@ -185,6 +185,7 @@ func SeedJobs() {
 	rateTypes := []string{"hourly", "fixed"}
 	lengthOptions := []string{"<1", "1-3", "3-6", "6-12", "12+"}
 	hoursPerWeekOptions := []string{"<20", "20-40", "40-60", "60-80", "80+"}
+
 	// Get all clients
 	var clients []models.User
 	_, err = o.QueryTable(new(models.User)).Filter("role", "client").All(&clients)
@@ -195,7 +196,7 @@ func SeedJobs() {
 
 	// Create 0-5 jobs for each client
 	for _, client := range clients {
-		numJobs := rand.IntN(6) // Random number between 0 and 5
+		numJobs := rand.IntN(6)
 
 		for range numJobs {
 			rateType := rateTypes[rand.IntN(len(rateTypes))]
@@ -211,7 +212,7 @@ func SeedJobs() {
 
 			job := models.Job{
 				Client:       &client,
-				Title:        faker.Sentence()[:30], // Limit to 30 chars
+				Title:        faker.Sentence()[:30],
 				Description:  faker.Paragraph(),
 				Type:         projectTypes[rand.IntN(len(projectTypes))],
 				Rate:         rateType,
@@ -221,7 +222,6 @@ func SeedJobs() {
 				Status:       "open",
 			}
 
-			// Insert job
 			jobID, err := o.Insert(&job)
 			if err != nil {
 				log.Printf("Error inserting job: %v", err)
@@ -236,7 +236,6 @@ func SeedJobs() {
 				continue
 			}
 
-			// Add skills to job using m2m relationship
 			m2m := o.QueryM2M(&job, "Skills")
 			for _, skill := range skills {
 				if _, err := m2m.Add(&skill); err != nil {

@@ -117,7 +117,7 @@ const ClientJobsPage = () => {
       titleRef.current.reportValidity();
       return;
     } else {
-      titleRef.current.setCustomValidity(""); // clear message
+      titleRef.current.setCustomValidity("");
     }
 
     if (!formData.description.trim()) {
@@ -323,7 +323,7 @@ const ClientJobsPage = () => {
             <label className="form-label">Skills</label>
             <div className="d-flex flex-wrap gap-2">
               {allSkills.length === 0 ? (
-                <p>No skills available. Please try again later.</p> // Message when there are no skills
+                <p>No skills available. Please try again later.</p>
               ) : (
                 allSkills.map((skill) => (
                   <button

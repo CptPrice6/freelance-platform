@@ -14,10 +14,6 @@ type JobController struct {
 	web.Controller
 }
 
-// TODO: Implement personal filtering personal:true in type
-// then filter out open jobs that have skills that user has (if skills are empty, return all) ,
-// that hours per week is <= user hours per week,
-// that rate is >= user rate (if hourly) include fixed?)
 func (c *JobController) GetJobsHandler() {
 	jobs, err := models.GetOpenJobs()
 	if err != nil {
@@ -339,7 +335,6 @@ func (c *JobController) GetClientJobsHandler() {
 			freelancerID = job.Freelancer.Id
 		}
 
-		// Get application count for this job
 		applicationCount, err := models.GetApplicationCountForJob(job.Id)
 		if err != nil {
 			c.Ctx.Output.SetStatus(http.StatusInternalServerError)

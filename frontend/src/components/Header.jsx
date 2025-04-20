@@ -10,7 +10,6 @@ function Header() {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
   const handleLogout = () => {
-    // Clear all authentication-related data
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("role");

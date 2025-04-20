@@ -14,7 +14,6 @@ type AuthController struct {
 	web.Controller
 }
 
-// RegisterHandler - Handles user registration
 func (c *AuthController) RegisterHandler() {
 
 	registerRequest, err := validators.RegisterValidator(c.Ctx.Input.RequestBody)
@@ -31,7 +30,6 @@ func (c *AuthController) RegisterHandler() {
 		return
 	}
 
-	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerRequest.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
@@ -46,13 +44,11 @@ func (c *AuthController) RegisterHandler() {
 		return
 	}
 
-	// Registration successful
 	c.Ctx.Output.SetStatus(http.StatusCreated)
 	c.Data["json"] = map[string]string{"message": "User registered successfully"}
 	c.ServeJSON()
 }
 
-// LoginHandler - Handles user login and returns a JWT token
 func (c *AuthController) LoginHandler() {
 
 	loginRequest, err := validators.LoginValidator(c.Ctx.Input.RequestBody)
@@ -69,7 +65,6 @@ func (c *AuthController) LoginHandler() {
 		return
 	}
 
-	// Compare passwords
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusBadRequest)
@@ -84,7 +79,6 @@ func (c *AuthController) LoginHandler() {
 		return
 	}
 
-	// Successful login
 	c.Ctx.Output.SetStatus(http.StatusOK)
 	c.Ctx.Output.JSON(map[string]string{
 		"access_token":  accessToken,
@@ -92,7 +86,6 @@ func (c *AuthController) LoginHandler() {
 	}, false, false)
 }
 
-// Refresh Token Handler
 func (c *AuthController) RefreshTokenHandler() {
 
 	refreshRequest, err := validators.RefreshValidator(c.Ctx.Input.RequestBody)
@@ -102,7 +95,6 @@ func (c *AuthController) RefreshTokenHandler() {
 		return
 	}
 
-	// Validate Refresh Token
 	claims, err := utils.ValidateRefreshToken(refreshRequest.RefreshToken)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusUnauthorized)
@@ -117,7 +109,6 @@ func (c *AuthController) RefreshTokenHandler() {
 		return
 	}
 
-	// Generate new Access and Refresh tokens
 	newAccessToken, newRefreshToken, err := utils.GenerateTokenPair(user.Id, user.Role)
 	if err != nil {
 		c.Ctx.Output.SetStatus(http.StatusInternalServerError)
@@ -145,7 +136,7 @@ func (c *AuthController) AuthHandler() {
 	c.Ctx.Output.SetStatus(http.StatusOK)
 	c.Data["json"] = map[string]string{
 		"message": "User authenticated",
-		"role":    user.Role, // Send user role
+		"role":    user.Role,
 	}
 	c.ServeJSON()
 }

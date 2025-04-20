@@ -9,7 +9,7 @@ import {
   Button,
   Alert,
 } from "react-bootstrap";
-import "../styles/Dashboard.css"; // use dashboard styles for consistent design
+import "../styles/Dashboard.css";
 
 function ProfileSettings() {
   const [user, setUser] = useState(null);

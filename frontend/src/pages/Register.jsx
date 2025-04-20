@@ -25,11 +25,9 @@ function Register() {
         surname,
       });
 
-      // If successful, show the success message from backend
       alert(response.data.message || "Registration successful!");
-      navigate("/login"); // Redirect to login page
+      navigate("/login");
     } catch (err) {
-      // Extract error message if available
       setError(err.response?.data?.error || "Registration failed");
     }
   };

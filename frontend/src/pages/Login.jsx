@@ -28,9 +28,8 @@ function Login() {
       const userRole = decodedToken.role || "freelancer";
       localStorage.setItem("role", userRole);
       alert("Login successful!");
-      navigate("/"); // Redirect to home page
+      navigate("/");
     } catch (err) {
-      // Handle backend error response
       setError(err.response?.data?.error || "Login failed");
     }
   };

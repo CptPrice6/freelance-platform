@@ -101,7 +101,6 @@ func BanUserByID(userID int) error {
 		return err
 	}
 
-	// Update the ban status
 	user.Ban = true
 	_, err := o.Update(&user, "Ban")
 	return err
@@ -110,7 +109,6 @@ func BanUserByID(userID int) error {
 func UpdateUser(user *User) error {
 	o := orm.NewOrm()
 
-	// Update user
 	_, err := o.Update(user)
 	if err != nil {
 		return err
@@ -124,7 +122,6 @@ func DeleteUserByID(userID int) error {
 
 	user := User{Id: userID}
 
-	// Delete the user by ID
 	_, err := o.Delete(&user)
 	if err != nil {
 		return err

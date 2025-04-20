@@ -33,7 +33,6 @@ func (s *Job) TableName() string {
 func CreateJob(client *User, title, description, projectType, rate, length, hoursPerWeek string, amount int, skills []*types.Skill) error {
 	o := orm.NewOrm()
 
-	// Create a new Job instance
 	job := Job{
 		Client:       client,
 		Title:        title,
