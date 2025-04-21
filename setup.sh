@@ -28,4 +28,4 @@ sudo docker compose -p go-website up --build -d
 echo "Docker containers are now up and running!"
 echo "To access the project:"
 echo "1. If you're running this on your local machine, open your browser and go to http://localhost:3000."
-echo "2. If running on a remote server, use the server's public IP address, e.g., http://<your-server-ip>:3000."
+echo "2. If running on a remote server, use the server's public IP address, e.g., http://<your-server-ip>:<external-frontend-port>."
