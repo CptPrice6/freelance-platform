@@ -13,10 +13,8 @@ import (
 
 var once sync.Once
 
-// InitializeDB ensures that the database is set up only once
 func InitializeDB() {
 	once.Do(func() {
-		// Read database config from app.conf
 		dbDriver, _ := web.AppConfig.String("db_driver")
 		dbUser, _ := web.AppConfig.String("db_user")
 		dbPassword, _ := web.AppConfig.String("db_password")
@@ -25,15 +23,12 @@ func InitializeDB() {
 		dbPort, _ := web.AppConfig.String("db_port")
 		dbSSLMode, _ := web.AppConfig.String("db_sslmode")
 
-		// Construct a correct DSN with the created database
 		dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=%s",
 			dbUser, dbPassword, dbName, dbHost, dbPort, dbSSLMode)
 
-		// Register database
 		orm.RegisterDriver(dbDriver, orm.DRPostgres)
 		orm.RegisterDataBase("default", dbDriver, dsn)
 
-		// Run migrations
 		if err := orm.RunSyncdb("default", false, true); err != nil {
 			log.Fatalf("Failed to sync database: %v", err)
 		}
@@ -44,7 +39,6 @@ func InitializeDB() {
 		}
 		defer db.Close()
 
-		// Add constraints
 		if err := goose.Up(db, "migrations"); err != nil {
 			log.Fatal(err)
 		}
