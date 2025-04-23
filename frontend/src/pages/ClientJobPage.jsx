@@ -395,7 +395,7 @@ const ClientJobPage = () => {
                       size="sm"
                       className="px-4 py-2 rounded-3 shadow-sm"
                     >
-                      Your Public Page
+                      Job Public Page
                     </Button>
                   </Link>
                 </div>

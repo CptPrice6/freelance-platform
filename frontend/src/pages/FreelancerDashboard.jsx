@@ -188,7 +188,7 @@ const FreelancerDashboard = () => {
 
         <Row className="mb-4">
           <Col md={4} className="d-flex align-items-center">
-            <label className="fw-bold text-dark">Work Type:</label>
+            <label className="fw-bold text-dark">Availability:</label>
           </Col>
           <Col md={8}>
             <div>
@@ -202,7 +202,7 @@ const FreelancerDashboard = () => {
                   backgroundColor: "#e9f7fd",
                   borderRadius: "10px",
                   border: "1px solid #ddd",
-                  fontWeight: 500,
+                  fontWeight: 600,
                 }}
               >
                 <option value="<20">Less than 20 hours/week</option>

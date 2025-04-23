@@ -3,6 +3,7 @@ import React from "react";
 import axiosInstance from "../utils/axios";
 import { Button, Card, Container, Row, Col, Alert } from "react-bootstrap";
 import "../styles/Dashboard.css";
+import { Link } from "react-router-dom";
 
 const ClientDashboard = () => {
   const [editingField, setEditingField] = useState(null);
@@ -16,10 +17,12 @@ const ClientDashboard = () => {
   });
   const [updateError, setUpdateError] = useState(null);
   const inputRef = useRef(null);
+  const [id, setId] = useState(null);
 
   const fetchClient = () => {
     axiosInstance.get("/user").then((res) => {
       const userData = res.data;
+      setId(userData.id);
       setFormData({
         name: userData.name,
         surname: userData.surname,
@@ -181,6 +184,24 @@ const ClientDashboard = () => {
             </Button>
           </Col>
         </Row>
+
+        <div className="d-flex justify-content-center mt-4">
+          <Link to={`/clients/${id}`} style={{ textDecoration: "none" }}>
+            <Button
+              variant="primary"
+              size="lg"
+              className="px-5 py-3 rounded-3 shadow-sm"
+              style={{
+                backgroundColor: "#007bff",
+                color: "#fff",
+                fontWeight: "bold",
+                transition: "background-color 0.3s ease",
+              }}
+            >
+              Your Public Page
+            </Button>
+          </Link>
+        </div>
       </Card>
     </Container>
   );

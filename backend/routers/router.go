@@ -64,7 +64,6 @@ func init() {
 	web.Router("/admin/skills/:id", &controllers.SkillController{}, "delete:DeleteSkillHandler")
 	web.Router("/admin/skills/:id", &controllers.SkillController{}, "put:UpdateSkillHandler")
 
-	//TODO:
 	web.Router("/admin/jobs/:id", &controllers.JobController{}, "delete:DeleteJobHandler")
 
 	// public freelancer logic
